@@ -9,19 +9,55 @@ class MatchPage extends StatefulWidget {
 
 class _MatchPageState extends State<MatchPage> {
   final List<String> labels = [
-    '과제',
     '밥',
     '수다',
     '과제',
     '밥',
+    '수다',
+    '과제',
   ];
 
-  final List<bool> selected = [false, false, true, false, false];
+  final List<bool> selected = [false, false, false, false, true, false];
   late PageController controller;
 
   @override
   void initState() {
-    controller = PageController(initialPage: 2, viewportFraction: 0.5);
+    controller = PageController(initialPage: 4, viewportFraction: 0.5)
+      ..addListener(() {
+        if (controller.page!.toInt() >= labels.length - 1) {
+          setState(() {
+            labels.addAll(const ['밥', '수다', '과제']);
+            selected.addAll(const [false, false, false]);
+            labels.removeAt(0);
+            labels.removeAt(0);
+            labels.removeAt(0);
+            selected.removeAt(0);
+            selected.removeAt(0);
+            selected.removeAt(0);
+          });
+          controller.jumpToPage(2);
+          controller.nextPage(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.linear);
+          // print(labels);
+        } else if (controller.page!.toInt() == 0) {
+          setState(() {
+            labels.insertAll(0, const ['밥', '수다', '과제']);
+            selected.insertAll(0, const [false, false, false]);
+            labels.removeLast();
+            labels.removeLast();
+            labels.removeLast();
+            selected.removeLast();
+            selected.removeLast();
+            selected.removeLast();
+          });
+          // print(labels);
+          controller.jumpToPage(4);
+          controller.previousPage(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.linear);
+        }
+      });
 
     super.initState();
   }
