@@ -176,14 +176,20 @@ class MatchPageView extends StatelessWidget {
 }
 
 class MatchListItem extends StatelessWidget {
-  const MatchListItem(
+  MatchListItem(
       {super.key,
       required this.label,
       required this.isSelect,
       required this.onPressed})
       : height = isSelect ? 200.0 : 150.0,
         width = isSelect ? 150.0 : 100.0,
-        labelSize = isSelect ? 24.0 : 14.0;
+        labelSize = isSelect ? 24.0 : 14.0,
+        imagePath = switch (label) {
+          '밥' => 'assets/eat.png',
+          '수다' => 'assets/talk.png',
+          '과제' => 'assets/subject.png',
+          _ => 'assets/eat.png'
+        };
 
   final String label;
   final bool isSelect;
@@ -191,6 +197,7 @@ class MatchListItem extends StatelessWidget {
   final double width;
   final double labelSize;
   final VoidCallback onPressed;
+  final String imagePath;
 
   @override
   Widget build(BuildContext context) {
@@ -205,9 +212,14 @@ class MatchListItem extends StatelessWidget {
             height: height,
             width: width,
             margin: const EdgeInsets.fromLTRB(0, 0, 0, 8.0),
+            padding: EdgeInsets.all(16.0),
             decoration: BoxDecoration(
                 color: colorScheme.secondaryContainer,
                 borderRadius: BorderRadius.circular(30.0)),
+            child: Image.asset(
+              imagePath,
+              fit: BoxFit.contain,
+            ),
           ),
           Text(
             label,
