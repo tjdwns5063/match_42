@@ -62,7 +62,6 @@ class _MatchPageState extends State<MatchPage> {
         selected.removeAt(0);
       }
     });
-    // print(labels);
     controller.jumpToPage(2);
     controller.nextPage(
         duration: const Duration(milliseconds: 200), curve: Curves.linear);
@@ -77,7 +76,6 @@ class _MatchPageState extends State<MatchPage> {
         selected.removeLast();
       }
     });
-    // print(labels);
     controller.jumpToPage(4);
     controller.previousPage(
         duration: const Duration(milliseconds: 200), curve: Curves.linear);
@@ -129,8 +127,8 @@ class _MatchPageState extends State<MatchPage> {
                 shape: const CircleBorder(),
                 padding: const EdgeInsets.all(30.0)),
             child: const Text(
-              'Go',
-              style: TextStyle(fontSize: 24.0),
+              '시작',
+              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
             ),
           )
         ],
@@ -212,7 +210,7 @@ class MatchListItem extends StatelessWidget {
             height: height,
             width: width,
             margin: const EdgeInsets.fromLTRB(0, 0, 0, 8.0),
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
                 color: colorScheme.secondaryContainer,
                 borderRadius: BorderRadius.circular(30.0)),
