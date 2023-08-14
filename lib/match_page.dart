@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:match_42/main_layout.dart';
 
 class MatchPage extends StatefulWidget {
   const MatchPage({super.key});
@@ -22,41 +23,9 @@ class _MatchPageState extends State<MatchPage> {
 
   @override
   void initState() {
-    controller = PageController(initialPage: 4, viewportFraction: 0.5)
+    controller = PageController(initialPage: 4, viewportFraction: 0.4)
       ..addListener(() {
-        if (controller.page!.toInt() >= labels.length - 1) {
-          setState(() {
-            labels.addAll(const ['밥', '수다', '과제']);
-            selected.addAll(const [false, false, false]);
-            labels.removeAt(0);
-            labels.removeAt(0);
-            labels.removeAt(0);
-            selected.removeAt(0);
-            selected.removeAt(0);
-            selected.removeAt(0);
-          });
-          controller.jumpToPage(2);
-          controller.nextPage(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.linear);
-          // print(labels);
-        } else if (controller.page!.toInt() == 0) {
-          setState(() {
-            labels.insertAll(0, const ['밥', '수다', '과제']);
-            selected.insertAll(0, const [false, false, false]);
-            labels.removeLast();
-            labels.removeLast();
-            labels.removeLast();
-            selected.removeLast();
-            selected.removeLast();
-            selected.removeLast();
-          });
-          // print(labels);
-          controller.jumpToPage(4);
-          controller.previousPage(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.linear);
-        }
+        _infiniteScroll();
       });
 
     super.initState();
@@ -68,36 +37,73 @@ class _MatchPageState extends State<MatchPage> {
     super.dispose();
   }
 
+  void _infiniteScroll() {
+    if (_isMoreItemPrevious()) {
+      _moreItemPrevious();
+    } else if (_isMoreItemNext()) {
+      _moreItemNext();
+    }
+  }
+
+  bool _isMoreItemPrevious() {
+    return controller.page!.toInt() >= labels.length - 1;
+  }
+
+  bool _isMoreItemNext() {
+    return controller.page!.toInt() == 0;
+  }
+
+  void _moreItemPrevious() {
+    setState(() {
+      labels.addAll(const ['밥', '수다', '과제']);
+      selected.addAll(const [false, false, false]);
+      for (int i = 0; i < 3; ++i) {
+        labels.removeAt(0);
+        selected.removeAt(0);
+      }
+    });
+    // print(labels);
+    controller.jumpToPage(2);
+    controller.nextPage(
+        duration: const Duration(milliseconds: 200), curve: Curves.linear);
+  }
+
+  void _moreItemNext() {
+    setState(() {
+      labels.insertAll(0, const ['밥', '수다', '과제']);
+      selected.insertAll(0, const [false, false, false]);
+      for (int i = 0; i < 3; ++i) {
+        labels.removeLast();
+        selected.removeLast();
+      }
+    });
+    // print(labels);
+    controller.jumpToPage(4);
+    controller.previousPage(
+        duration: const Duration(milliseconds: 200), curve: Curves.linear);
+  }
+
+  void _onPageChanged(int page) {
+    setState(() {
+      selected[selected.indexOf(true)] = false;
+      selected[page] = true;
+    });
+  }
+
+  void _onPressed(int index) {
+    if (controller.page!.toInt() < index) {
+      controller.nextPage(
+          duration: const Duration(milliseconds: 200), curve: Curves.linear);
+    } else if (controller.page!.toInt() > index) {
+      controller.previousPage(
+          duration: const Duration(milliseconds: 200), curve: Curves.linear);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    ColorScheme colorScheme = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: colorScheme.background,
-        title: const Text(
-          '매칭',
-          style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.notifications_none,
-              size: 32,
-            ),
-            onPressed: () {},
-          )
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        showUnselectedLabels: false,
-        showSelectedLabels: false,
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person_search_rounded), label: 'match'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'chat'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'my')
-        ],
-      ),
+    return MainLayout(
+      title: '매칭',
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -108,41 +114,15 @@ class _MatchPageState extends State<MatchPage> {
             ),
           ),
           SizedBox(
-            height: 250.0,
-            width: double.infinity,
-            child: PageView.builder(
-              scrollDirection: Axis.horizontal,
-              onPageChanged: (int page) {
-                setState(() {
-                  selected[selected.indexOf(true)] = false;
-                  selected[page] = true;
-                });
-              },
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: MatchListItem(
-                    index: index,
-                    label: labels[index],
-                    isSelect: selected[index],
-                    onPressed: () {
-                      if (controller.page!.toInt() < index) {
-                        controller.nextPage(
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.linear);
-                      } else if (controller.page!.toInt() > index) {
-                        controller.previousPage(
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.linear);
-                      }
-                    },
-                  ),
-                );
-              },
-              controller: controller,
-              itemCount: labels.length,
-            ),
-          ),
+              height: 250.0,
+              width: double.infinity,
+              child: MatchPageView(
+                controller: controller,
+                labels: labels,
+                selected: selected,
+                onPageChanged: _onPageChanged,
+                onPressed: _onPressed,
+              )),
           ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
@@ -159,10 +139,45 @@ class _MatchPageState extends State<MatchPage> {
   }
 }
 
+class MatchPageView extends StatelessWidget {
+  const MatchPageView(
+      {super.key,
+      required this.controller,
+      required this.labels,
+      required this.selected,
+      required this.onPageChanged,
+      required this.onPressed});
+
+  final PageController controller;
+  final List<String> labels;
+  final List<bool> selected;
+  final ValueChanged<int> onPageChanged;
+  final ValueChanged<int> onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return PageView.builder(
+      scrollDirection: Axis.horizontal,
+      onPageChanged: onPageChanged,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: MatchListItem(
+            label: labels[index],
+            isSelect: selected[index],
+            onPressed: () => onPressed(index),
+          ),
+        );
+      },
+      controller: controller,
+      itemCount: labels.length,
+    );
+  }
+}
+
 class MatchListItem extends StatelessWidget {
   const MatchListItem(
       {super.key,
-      required this.index,
       required this.label,
       required this.isSelect,
       required this.onPressed})
@@ -171,7 +186,6 @@ class MatchListItem extends StatelessWidget {
         labelSize = isSelect ? 24.0 : 14.0;
 
   final String label;
-  final int index;
   final bool isSelect;
   final double height;
   final double width;
