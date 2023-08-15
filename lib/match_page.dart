@@ -16,9 +16,22 @@ class _MatchPageState extends State<MatchPage> {
     '밥',
     '수다',
     '과제',
+    '밥',
+    '수다',
+    '과제',
   ];
 
-  final List<bool> selected = [false, false, false, false, true, false];
+  final List<bool> selected = [
+    false,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false
+  ];
   late PageController controller;
 
   @override
@@ -45,15 +58,15 @@ class _MatchPageState extends State<MatchPage> {
     }
   }
 
-  bool _isMoreItemPrevious() {
-    return controller.page!.toInt() >= labels.length - 1;
-  }
-
   bool _isMoreItemNext() {
-    return controller.page!.toInt() == 0;
+    return controller.page!.toInt() >= labels.length - 2;
   }
 
-  void _moreItemPrevious() {
+  bool _isMoreItemPrevious() {
+    return controller.page!.toInt() == 1;
+  }
+
+  void _moreItemNext() {
     setState(() {
       labels.addAll(const ['밥', '수다', '과제']);
       selected.addAll(const [false, false, false]);
@@ -62,12 +75,10 @@ class _MatchPageState extends State<MatchPage> {
         selected.removeAt(0);
       }
     });
-    controller.jumpToPage(2);
-    controller.nextPage(
-        duration: const Duration(milliseconds: 200), curve: Curves.linear);
+    controller.jumpToPage(4);
   }
 
-  void _moreItemNext() {
+  void _moreItemPrevious() {
     setState(() {
       labels.insertAll(0, const ['밥', '수다', '과제']);
       selected.insertAll(0, const [false, false, false]);
@@ -76,7 +87,7 @@ class _MatchPageState extends State<MatchPage> {
         selected.removeLast();
       }
     });
-    controller.jumpToPage(4);
+    controller.jumpToPage(5);
     controller.previousPage(
         duration: const Duration(milliseconds: 200), curve: Curves.linear);
   }
@@ -111,24 +122,26 @@ class _MatchPageState extends State<MatchPage> {
               style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w700),
             ),
           ),
-          SizedBox(
-              height: 250.0,
-              width: double.infinity,
-              child: MatchPageView(
-                controller: controller,
-                labels: labels,
-                selected: selected,
-                onPageChanged: _onPageChanged,
-                onPressed: _onPressed,
-              )),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-                shape: const CircleBorder(),
-                padding: const EdgeInsets.all(30.0)),
-            child: const Text(
-              '시작',
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
+          Expanded(
+            child: MatchPageView(
+              controller: controller,
+              labels: labels,
+              selected: selected,
+              onPageChanged: _onPageChanged,
+              onPressed: _onPressed,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: 32.0),
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                  shape: const CircleBorder(),
+                  padding: const EdgeInsets.all(30.0)),
+              child: const Text(
+                '시작',
+                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
+              ),
             ),
           )
         ],
@@ -179,10 +192,7 @@ class MatchListItem extends StatelessWidget {
       required this.label,
       required this.isSelect,
       required this.onPressed})
-      : height = isSelect ? 200.0 : 150.0,
-        width = isSelect ? 150.0 : 100.0,
-        labelSize = isSelect ? 24.0 : 14.0,
-        imagePath = switch (label) {
+      : imagePath = switch (label) {
           '밥' => 'assets/eat.png',
           '수다' => 'assets/talk.png',
           '과제' => 'assets/subject.png',
@@ -191,9 +201,6 @@ class MatchListItem extends StatelessWidget {
 
   final String label;
   final bool isSelect;
-  final double height;
-  final double width;
-  final double labelSize;
   final VoidCallback onPressed;
   final String imagePath;
 
@@ -201,29 +208,33 @@ class MatchListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-    return GestureDetector(
-      onTap: onPressed,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            height: height,
-            width: width,
-            margin: const EdgeInsets.fromLTRB(0, 0, 0, 8.0),
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-                color: colorScheme.secondaryContainer,
-                borderRadius: BorderRadius.circular(30.0)),
-            child: Image.asset(
-              imagePath,
-              fit: BoxFit.contain,
+    return AnimatedScale(
+      scale: isSelect ? 1.5 : 1.0,
+      duration: const Duration(milliseconds: 200),
+      child: GestureDetector(
+        onTap: onPressed,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: 150.0,
+              width: 100.0,
+              margin: const EdgeInsets.fromLTRB(0, 0, 0, 8.0),
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                  color: colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(30.0)),
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.contain,
+              ),
             ),
-          ),
-          Text(
-            label,
-            style: TextStyle(fontSize: labelSize),
-          ),
-        ],
+            Text(
+              label,
+              style: const TextStyle(fontSize: 14.0),
+            ),
+          ],
+        ),
       ),
     );
   }
