@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:match_42/color_schemes.dart';
-import 'package:match_42/match_page.dart';
+import 'package:match_42/ui/match_page.dart';
+import 'package:match_42/ui/theme/color_schemes.dart';
 
 void main() {
   runApp(const MyApp());

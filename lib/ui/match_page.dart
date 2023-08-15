@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:match_42/main_layout.dart';
+import 'package:match_42/ui/main_layout.dart';
+import 'package:match_42/ui/subject_dialog.dart';
 
 class MatchPage extends StatefulWidget {
   const MatchPage({super.key});
@@ -127,7 +128,17 @@ class _MatchPageState extends State<MatchPage> {
             height: 32.0,
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return Dialog(
+                      surfaceTintColor:
+                          Theme.of(context).colorScheme.background,
+                      child: SubjectDialog(),
+                    );
+                  });
+            },
             style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
                 padding: const EdgeInsets.all(30.0)),
