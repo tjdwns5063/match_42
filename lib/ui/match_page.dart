@@ -223,7 +223,7 @@ class MatchListItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              height: 150.0,
+              height: 120.0,
               width: 100.0,
               margin: const EdgeInsets.fromLTRB(0, 0, 0, 8.0),
               padding: const EdgeInsets.all(16.0),

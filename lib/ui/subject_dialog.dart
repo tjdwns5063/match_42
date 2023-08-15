@@ -104,18 +104,15 @@ class SubjectDialog extends StatelessWidget {
                     horizontal: 16.0, vertical: 32.0),
                 child: ElevatedButton(
                     onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.secondaryContainer,
-                    ),
-                    child: SizedBox(
+                    child: const SizedBox(
                       width: double.infinity,
                       child: Text(
                         '매칭 시작',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.w700,
-                            color: colorScheme.onSecondaryContainer),
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     )),
               ),
