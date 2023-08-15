@@ -67,26 +67,12 @@ class _MatchPageState extends State<MatchPage> {
   }
 
   void _moreItemNext() {
-    setState(() {
-      labels.addAll(const ['밥', '수다', '과제']);
-      selected.addAll(const [false, false, false]);
-      for (int i = 0; i < 3; ++i) {
-        labels.removeAt(0);
-        selected.removeAt(0);
-      }
-    });
     controller.jumpToPage(4);
+    controller.nextPage(
+        duration: const Duration(milliseconds: 200), curve: Curves.linear);
   }
 
   void _moreItemPrevious() {
-    setState(() {
-      labels.insertAll(0, const ['밥', '수다', '과제']);
-      selected.insertAll(0, const [false, false, false]);
-      for (int i = 0; i < 3; ++i) {
-        labels.removeLast();
-        selected.removeLast();
-      }
-    });
     controller.jumpToPage(5);
     controller.previousPage(
         duration: const Duration(milliseconds: 200), curve: Curves.linear);
@@ -116,11 +102,17 @@ class _MatchPageState extends State<MatchPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          const SizedBox(
+            height: 32.0,
+          ),
           const Center(
             child: Text(
               '어떤 친구가 찾고 싶나요?',
               style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w700),
             ),
+          ),
+          const SizedBox(
+            height: 32.0,
           ),
           Expanded(
             child: MatchPageView(
@@ -131,19 +123,22 @@ class _MatchPageState extends State<MatchPage> {
               onPressed: _onPressed,
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(bottom: 32.0),
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(30.0)),
-              child: const Text(
-                '시작',
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
-              ),
+          const SizedBox(
+            height: 32.0,
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                padding: const EdgeInsets.all(30.0)),
+            child: const Text(
+              '시작',
+              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
             ),
-          )
+          ),
+          const SizedBox(
+            height: 32.0,
+          ),
         ],
       ),
     );
