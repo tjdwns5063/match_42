@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:match_42/ui/eat_dialog.dart';
 import 'package:match_42/ui/main_layout.dart';
 import 'package:match_42/ui/subject_dialog.dart';
 
@@ -135,7 +136,7 @@ class _MatchPageState extends State<MatchPage> {
                     return Dialog(
                       surfaceTintColor:
                           Theme.of(context).colorScheme.background,
-                      child: SubjectDialog(),
+                      child: EatDialog(),
                     );
                   });
             },
