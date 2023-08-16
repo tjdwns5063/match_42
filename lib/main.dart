@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:match_42/color_schemes.dart';
-import 'package:match_42/match_page.dart';
+import 'package:match_42/ui/match_page.dart';
+import 'package:match_42/ui/theme/color_schemes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,7 +9,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,7 +19,7 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData(colorScheme: darkColorScheme, useMaterial3: true),
       debugShowCheckedModeBanner: false,
-      home: MatchPage(),
+      home: const MatchPage(),
     );
   }
 }
