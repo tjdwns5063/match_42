@@ -27,7 +27,7 @@ class _ChatListPageState extends State<ChatListPage> {
               children: [
                 const Text(
                   '채팅',
-                  style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(
                   width: 8.0,
@@ -36,7 +36,7 @@ class _ChatListPageState extends State<ChatListPage> {
                     onPressed: () {},
                     icon: const Icon(
                       Icons.filter_list_outlined,
-                      size: 32.0,
+                      size: 28.0,
                     )),
               ],
             ),
