@@ -98,7 +98,7 @@ class ChatListItem extends StatelessWidget {
       ),
       subtitle: Text(
         description,
-        style: const TextStyle(color: Color(0xff8D8D8D)),
+        style: TextStyle(color: colorScheme.outline.withAlpha(200)),
       ),
       trailing: unreadMessageCount != 0
           ? Container(
