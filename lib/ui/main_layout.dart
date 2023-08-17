@@ -26,6 +26,8 @@ class _MainLayoutState extends State<MainLayout> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: colorScheme.background,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0.0,
         title: Text(
           widget.title,
           style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
