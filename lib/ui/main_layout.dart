@@ -77,22 +77,8 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
           ],
         ),
       ),
-      // Theme(
-      //   data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-      //   child: BottomNavigationBar(
-      //     showUnselectedLabels: false,
-      //     showSelectedLabels: false,
-      //     onTap: _move,
-      //     currentIndex: _page,
-      //     items: const [
-      //       BottomNavigationBarItem(
-      //           icon: Icon(Icons.person_search_rounded), label: 'match'),
-      //       BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'chat'),
-      //       BottomNavigationBarItem(icon: Icon(Icons.person), label: 'my')
-      //     ],
-      //   ),
-      // ),
       body: TabBarView(
+        physics: const NeverScrollableScrollPhysics(),
         controller: controller,
         children: _pages,
       ),
