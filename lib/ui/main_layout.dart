@@ -1,22 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:match_42/ui/chat_list_page.dart';
+import 'package:match_42/ui/match_page.dart';
 
 class MainLayout extends StatefulWidget {
-  const MainLayout({super.key, required this.title, required this.body});
-
-  final String title;
-  final Widget body;
+  const MainLayout({super.key});
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
 }
 
-class _MainLayoutState extends State<MainLayout> {
-  int _page = 0;
+class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
+  final List<Widget> _pages = const [
+    MatchPage(),
+    ChatListPage(),
+    ChatListPage()
+  ];
+  final List<String> _titles = const ['매칭', '채팅 목록', '채팅 목록'];
+  late TabController controller;
+  late String _title;
 
-  void _move(int page) {
-    setState(() {
-      _page = page;
-    });
+  @override
+  void initState() {
+    controller = TabController(length: 3, vsync: this)
+      ..addListener(() {
+        setState(() {
+          _title = _titles[controller.index];
+        });
+      });
+    _title = _titles[controller.index];
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -28,8 +46,9 @@ class _MainLayoutState extends State<MainLayout> {
         backgroundColor: colorScheme.background,
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0.0,
+        centerTitle: false,
         title: Text(
-          widget.title,
+          _title,
           style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
         ),
         actions: [
@@ -42,22 +61,41 @@ class _MainLayoutState extends State<MainLayout> {
           )
         ],
       ),
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-        child: BottomNavigationBar(
-          showUnselectedLabels: false,
-          showSelectedLabels: false,
-          onTap: _move,
-          currentIndex: _page,
-          items: const [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.person_search_rounded), label: 'match'),
-            BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'chat'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'my')
+      bottomNavigationBar: SafeArea(
+        child: TabBar(
+          controller: controller,
+          tabs: const [
+            Tab(
+              icon: Icon(Icons.person_search_rounded),
+            ),
+            Tab(
+              icon: Icon(Icons.chat),
+            ),
+            Tab(
+              icon: Icon(Icons.person),
+            )
           ],
         ),
       ),
-      body: widget.body,
+      // Theme(
+      //   data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+      //   child: BottomNavigationBar(
+      //     showUnselectedLabels: false,
+      //     showSelectedLabels: false,
+      //     onTap: _move,
+      //     currentIndex: _page,
+      //     items: const [
+      //       BottomNavigationBarItem(
+      //           icon: Icon(Icons.person_search_rounded), label: 'match'),
+      //       BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'chat'),
+      //       BottomNavigationBarItem(icon: Icon(Icons.person), label: 'my')
+      //     ],
+      //   ),
+      // ),
+      body: TabBarView(
+        controller: controller,
+        children: _pages,
+      ),
     );
   }
 }

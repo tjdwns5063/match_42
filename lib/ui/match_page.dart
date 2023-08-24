@@ -99,60 +99,55 @@ class _MatchPageState extends State<MatchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      title: '매칭',
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          const SizedBox(
-            height: 32.0,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        const SizedBox(
+          height: 32.0,
+        ),
+        const Center(
+          child: Text(
+            '어떤 친구가 찾고 싶나요?',
+            style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w700),
           ),
-          const Center(
-            child: Text(
-              '어떤 친구가 찾고 싶나요?',
-              style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w700),
-            ),
+        ),
+        const SizedBox(
+          height: 32.0,
+        ),
+        Expanded(
+          child: MatchPageView(
+            controller: controller,
+            labels: labels,
+            selected: selected,
+            onPageChanged: _onPageChanged,
+            onPressed: _onPressed,
           ),
-          const SizedBox(
-            height: 32.0,
+        ),
+        const SizedBox(
+          height: 32.0,
+        ),
+        ElevatedButton(
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return Dialog(
+                    surfaceTintColor: Theme.of(context).colorScheme.background,
+                    child: EatDialog(),
+                  );
+                });
+          },
+          style: ElevatedButton.styleFrom(
+              shape: const CircleBorder(), padding: const EdgeInsets.all(30.0)),
+          child: const Text(
+            '시작',
+            style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
           ),
-          Expanded(
-            child: MatchPageView(
-              controller: controller,
-              labels: labels,
-              selected: selected,
-              onPageChanged: _onPageChanged,
-              onPressed: _onPressed,
-            ),
-          ),
-          const SizedBox(
-            height: 32.0,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return Dialog(
-                      surfaceTintColor:
-                          Theme.of(context).colorScheme.background,
-                      child: EatDialog(),
-                    );
-                  });
-            },
-            style: ElevatedButton.styleFrom(
-                shape: const CircleBorder(),
-                padding: const EdgeInsets.all(30.0)),
-            child: const Text(
-              '시작',
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
-            ),
-          ),
-          const SizedBox(
-            height: 32.0,
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          height: 32.0,
+        ),
+      ],
     );
   }
 }
