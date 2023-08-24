@@ -1,12 +1,10 @@
 import 'package:go_router/go_router.dart';
-import 'package:match_42/ui/chat_list_page.dart';
 import 'package:match_42/ui/chat_page.dart';
 import 'package:match_42/ui/login_page.dart';
-import 'package:match_42/ui/match_page.dart';
+import 'package:match_42/ui/main_layout.dart';
 
 const String LOGIN_PATH = '/login';
-const String MATCH_PATH = '/match';
-const String CHAT_LIST_PATH = '/chat_list';
+const String MAIN_PATH = '/main';
 const String CHAT_PATH = '/chat';
 
 class MyRouter {
@@ -17,14 +15,9 @@ class MyRouter {
           return const LoginPage();
         }),
     GoRoute(
-        path: MATCH_PATH,
+        path: MAIN_PATH,
         builder: (context, _) {
-          return const MatchPage();
-        }),
-    GoRoute(
-        path: CHAT_LIST_PATH,
-        builder: (context, _) {
-          return const ChatListPage();
+          return const MainLayout();
         }),
     GoRoute(
         path: CHAT_PATH,
