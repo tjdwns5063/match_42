@@ -24,3 +24,9 @@ jobs:
 
       - name: Build Dev Apk
         run: flutter build apk --debug
+
+      - name: Upload Apk
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: android_debug_apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
