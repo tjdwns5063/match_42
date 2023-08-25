@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -17,9 +16,6 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     text = TextEditingController();
     scroll = ScrollController();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      scroll.jumpTo(scroll.position.maxScrollExtent);
-    });
     super.initState();
   }
 
@@ -36,7 +32,7 @@ class _ChatPageState extends State<ChatPage> {
       text.clear();
     });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      scroll.jumpTo(scroll.position.maxScrollExtent);
+      scroll.jumpTo(0.0);
     });
   }
 
@@ -75,13 +71,15 @@ class _ChatPageState extends State<ChatPage> {
         children: [
           Expanded(
             child: ListView.separated(
+                reverse: true,
                 controller: scroll,
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 itemBuilder: (context, index) {
+                  int i = list.length - index - 1;
                   if (index % 2 == 0) {
-                    return MyChatMessage(text: list[index]);
+                    return MyChatMessage(text: list[i]);
                   } else {
-                    return OtherChatMessage(text: list[index]);
+                    return OtherChatMessage(text: list[i]);
                   }
                 },
                 separatorBuilder: (context, index) {
@@ -104,49 +102,66 @@ class _ChatPageState extends State<ChatPage> {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    shape: const CircleBorder(),
-                    backgroundColor: colorScheme.primary,
-                    foregroundColor: colorScheme.onPrimary,
-                    padding: EdgeInsets.zero,
-                  ),
-                  child: ImageIcon(
-                    const AssetImage('assets/talk_event.png'),
-                    color: colorScheme.onPrimary,
-                  ),
-                ),
-                Expanded(
-                  child: SizedBox(
-                    height: 40.0,
-                    child: TextField(
-                      controller: text,
-                      style: const TextStyle(fontSize: 16.0),
-                      decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.only(
-                              left: 16.0, bottom: 8.0, right: 16.0),
-                          border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(20.0)),
-                          filled: true,
-                          fillColor: colorScheme.secondaryContainer),
-                    ),
-                  ),
-                ),
-                IconButton(
-                    onPressed: _send,
-                    icon: Icon(
-                      Icons.send,
-                      color: colorScheme.primary,
-                    )),
-              ],
+            child: MessageSender(
+              sendCallback: _send,
+              controller: text,
             ),
           )
         ],
       ),
+    );
+  }
+}
+
+class MessageSender extends StatelessWidget {
+  const MessageSender(
+      {super.key, required this.sendCallback, required this.controller});
+
+  final VoidCallback sendCallback;
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        ElevatedButton(
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+            shape: const CircleBorder(),
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
+            padding: EdgeInsets.zero,
+          ),
+          child: ImageIcon(
+            const AssetImage('assets/talk_event.png'),
+            color: colorScheme.onPrimary,
+          ),
+        ),
+        Expanded(
+          child: SizedBox(
+            height: 40.0,
+            child: TextField(
+              controller: controller,
+              style: const TextStyle(fontSize: 16.0),
+              decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.only(
+                      left: 16.0, bottom: 8.0, right: 16.0),
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(20.0)),
+                  filled: true,
+                  fillColor: colorScheme.secondaryContainer),
+            ),
+          ),
+        ),
+        IconButton(
+            onPressed: sendCallback,
+            icon: Icon(
+              Icons.send,
+              color: colorScheme.primary,
+            )),
+      ],
     );
   }
 }

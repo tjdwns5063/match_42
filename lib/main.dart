@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:match_42/ui/chat_list_page.dart';
-import 'package:match_42/ui/match_page.dart';
+import 'package:match_42/router.dart';
 import 'package:match_42/ui/theme/color_schemes.dart';
 import 'package:match_42/ui/login_page.dart';
 import 'package:match_42/ui/my_page.dart';
@@ -14,7 +13,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'matching 42',
       theme: ThemeData(
         colorScheme: lightColorScheme,
@@ -22,7 +21,7 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData(colorScheme: darkColorScheme, useMaterial3: true),
       debugShowCheckedModeBanner: false,
-      home: const MyPage(),
+      routerConfig: MyRouter.router,
     );
   }
 }

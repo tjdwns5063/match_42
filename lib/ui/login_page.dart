@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:match_42/router.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -42,7 +44,9 @@ class LoginPage extends StatelessWidget {
           height: 90,
         ),
         TextButton(
-          onPressed: null,
+          onPressed: () {
+            context.go('/main');
+          },
           style: ButtonStyle(
             backgroundColor:
                 MaterialStatePropertyAll(colorScheme.secondaryContainer),

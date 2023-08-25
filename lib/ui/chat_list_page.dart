@@ -17,47 +17,44 @@ class _ChatListPageState extends State<ChatListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      title: '채팅 목록',
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              children: [
-                const Text(
-                  '채팅',
-                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(
-                  width: 8.0,
-                ),
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.filter_list_outlined,
-                      size: 28.0,
-                    )),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Scrollbar(
-              child: ListView.builder(
-                itemBuilder: (BuildContext _, int index) {
-                  return ChatListItem(
-                    type: chatList[index],
-                    title: '안드',
-                    description: '안녕하세요',
-                    unreadMessageCount: index < 3 ? 3 : 0,
-                  );
-                },
-                itemCount: chatList.length,
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            children: [
+              const Text(
+                '채팅',
+                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
               ),
+              const SizedBox(
+                width: 8.0,
+              ),
+              IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.filter_list_outlined,
+                    size: 28.0,
+                  )),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Scrollbar(
+            child: ListView.builder(
+              itemBuilder: (BuildContext _, int index) {
+                return ChatListItem(
+                  type: chatList[index],
+                  title: '안드',
+                  description: '안녕하세요',
+                  unreadMessageCount: index < 3 ? 3 : 0,
+                );
+              },
+              itemCount: chatList.length,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
