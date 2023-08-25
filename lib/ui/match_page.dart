@@ -102,17 +102,12 @@ class _MatchPageState extends State<MatchPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        const SizedBox(
-          height: 32.0,
-        ),
+        const SizedBox(height: 32.0),
         const Center(
           child: Text(
             '어떤 친구가 찾고 싶나요?',
             style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w700),
           ),
-        ),
-        const SizedBox(
-          height: 32.0,
         ),
         Expanded(
           child: MatchPageView(
@@ -122,9 +117,6 @@ class _MatchPageState extends State<MatchPage> {
             onPageChanged: _onPageChanged,
             onPressed: _onPressed,
           ),
-        ),
-        const SizedBox(
-          height: 32.0,
         ),
         ElevatedButton(
           onPressed: () {
@@ -144,9 +136,7 @@ class _MatchPageState extends State<MatchPage> {
             style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
           ),
         ),
-        const SizedBox(
-          height: 32.0,
-        ),
+        const SizedBox(height: 32.0),
       ],
     );
   }
