@@ -6,22 +6,20 @@ class MyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MainLayout(
-        title: '마이페이지',
-        body: Column(
-          children: [
-            Expanded(
-              child: Interest(),
-            ),
-            Expanded(
-              flex: 3,
-              child: BlockUser(),
-            ),
-            Expanded(
-              child: Logout(),
-            ),
-          ],
-        ));
+    return Column(
+      children: [
+        Expanded(
+          child: Interest(),
+        ),
+        Expanded(
+          flex: 3,
+          child: BlockUser(),
+        ),
+        Expanded(
+          child: Logout(),
+        ),
+      ],
+    );
   }
 }
 
