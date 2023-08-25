@@ -8,13 +8,12 @@ class LoginPage extends StatelessWidget {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-        body: Column(
-      children: <Widget>[
+      body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         Center(
           child: Container(
             width: 220,
             height: 220,
-            margin: const EdgeInsets.only(top: 70),
+            // margin: const EdgeInsets.only(top: 70),
             decoration: BoxDecoration(
               color: colorScheme.secondaryContainer,
               borderRadius: const BorderRadius.all(Radius.circular(60.0)),
@@ -56,7 +55,7 @@ class LoginPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               )),
         ),
-      ],
-    ));
+      ]),
+    );
   }
 }
