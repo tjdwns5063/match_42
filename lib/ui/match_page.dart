@@ -70,8 +70,6 @@ class _MatchPageState extends State<MatchPage> {
 
   void _moreItemNext() {
     controller.jumpToPage(4);
-    controller.nextPage(
-        duration: const Duration(milliseconds: 200), curve: Curves.linear);
   }
 
   void _moreItemPrevious() {
