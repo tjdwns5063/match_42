@@ -44,6 +44,14 @@ class ChatService {
   }
 
   Future<void> addMessage(String roomId, Message msg) async {
+    ChatRoom? room = await getChatRoom(roomId);
+
+    if (room != null) {
+      for (int i = 0; i < room.unread.length; ++i) {
+        room.unread[i] += 1;
+      }
+      roomRef.doc(roomId).set(room);
+    }
     await createMessageRef(roomId).add(msg);
   }
 
