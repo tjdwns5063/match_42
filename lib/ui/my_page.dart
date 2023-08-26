@@ -34,6 +34,7 @@ class _MyPageState extends State<MyPage> {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return MainLayout(
         title: '마이페이지',
         body: Column(
@@ -50,6 +51,22 @@ class _MyPageState extends State<MyPage> {
             ),
           ],
         ));
+=======
+    return Column(
+      children: [
+        Expanded(
+          child: Interest(),
+        ),
+        Expanded(
+          flex: 3,
+          child: BlockUser(),
+        ),
+        Expanded(
+          child: Logout(),
+        ),
+      ],
+    );
+>>>>>>> 225ba908287d8a8e05905dd85c650f78a1e9adb6
   }
 }
 
