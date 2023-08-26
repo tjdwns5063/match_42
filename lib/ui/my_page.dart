@@ -55,13 +55,13 @@ class _MyPageState extends State<MyPage> {
     return Column(
       children: [
         Expanded(
-          child: Interest(),
+          child: SelectedInterest(interestList, onPressed),
         ),
-        Expanded(
+        const Expanded(
           flex: 3,
           child: BlockUser(),
         ),
-        Expanded(
+        const Expanded(
           child: Logout(),
         ),
       ],
