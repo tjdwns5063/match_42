@@ -1,22 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:match_42/ui/main_layout.dart';
+import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
+import 'package:provider/provider.dart';
 
-class ChatListPage extends StatefulWidget {
+class ChatListPage extends StatelessWidget {
   const ChatListPage({super.key});
 
   @override
-  State<ChatListPage> createState() => _ChatListPageState();
-}
-
-class _ChatListPageState extends State<ChatListPage> {
-  late List<String> chatList = [for (int i = 0; i < 10; ++i) generateType(i)];
-
-  String generateType(int i) {
-    return switch (i % 3) { 0 => 'talk', 1 => 'subject', _ => 'eat' };
-  }
-
-  @override
   Widget build(BuildContext context) {
+    ChatListViewModel viewModel = context.watch();
+
     return Column(
       children: [
         Padding(
@@ -36,6 +28,12 @@ class _ChatListPageState extends State<ChatListPage> {
                     Icons.filter_list_outlined,
                     size: 28.0,
                   )),
+              IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.add,
+                    size: 28.0,
+                  ))
             ],
           ),
         ),
@@ -44,13 +42,13 @@ class _ChatListPageState extends State<ChatListPage> {
             child: ListView.builder(
               itemBuilder: (BuildContext _, int index) {
                 return ChatListItem(
-                  type: chatList[index],
-                  title: '안드',
+                  type: viewModel.rooms[index].type,
+                  title: viewModel.rooms[index].name,
                   description: '안녕하세요',
-                  unreadMessageCount: index < 3 ? 3 : 0,
+                  unreadMessageCount: viewModel.rooms[index].unread[0],
                 );
               },
-              itemCount: chatList.length,
+              itemCount: viewModel.rooms.length,
             ),
           ),
         ),

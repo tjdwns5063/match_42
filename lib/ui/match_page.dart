@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:match_42/data/message.dart';
+import 'package:match_42/data/user.dart';
+import 'package:match_42/service/chat_service.dart';
 import 'package:match_42/ui/eat_dialog.dart';
 import 'package:match_42/ui/main_layout.dart';
 import 'package:match_42/ui/subject_dialog.dart';
@@ -95,6 +99,8 @@ class _MatchPageState extends State<MatchPage> {
     }
   }
 
+  ChatService chatService = ChatService();
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -118,14 +124,22 @@ class _MatchPageState extends State<MatchPage> {
         ),
         ElevatedButton(
           onPressed: () {
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return Dialog(
-                    surfaceTintColor: Theme.of(context).colorScheme.background,
-                    child: EatDialog(),
-                  );
-                });
+            chatService.addMessage(
+                '1',
+                Message(
+                  sender:
+                      User(nickname: 'aaaa', intra: 'seongjki', profile: 'eat'),
+                  message: '안녕',
+                  date: Timestamp.now(),
+                ));
+            // showDialog(
+            //     context: context,
+            //     builder: (context) {
+            //       return Dialog(
+            //         surfaceTintColor: Theme.of(context).colorScheme.background,
+            //         child: EatDialog(),
+            //       );
+            //     });
           },
           style: ElevatedButton.styleFrom(
               shape: const CircleBorder(), padding: const EdgeInsets.all(30.0)),
