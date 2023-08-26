@@ -1,11 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:match_42/ui/main_layout.dart';
+import 'package:match_42/ui/interest_list.dart';
 
-class MyPage extends StatelessWidget {
+class Interest {
+  String title;
+  bool isSelect;
+
+  Interest(
+    this.title,
+    this.isSelect,
+  );
+}
+
+class MyPage extends StatefulWidget {
   const MyPage({super.key});
 
   @override
+  State<MyPage> createState() => _MyPageState();
+}
+
+class _MyPageState extends State<MyPage> {
+  List<Interest> interestList = [
+    Interest('운동', false),
+    Interest('코딩', false),
+    Interest('반려동물', false),
+  ];
+
+  void onPressed(int index) {
+    setState(() {
+      interestList[index].isSelect = !interestList[index].isSelect;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
+    return MainLayout(
+        title: '마이페이지',
+        body: Column(
+          children: [
+            Expanded(
+              child: SelectedInterest(interestList, onPressed),
+            ),
+            const Expanded(
+              flex: 3,
+              child: BlockUser(),
+            ),
+            const Expanded(
+              child: Logout(),
+            ),
+          ],
+        ));
+=======
     return Column(
       children: [
         Expanded(
@@ -20,11 +66,14 @@ class MyPage extends StatelessWidget {
         ),
       ],
     );
+>>>>>>> 225ba908287d8a8e05905dd85c650f78a1e9adb6
   }
 }
 
-class Interest extends StatelessWidget {
-  const Interest({super.key});
+class SelectedInterest extends StatelessWidget {
+  List<Interest> interestList;
+  final Function onPressed;
+  SelectedInterest(this.interestList, this.onPressed, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +94,12 @@ class Interest extends StatelessWidget {
                 ),
               ),
               IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) =>
+                            InterestView(interestList, onPressed));
+                  },
                   icon: Icon(
                     Icons.add_circle_outline_rounded,
                     size: 25.0,
@@ -66,7 +120,7 @@ class Interest extends StatelessWidget {
                     onPressed: null,
                     style: TextButton.styleFrom(
                       backgroundColor: colorScheme.secondaryContainer,
-                      padding: const EdgeInsets.all(1),
+                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                     ),
                     child: Text(
                       '운동',
@@ -81,7 +135,7 @@ class Interest extends StatelessWidget {
                     onPressed: null,
                     style: TextButton.styleFrom(
                       backgroundColor: colorScheme.secondaryContainer,
-                      padding: const EdgeInsets.all(1),
+                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                     ),
                     child: Text(
                       '독서',
@@ -184,7 +238,7 @@ class Logout extends StatelessWidget {
           onPressed: () {},
           style: TextButton.styleFrom(
             backgroundColor: colorScheme.primary,
-            fixedSize: const Size.fromWidth(210),
+            fixedSize: Size.fromWidth(MediaQuery.of(context).size.width * 0.5),
             elevation: 0,
           ),
           icon: Icon(
@@ -205,7 +259,7 @@ class Logout extends StatelessWidget {
           onPressed: () {},
           style: TextButton.styleFrom(
             backgroundColor: colorScheme.primary,
-            fixedSize: const Size.fromWidth(210),
+            fixedSize: Size.fromWidth(MediaQuery.of(context).size.width * 0.5),
             elevation: 0,
           ),
           icon: Icon(
