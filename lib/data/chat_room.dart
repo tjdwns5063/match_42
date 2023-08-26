@@ -8,6 +8,7 @@ class ChatRoom {
     required this.type,
     required this.open,
     required this.users,
+    required this.unread,
   });
 
   final String id;
@@ -15,6 +16,7 @@ class ChatRoom {
   final String type;
   final Timestamp open;
   final List<User> users;
+  final List<int> unread;
 
   factory ChatRoom.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -29,6 +31,7 @@ class ChatRoom {
       users: [
         for (Map<String, dynamic> json in data['users']) User.fromJson(json)
       ],
+      unread: List.from(data['unread']),
     );
   }
 
@@ -39,6 +42,7 @@ class ChatRoom {
       'type': type,
       'open': open,
       'users': [for (User user in users) user.toFirestore()],
+      'unread': unread,
     };
   }
 

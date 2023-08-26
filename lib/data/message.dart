@@ -6,13 +6,11 @@ class Message {
     required this.sender,
     required this.message,
     required this.date,
-    required this.isRead,
   });
 
   final User sender;
   final String message;
   final Timestamp date;
-  final bool isRead;
 
   factory Message.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -23,7 +21,6 @@ class Message {
       sender: User.fromJson(data!['sender']),
       message: data['message'],
       date: data['date'],
-      isRead: data['isRead'],
     );
   }
 
@@ -32,7 +29,6 @@ class Message {
       sender: json['sender'],
       message: json['message'],
       date: json['date'],
-      isRead: json['isRead'],
     );
   }
 
@@ -41,12 +37,11 @@ class Message {
       'sender': sender.toFirestore(),
       'message': message,
       'date': date,
-      'isRead': isRead,
     };
   }
 
   @override
   String toString() {
-    return 'sender: $sender message: $message date: ${date.toDate()} isRead: $isRead';
+    return 'sender: $sender message: $message date: ${date.toDate()}';
   }
 }
