@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:match_42/ui/main_layout.dart';
 import 'package:match_42/ui/interest_list.dart';
 
 class Interest {
@@ -34,24 +33,6 @@ class _MyPageState extends State<MyPage> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return MainLayout(
-        title: '마이페이지',
-        body: Column(
-          children: [
-            Expanded(
-              child: SelectedInterest(interestList, onPressed),
-            ),
-            const Expanded(
-              flex: 3,
-              child: BlockUser(),
-            ),
-            const Expanded(
-              child: Logout(),
-            ),
-          ],
-        ));
-=======
     return Column(
       children: [
         Expanded(
@@ -66,7 +47,6 @@ class _MyPageState extends State<MyPage> {
         ),
       ],
     );
->>>>>>> 225ba908287d8a8e05905dd85c650f78a1e9adb6
   }
 }
 
