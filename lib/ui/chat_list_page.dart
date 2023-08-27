@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:match_42/router.dart';
 import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -8,6 +10,12 @@ class ChatListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ChatListViewModel viewModel = context.watch();
+
+    void onPressedChatRoom(int index) {
+      String chatPath = '$CHAT_PATH/${viewModel.rooms[index].id}';
+
+      context.go(chatPath);
+    }
 
     return Column(
       children: [
@@ -46,6 +54,7 @@ class ChatListPage extends StatelessWidget {
                   title: viewModel.rooms[index].name,
                   description: '안녕하세요',
                   unreadMessageCount: viewModel.rooms[index].unread[0],
+                  onPressed: () => onPressedChatRoom(index),
                 );
               },
               itemCount: viewModel.rooms.length,
@@ -58,17 +67,20 @@ class ChatListPage extends StatelessWidget {
 }
 
 class ChatListItem extends StatelessWidget {
-  const ChatListItem(
-      {super.key,
-      required this.type,
-      required this.title,
-      required this.description,
-      required this.unreadMessageCount});
+  const ChatListItem({
+    super.key,
+    required this.type,
+    required this.title,
+    required this.description,
+    required this.unreadMessageCount,
+    required this.onPressed,
+  });
 
   final String type;
   final String title;
   final String description;
   final int unreadMessageCount;
+  final VoidCallback onPressed;
 
   String getImagePath() {
     return switch (type) {
@@ -110,7 +122,7 @@ class ChatListItem extends StatelessWidget {
               ),
             )
           : const SizedBox(),
-      onTap: () {},
+      onTap: onPressed,
     );
   }
 }

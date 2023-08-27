@@ -20,9 +20,9 @@ class MyRouter {
           return const MainLayout();
         }),
     GoRoute(
-        path: CHAT_PATH,
-        builder: (context, _) {
-          return const ChatPage();
+        path: '$CHAT_PATH/:room_id',
+        builder: (context, state) {
+          return ChatPage(roomId: state.pathParameters['room_id']!);
         }),
   ]);
 }

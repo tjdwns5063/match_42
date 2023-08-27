@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  const ChatPage({super.key, required this.roomId});
+
+  final String roomId;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
