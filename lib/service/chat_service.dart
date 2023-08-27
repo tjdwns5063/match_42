@@ -51,8 +51,8 @@ class ChatService {
 
     _addUnreadMessageCount(room, msg);
 
-    roomRef.doc(roomId).set(room);
     await createMessageRef(roomId).add(msg);
+    roomRef.doc(roomId).set(room);
   }
 
   void _addUnreadMessageCount(ChatRoom room, Message msg) {

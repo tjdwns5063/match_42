@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:match_42/data/message.dart';
+import 'package:match_42/data/user.dart';
 import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +13,6 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  List<String> list = [for (int i = 0; i < 20; ++i) '안녕하세요'];
   late TextEditingController text;
   late ScrollController scroll;
 
@@ -30,20 +30,11 @@ class _ChatPageState extends State<ChatPage> {
     super.dispose();
   }
 
-  void _send() {
-    setState(() {
-      list.add(text.text);
-      text.clear();
-    });
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      scroll.jumpTo(0.0);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     ChatViewModel chatViewModel = context.watch();
+    chatViewModel.listen();
 
     return Scaffold(
       appBar: AppBar(
@@ -80,12 +71,12 @@ class _ChatPageState extends State<ChatPage> {
                 controller: scroll,
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 itemBuilder: (context, index) {
-                  int i = chatViewModel.message.length - index - 1;
-                  // if (index % 2 == 0) {
-                  return MyChatMessage(msg: chatViewModel.message[i]);
-                  // } else {
-                  //   return OtherChatMessage(text: chatViewModel.message[i].message);
-                  // }
+                  int i = chatViewModel.messages.length - index - 1;
+                  if (chatViewModel.messages[i].sender.intra == 'seongjki') {
+                    return MyChatMessage(msg: chatViewModel.messages[i]);
+                  } else {
+                    return OtherChatMessage(msg: chatViewModel.messages[i]);
+                  }
                 },
                 separatorBuilder: (context, index) {
                   if (index % 5 == 1) {
@@ -103,12 +94,14 @@ class _ChatPageState extends State<ChatPage> {
                     height: 16.0,
                   );
                 },
-                itemCount: chatViewModel.message.length),
+                itemCount: chatViewModel.messages.length),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: MessageSender(
-              sendCallback: _send,
+              sendCallback: () => chatViewModel.send(
+                  User(nickname: 'aaaa', intra: 'seongjki', profile: 'eat'),
+                  text),
               controller: text,
             ),
           )
@@ -127,11 +120,16 @@ class MessageSender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ChatViewModel chatViewModel = context.read();
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            chatViewModel.send(
+                User(nickname: 'bbbb', intra: 'jiheekan', profile: 'talk'),
+                controller);
+          },
           style: ElevatedButton.styleFrom(
             shape: const CircleBorder(),
             backgroundColor: colorScheme.primary,
@@ -172,9 +170,9 @@ class MessageSender extends StatelessWidget {
 }
 
 class OtherChatMessage extends StatelessWidget {
-  const OtherChatMessage({super.key, required this.text});
+  const OtherChatMessage({super.key, required this.msg});
 
-  final String text;
+  final Message msg;
 
   @override
   Widget build(BuildContext context) {
@@ -191,8 +189,8 @@ class OtherChatMessage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                '안드',
+              Text(
+                msg.sender.nickname,
               ),
               ConstrainedBox(
                 constraints: BoxConstraints(
@@ -208,15 +206,15 @@ class OtherChatMessage extends StatelessWidget {
                       decoration: BoxDecoration(
                           color: colorScheme.secondaryContainer,
                           borderRadius: BorderRadius.circular(10.0)),
-                      child: Text(text),
+                      child: Text(msg.message),
                     )),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 4.0,
                       ),
                       child: Text(
-                        '오후 13:33',
-                        style: TextStyle(fontSize: 10.0),
+                        msg.date.toFormatString(),
+                        style: const TextStyle(fontSize: 10.0),
                       ),
                     ),
                   ],
