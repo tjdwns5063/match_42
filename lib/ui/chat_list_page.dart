@@ -11,10 +11,12 @@ class ChatListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     ChatListViewModel viewModel = context.watch();
 
+    viewModel.listen();
+
     void onPressedChatRoom(int index) {
       String chatPath = '$CHAT_PATH/${viewModel.rooms[index].id}';
 
-      context.go(chatPath);
+      context.push(chatPath);
     }
 
     return Column(

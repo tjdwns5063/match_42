@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:match_42/data/message.dart';
+import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
+import 'package:match_42/viewmodel/chat_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key, required this.roomId});
-
-  final String roomId;
+  const ChatPage({super.key});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -41,6 +43,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
+    ChatViewModel chatViewModel = context.watch();
 
     return Scaffold(
       appBar: AppBar(
@@ -77,12 +80,12 @@ class _ChatPageState extends State<ChatPage> {
                 controller: scroll,
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 itemBuilder: (context, index) {
-                  int i = list.length - index - 1;
-                  if (index % 2 == 0) {
-                    return MyChatMessage(text: list[i]);
-                  } else {
-                    return OtherChatMessage(text: list[i]);
-                  }
+                  int i = chatViewModel.message.length - index - 1;
+                  // if (index % 2 == 0) {
+                  return MyChatMessage(msg: chatViewModel.message[i]);
+                  // } else {
+                  //   return OtherChatMessage(text: chatViewModel.message[i].message);
+                  // }
                 },
                 separatorBuilder: (context, index) {
                   if (index % 5 == 1) {
@@ -100,7 +103,7 @@ class _ChatPageState extends State<ChatPage> {
                     height: 16.0,
                   );
                 },
-                itemCount: list.length),
+                itemCount: chatViewModel.message.length),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -230,10 +233,10 @@ class OtherChatMessage extends StatelessWidget {
 class MyChatMessage extends StatelessWidget {
   const MyChatMessage({
     super.key,
-    required this.text,
+    required this.msg,
   });
 
-  final String text;
+  final Message msg;
 
   @override
   Widget build(BuildContext context) {
@@ -255,11 +258,11 @@ class MyChatMessage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: Text(
-                        '오후 13:33',
-                        style: TextStyle(fontSize: 10.0),
+                        msg.date.toFormatString(),
+                        style: const TextStyle(fontSize: 10.0),
                       ),
                     ),
                     Flexible(
@@ -270,7 +273,7 @@ class MyChatMessage extends StatelessWidget {
                         decoration: BoxDecoration(
                             color: colorScheme.tertiaryContainer,
                             borderRadius: BorderRadius.circular(10.0)),
-                        child: Text(text),
+                        child: Text(msg.message),
                       ),
                     )),
                   ],
