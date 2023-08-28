@@ -43,7 +43,13 @@ class ChatViewModel extends ChangeNotifier {
 
   Future<void> _readAll() async {
     await _chatService.readAllMessage(
-        roomId, User(nickname: 'aaaa', intra: 'seongjki', profile: 'eat'));
+        roomId,
+        User(
+            id: 0,
+            interests: <String?>[],
+            nickname: 'aaaa',
+            intra: 'seongjki',
+            profile: 'eat'));
   }
 
   void listen() {
@@ -58,7 +64,13 @@ class ChatViewModel extends ChangeNotifier {
 
     _readSubscription = readStream.listen((event) async {
       await _chatService.readAllMessage(
-          roomId, User(nickname: 'aaaa', intra: 'seongjki', profile: 'eat'));
+          roomId,
+          User(
+              id: 0,
+              interests: <String?>[],
+              nickname: 'aaaa',
+              intra: 'seongjki',
+              profile: 'eat'));
     });
   }
 

@@ -6,6 +6,8 @@ import 'package:match_42/service/chat_service.dart';
 import 'package:match_42/ui/eat_dialog.dart';
 import 'package:match_42/ui/main_layout.dart';
 import 'package:match_42/ui/subject_dialog.dart';
+import 'package:match_42/viewmodel/login_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class MatchPage extends StatefulWidget {
   const MatchPage({super.key});
@@ -103,6 +105,9 @@ class _MatchPageState extends State<MatchPage> {
 
   @override
   Widget build(BuildContext context) {
+    LoginViewModel loginViewModel = context.read();
+
+    print(loginViewModel.user);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -127,8 +132,12 @@ class _MatchPageState extends State<MatchPage> {
             chatService.addMessage(
                 '1',
                 Message(
-                  sender:
-                      User(nickname: 'aaaa', intra: 'seongjki', profile: 'eat'),
+                  sender: User(
+                      id: 0,
+                      interests: <String?>[],
+                      nickname: 'aaaa',
+                      intra: 'seongjki',
+                      profile: 'eat'),
                   message: '안녕',
                   date: Timestamp.now(),
                 ));

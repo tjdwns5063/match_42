@@ -78,7 +78,7 @@ class LoginWeb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // LoginViewModel loginViewModel = context.read();
+    LoginViewModel loginViewModel = context.read();
 
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -89,7 +89,7 @@ class LoginWeb extends StatelessWidget {
           String token =
               Uri.parse(request.url).queryParameters['token'] as String;
           print(token);
-          // loginViewModel.updateToken(token);
+          loginViewModel.updateToken(token);
           Response response2 = await http.post(
               Uri.parse('http://115.85.181.92/api/v1/user/interest'),
               headers: {'Authorization': 'Bearer $token'},
@@ -101,8 +101,8 @@ class LoginWeb extends StatelessWidget {
               headers: {'Authorization': 'Bearer $token'});
 
           Map<String, dynamic> json = jsonDecode(response.body);
-
-          print(json);
+          User user = User.fromJson(json);
+          loginViewModel.updateUser(user);
 
           context.go(MAIN_PATH);
         }

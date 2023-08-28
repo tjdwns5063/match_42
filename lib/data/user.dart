@@ -1,15 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:match_42/ui/my_page.dart';
 
 class User {
   User({
-    required this.nickname,
+    required this.id,
+    this.nickname = '',
     required this.intra,
     required this.profile,
-  });
+    interests,
+  }) : interests = interests;
 
-  final String nickname;
+  final int id;
+  String nickname;
   final String intra;
   final String profile;
+  List<String?> interests;
 
   factory User.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -17,7 +22,8 @@ class User {
   ) {
     final data = snapshot.data();
     return User(
-      nickname: data!['nickname'],
+      id: data!['id'],
+      nickname: data['nickname'],
       intra: data['intra'],
       profile: data['profile'],
     );
@@ -25,14 +31,23 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      nickname: json['nickname'],
+      id: json['id'],
+      nickname: json['nickname'] ?? '',
       intra: json['intra'],
-      profile: json['profile'],
+      profile: json['profile'] ?? '',
+      interests: <String?>[
+        json['interest1'],
+        json['interest2'],
+        json['interest3'],
+        json['interest4'],
+        json['interest5'],
+      ],
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
+      'id': id,
       'nickname': nickname,
       'intra': intra,
       'profile': profile,
@@ -41,6 +56,6 @@ class User {
 
   @override
   String toString() {
-    return 'nickname: $nickname intra: $intra profile: $profile';
+    return 'id: $id nickname: $nickname intra: $intra profile: $profile interests: $interests';
   }
 }
