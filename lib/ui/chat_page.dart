@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
-import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -34,7 +33,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     ChatViewModel chatViewModel = context.watch();
-    chatViewModel.listen();
+    // chatViewModel.listen();
 
     return Scaffold(
       appBar: AppBar(

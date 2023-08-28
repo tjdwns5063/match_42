@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,17 +16,25 @@ class ChatListViewModel extends ChangeNotifier {
   List<ChatRoom> get rooms => UnmodifiableListView(_rooms);
   List<ChatRoom> _rooms = [];
 
-  void _init() {
-    _chatService.getAllChatRoom().then((List<ChatRoom> rooms) {
-      _rooms = rooms;
-      notifyListeners();
-    });
+  late StreamSubscription _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> _init() async {
+    _rooms = await _chatService.getAllChatRoom();
+    notifyListeners();
+    listen();
   }
 
   void listen() {
     final Stream<QuerySnapshot<ChatRoom>> stream =
         _chatService.roomRef.snapshots();
-    stream.listen((event) {
+
+    _subscription = stream.listen((event) {
       List<ChatRoom> newRooms = [
         for (QueryDocumentSnapshot<ChatRoom> doc in event.docs) doc.data()
       ];

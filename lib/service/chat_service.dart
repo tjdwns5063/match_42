@@ -52,7 +52,7 @@ class ChatService {
     _addUnreadMessageCount(room, msg);
 
     await createMessageRef(roomId).add(msg);
-    roomRef.doc(roomId).set(room);
+    await roomRef.doc(roomId).set(room);
   }
 
   void _addUnreadMessageCount(ChatRoom room, Message msg) {
@@ -79,5 +79,16 @@ class ChatService {
       result.add(doc.data());
     }
     return result;
+  }
+
+  Future<void> readAllMessage(String roomId, User user) async {
+    ChatRoom chatRoom = await getChatRoom(roomId) as ChatRoom;
+
+    chatRoom.unread[chatRoom.users
+        .indexWhere((element) => element.intra == user.intra)] = 0;
+
+    roomRef.doc(roomId).update({
+      'unread': chatRoom.unread,
+    });
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,19 +19,46 @@ class ChatViewModel extends ChangeNotifier {
   List<Message> get messages => UnmodifiableListView(
       _messages..sort((Message m1, Message m2) => m1.date.compareTo(m2.date)));
 
-  void init() {
-    _chatService.getAllMessage(roomId).then((List<Message> messages) {
-      _messages = messages;
-      notifyListeners();
-    });
+  late StreamSubscription _chatSubscription;
+  late StreamSubscription _readSubscription;
+
+  @override
+  void dispose() {
+    _chatSubscription.cancel();
+    _readSubscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> init() async {
+    _updateChat();
+    _readAll();
+    listen();
+  }
+
+  Future<void> _updateChat() async {
+    _messages = await _chatService.getAllMessage(roomId);
+    await _readAll();
+    notifyListeners();
+  }
+
+  Future<void> _readAll() async {
+    await _chatService.readAllMessage(
+        roomId, User(nickname: 'aaaa', intra: 'seongjki', profile: 'eat'));
   }
 
   void listen() {
-    _chatService.createMessageRef(roomId).snapshots().listen((event) {
-      _chatService.getAllMessage(roomId).then((value) {
-        _messages = value;
-        notifyListeners();
-      });
+    final chatStream = _chatService.createMessageRef(roomId).snapshots();
+
+    _chatSubscription = chatStream.listen((event) async {
+      _messages = await _chatService.getAllMessage(roomId);
+      notifyListeners();
+    });
+
+    final readStream = _chatService.roomRef.doc(roomId).snapshots();
+
+    _readSubscription = readStream.listen((event) async {
+      await _chatService.readAllMessage(
+          roomId, User(nickname: 'aaaa', intra: 'seongjki', profile: 'eat'));
     });
   }
 
