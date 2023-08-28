@@ -69,4 +69,11 @@ class ChatViewModel extends ChangeNotifier {
         Message(sender: sender, message: msg.text, date: Timestamp.now()));
     msg.clear();
   }
+
+  bool isChangeDate(int i) {
+    DateTime prevDate = messages[i - 1].date.toDate();
+    DateTime currDate = messages[i].date.toDate();
+
+    return i > 0 && prevDate.day != currDate.day;
+  }
 }

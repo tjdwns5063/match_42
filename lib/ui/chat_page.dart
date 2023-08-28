@@ -33,7 +33,14 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     ChatViewModel chatViewModel = context.watch();
-    // chatViewModel.listen();
+
+    Widget generateMessage(int i) {
+      if (chatViewModel.messages[i].sender.intra == 'seongjki') {
+        return MyChatMessage(msg: chatViewModel.messages[i]);
+      } else {
+        return OtherChatMessage(msg: chatViewModel.messages[i]);
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -71,23 +78,25 @@ class _ChatPageState extends State<ChatPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 itemBuilder: (context, index) {
                   int i = chatViewModel.messages.length - index - 1;
-                  if (chatViewModel.messages[i].sender.intra == 'seongjki') {
-                    return MyChatMessage(msg: chatViewModel.messages[i]);
+                  Message msg = chatViewModel.messages[i];
+
+                  if (i == 0) {
+                    return Column(
+                      children: [
+                        DateSeparator(date: msg.date.toDate()),
+                        generateMessage(i),
+                      ],
+                    );
                   } else {
-                    return OtherChatMessage(msg: chatViewModel.messages[i]);
+                    return generateMessage(i);
                   }
                 },
                 separatorBuilder: (context, index) {
-                  if (index % 5 == 1) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text(
-                          '2023년 6월 ${index ~/ 5 + 1}일',
-                          style: const TextStyle(fontSize: 12.0),
-                        ),
-                      ),
-                    );
+                  int i = chatViewModel.messages.length - index - 1;
+                  Message msg = chatViewModel.messages[i];
+
+                  if (chatViewModel.isChangeDate(i)) {
+                    return DateSeparator(date: msg.date.toDate());
                   }
                   return const SizedBox(
                     height: 16.0,
@@ -280,6 +289,25 @@ class MyChatMessage extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class DateSeparator extends StatelessWidget {
+  const DateSeparator({super.key, required this.date});
+
+  final DateTime date;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Text(
+          '${date.year}년 ${date.month}월 ${date.day}일',
+          style: const TextStyle(fontSize: 12.0),
+        ),
+      ),
     );
   }
 }
