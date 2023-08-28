@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:match_42/ui/main_layout.dart';
 import 'package:match_42/ui/interest_list.dart';
 import 'package:match_42/viewmodel/mypage_viewmodel.dart';
 import 'package:provider/provider.dart';

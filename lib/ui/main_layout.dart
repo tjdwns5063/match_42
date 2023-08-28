@@ -16,14 +16,8 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
   final List<Widget> _pages = [
     const MatchPage(),
-    ChangeNotifierProvider(
-      create: (BuildContext context) => ChatListViewModel(),
-      child: const ChatListPage(),
-    ),
-    ChangeNotifierProvider(
-      create: (BuildContext context) => MyPageViewModel(),
-      child: const MyPage(),
-    ),
+    const ChatListPage(),
+    const MyPage(),
   ];
   final List<String> _titles = const ['매칭', '채팅 목록', '채팅 목록'];
   late TabController controller;

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
+import 'package:match_42/data/user.dart';
 
 class ChatService {
   static const String roomCollectionPath = 'rooms';
@@ -46,13 +47,28 @@ class ChatService {
   Future<void> addMessage(String roomId, Message msg) async {
     ChatRoom? room = await getChatRoom(roomId);
 
-    if (room != null) {
-      for (int i = 0; i < room.unread.length; ++i) {
+    if (room == null) return;
+
+    _addUnreadMessageCount(room, msg);
+    room.lastMsg = msg;
+
+    await createMessageRef(roomId).add(msg);
+    await roomRef.doc(roomId).set(room);
+  }
+
+  void _addUnreadMessageCount(ChatRoom room, Message msg) {
+    for (int i = 0; i < room.unread.length; ++i) {
+      String userIntra = room.users[i].intra;
+      String senderIntra = msg.sender.intra;
+
+      if (_isNotSender(userIntra, senderIntra)) {
         room.unread[i] += 1;
       }
-      roomRef.doc(roomId).set(room);
     }
-    await createMessageRef(roomId).add(msg);
+  }
+
+  bool _isNotSender(String userIntra, String senderIntra) {
+    return userIntra != senderIntra;
   }
 
   Future<List<Message>> getAllMessage(String roomId) async {
@@ -64,5 +80,16 @@ class ChatService {
       result.add(doc.data());
     }
     return result;
+  }
+
+  Future<void> readAllMessage(String roomId, User user) async {
+    ChatRoom chatRoom = await getChatRoom(roomId) as ChatRoom;
+
+    chatRoom.unread[chatRoom.users
+        .indexWhere((element) => element.intra == user.intra)] = 0;
+
+    roomRef.doc(roomId).update({
+      'unread': chatRoom.unread,
+    });
   }
 }

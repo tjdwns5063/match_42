@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
 
 class ChatRoom {
@@ -9,6 +10,7 @@ class ChatRoom {
     required this.open,
     required this.users,
     required this.unread,
+    required this.lastMsg,
   });
 
   final String id;
@@ -17,6 +19,7 @@ class ChatRoom {
   final Timestamp open;
   final List<User> users;
   final List<int> unread;
+  Message lastMsg;
 
   factory ChatRoom.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -32,6 +35,7 @@ class ChatRoom {
         for (Map<String, dynamic> json in data['users']) User.fromJson(json)
       ],
       unread: List.from(data['unread']),
+      lastMsg: Message.fromJson(data['lastMsg']),
     );
   }
 
@@ -43,6 +47,7 @@ class ChatRoom {
       'open': open,
       'users': [for (User user in users) user.toFirestore()],
       'unread': unread,
+      'lastMsg': lastMsg.toFirestore(),
     };
   }
 

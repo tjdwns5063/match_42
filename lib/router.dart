@@ -1,7 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:match_42/ui/chat_page.dart';
 import 'package:match_42/ui/login_page.dart';
 import 'package:match_42/ui/main_layout.dart';
+import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
+import 'package:match_42/viewmodel/chat_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 const String LOGIN_PATH = '/login';
 const String MAIN_PATH = '/main';
@@ -22,12 +26,18 @@ class MyRouter {
     GoRoute(
         path: MAIN_PATH,
         builder: (context, _) {
-          return const MainLayout();
+          return ChangeNotifierProvider(
+            create: (BuildContext context) => ChatListViewModel(),
+            child: const MainLayout(),
+          );
         }),
     GoRoute(
-        path: CHAT_PATH,
-        builder: (context, _) {
-          return const ChatPage();
+        path: '$CHAT_PATH/:room_id',
+        builder: (context, state) {
+          return ChangeNotifierProvider(
+              create: (context) =>
+                  ChatViewModel(roomId: state.pathParameters['room_id']!),
+              child: const ChatPage());
         }),
   ]);
 }
