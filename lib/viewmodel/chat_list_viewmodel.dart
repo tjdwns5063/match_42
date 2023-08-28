@@ -52,12 +52,27 @@ class ChatListViewModel extends ChangeNotifier {
         type: 'eat',
         open: Timestamp.now(),
         users: [
-          User(nickname: 'aaaa', intra: 'seongjki', profile: 'eat'),
-          User(nickname: 'bbbb', intra: 'jiheekan', profile: 'eat'),
+          User(
+              id: 0,
+              interests: <String?>[],
+              nickname: 'aaaa',
+              intra: 'seongjki',
+              profile: 'eat'),
+          User(
+              id: 1,
+              interests: <String?>[],
+              nickname: 'bbbb',
+              intra: 'jiheekan',
+              profile: 'eat'),
         ],
         unread: [0, 0],
         lastMsg: Message(
-          sender: User(nickname: 'system', intra: 'system', profile: 'system'),
+          sender: User(
+              id: 0,
+              interests: <String?>[],
+              nickname: 'system',
+              intra: 'system',
+              profile: 'system'),
           message: '채팅방이 생성되었습니다',
           date: Timestamp.now(),
         )));

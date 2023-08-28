@@ -108,7 +108,12 @@ class _ChatPageState extends State<ChatPage> {
             padding: const EdgeInsets.all(8.0),
             child: MessageSender(
               sendCallback: () => chatViewModel.send(
-                  User(nickname: 'aaaa', intra: 'seongjki', profile: 'eat'),
+                  User(
+                      id: 0,
+                      nickname: 'aaaa',
+                      intra: 'seongjki',
+                      profile: 'eat',
+                      interests: []),
                   text),
               controller: text,
             ),
@@ -135,7 +140,12 @@ class MessageSender extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             chatViewModel.send(
-                User(nickname: 'bbbb', intra: 'jiheekan', profile: 'talk'),
+                User(
+                    id: 0,
+                    nickname: 'bbbb',
+                    intra: 'jiheekan',
+                    profile: 'talk',
+                    interests: []),
                 controller);
           },
           style: ElevatedButton.styleFrom(
