@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:match_42/data/message.dart';
 import 'package:match_42/router.dart';
 import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +38,9 @@ class ChatListPage extends StatelessWidget {
                     size: 28.0,
                   )),
               IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    viewModel.testCreateChatRoom();
+                  },
                   icon: const Icon(
                     Icons.add,
                     size: 28.0,
@@ -52,7 +55,8 @@ class ChatListPage extends StatelessWidget {
                 return ChatListItem(
                   type: viewModel.rooms[index].type,
                   title: viewModel.rooms[index].name,
-                  description: '안녕하세요',
+                  userCount: viewModel.rooms[index].users.length,
+                  lastMsg: viewModel.rooms[index].lastMsg,
                   unreadMessageCount: viewModel.rooms[index].unread[0],
                   onPressed: () => onPressedChatRoom(index),
                 );
@@ -71,14 +75,16 @@ class ChatListItem extends StatelessWidget {
     super.key,
     required this.type,
     required this.title,
-    required this.description,
+    required this.userCount,
+    required this.lastMsg,
     required this.unreadMessageCount,
     required this.onPressed,
   });
 
   final String type;
   final String title;
-  final String description;
+  final int userCount;
+  final Message lastMsg;
   final int unreadMessageCount;
   final VoidCallback onPressed;
 
@@ -99,29 +105,55 @@ class ChatListItem extends StatelessWidget {
           getImagePath(),
         ),
       ),
-      title: Text(
-        title,
-        style: TextStyle(color: colorScheme.onSecondaryContainer),
+      title: Row(
+        children: [
+          Text(
+            title,
+            style: TextStyle(color: colorScheme.onSecondaryContainer),
+          ),
+          const SizedBox(
+            width: 8.0,
+          ),
+          (userCount > 2)
+              ? Text(
+                  userCount.toString(),
+                  style: TextStyle(color: colorScheme.outline.withAlpha(200)),
+                )
+              : const SizedBox(),
+        ],
       ),
       subtitle: Text(
-        description,
+        lastMsg.message,
         style: TextStyle(color: colorScheme.outline.withAlpha(200)),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
       ),
-      trailing: unreadMessageCount != 0
-          ? Container(
-              width: 24.0,
-              height: 24.0,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.red,
-              ),
-              child: Text(
-                unreadMessageCount.toString(),
-                style: TextStyle(fontSize: 16.0, color: colorScheme.onError),
-              ),
-            )
-          : const SizedBox(),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            lastMsg.date.toFormatString(),
+            style: TextStyle(color: colorScheme.outline.withAlpha(200)),
+          ),
+          unreadMessageCount != 0
+              ? Container(
+                  width: 24.0,
+                  height: 24.0,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.red,
+                  ),
+                  child: Text(
+                    unreadMessageCount.toString(),
+                    style:
+                        TextStyle(fontSize: 16.0, color: colorScheme.onError),
+                  ),
+                )
+              : const SizedBox(),
+        ],
+      ),
       onTap: onPressed,
     );
   }

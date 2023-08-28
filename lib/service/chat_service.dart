@@ -50,6 +50,7 @@ class ChatService {
     if (room == null) return;
 
     _addUnreadMessageCount(room, msg);
+    room.lastMsg = msg;
 
     await createMessageRef(roomId).add(msg);
     await roomRef.doc(roomId).set(room);
