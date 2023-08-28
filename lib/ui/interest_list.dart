@@ -4,7 +4,6 @@ import 'package:match_42/viewmodel/mypage_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class InterestView extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     MyPageViewModel viewModel = context.watch();
@@ -57,16 +56,18 @@ class InterestView extends StatelessWidget {
                     runSpacing: 8.0,
                     alignment: WrapAlignment.start,
                     children: [
-                      for (int i = 0; i < viewModel.interestList.length; ++i)
+                      for (int i = 0; i < viewModel.isSelect.length; ++i)
                         TextButton(
-                            onPressed: () => viewModel.onPressed(i),
+                            onPressed: () => viewModel.onPressed(
+                                  i,
+                                ),
                             style: TextButton.styleFrom(
-                              backgroundColor: !viewModel.interestList[i].isSelect
+                              backgroundColor: !viewModel.isSelect[i].isSelect
                                   ? colorScheme.onBackground.withAlpha(50)
                                   : colorScheme.secondaryContainer,
                               padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                             ),
-                            child: Text(viewModel.interestList[i].title,
+                            child: Text(viewModel.isSelect[i].title,
                                 style: TextStyle(
                                   color: colorScheme.onSecondaryContainer,
                                   fontSize: 15,
@@ -80,7 +81,7 @@ class InterestView extends StatelessWidget {
             Expanded(
               child: Center(
                 child: TextButton(
-                  onPressed: null,
+                  onPressed: () => viewModel.verifyButton(context),
                   style: TextButton.styleFrom(
                     backgroundColor: colorScheme.primary,
                     padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),

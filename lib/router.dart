@@ -34,7 +34,9 @@ class MyRouter {
                 create: (BuildContext context) => ChatListViewModel(),
               ),
               ChangeNotifierProvider(
-                  create: (BuildContext context) => MyPageViewModel())
+                  create: (BuildContext context) => MyPageViewModel(
+                      token: context.read<LoginViewModel>().token,
+                      user: context.read<LoginViewModel>().user))
             ],
             child: const MainLayout(),
           );
