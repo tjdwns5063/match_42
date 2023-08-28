@@ -31,7 +31,8 @@ class MyRouter {
           return MultiProvider(
             providers: [
               ChangeNotifierProvider(
-                  create: (BuildContext context) => ChatListViewModel()),
+                create: (BuildContext context) => ChatListViewModel(),
+              ),
               ChangeNotifierProvider(
                   create: (BuildContext context) => MyPageViewModel())
             ],

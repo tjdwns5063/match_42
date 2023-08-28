@@ -28,14 +28,9 @@ class ChatService {
   }
 
   Future<List<ChatRoom>> getAllChatRoom() async {
-    final List<ChatRoom> result = [];
     final QuerySnapshot<ChatRoom> snapshot = await roomRef.get();
 
-    for (QueryDocumentSnapshot<ChatRoom> doc in snapshot.docs) {
-      result.add(doc.data());
-    }
-
-    return result;
+    return snapshot.docs.map((doc) => doc.data()).toList();
   }
 
   Future<ChatRoom?> getChatRoom(String id) async {

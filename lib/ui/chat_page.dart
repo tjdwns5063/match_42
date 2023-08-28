@@ -49,15 +49,16 @@ class _ChatPageState extends State<ChatPage> {
         scrolledUnderElevation: 0.0,
         centerTitle: false,
         title: Container(
-            width: 120.0,
-            height: 30.0,
+            width: 150.0,
+            height: 45.0,
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 color: colorScheme.secondaryContainer,
                 borderRadius: BorderRadius.circular(20.0)),
-            child: const Text(
-              '06:03 남음',
-              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
+            child: Text(
+              chatViewModel.parseHMS(),
+              style:
+                  const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
             )),
         actions: [
           IconButton(
