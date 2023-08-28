@@ -129,12 +129,15 @@ class ChatListItem extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
       trailing: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
             lastMsg.date.toFormatString(),
             style: TextStyle(color: colorScheme.outline.withAlpha(200)),
+          ),
+          const SizedBox(
+            height: 7.0,
           ),
           unreadMessageCount != 0
               ? Container(
