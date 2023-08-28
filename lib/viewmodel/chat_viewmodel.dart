@@ -3,17 +3,19 @@ import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/service/chat_service.dart';
 
 class ChatViewModel extends ChangeNotifier {
-  ChatViewModel({required this.roomId}) {
+  ChatViewModel({required this.roomId, required this.user}) {
     init();
   }
 
   final ChatService _chatService = ChatService();
   final String roomId;
+  final User user;
 
   List<Message> _messages = [];
   List<Message> get messages => UnmodifiableListView(
@@ -22,16 +24,21 @@ class ChatViewModel extends ChangeNotifier {
   late StreamSubscription _chatSubscription;
   late StreamSubscription _readSubscription;
 
+  late Timer _timer;
+  int? remainSeconds;
+
   @override
   void dispose() {
     _chatSubscription.cancel();
     _readSubscription.cancel();
+    _timer.cancel();
     super.dispose();
   }
 
   Future<void> init() async {
     _updateChat();
     _readAll();
+    tickTimer();
     listen();
   }
 
@@ -42,14 +49,7 @@ class ChatViewModel extends ChangeNotifier {
   }
 
   Future<void> _readAll() async {
-    await _chatService.readAllMessage(
-        roomId,
-        User(
-            id: 0,
-            interests: <String?>[],
-            nickname: 'aaaa',
-            intra: 'seongjki',
-            profile: 'eat'));
+    await _chatService.readAllMessage(roomId, user);
   }
 
   void listen() {
@@ -63,14 +63,7 @@ class ChatViewModel extends ChangeNotifier {
     final readStream = _chatService.roomRef.doc(roomId).snapshots();
 
     _readSubscription = readStream.listen((event) async {
-      await _chatService.readAllMessage(
-          roomId,
-          User(
-              id: 0,
-              interests: <String?>[],
-              nickname: 'aaaa',
-              intra: 'seongjki',
-              profile: 'eat'));
+      _readAll();
     });
   }
 
@@ -87,5 +80,39 @@ class ChatViewModel extends ChangeNotifier {
     DateTime currDate = messages[i].date.toDate();
 
     return i > 0 && prevDate.day != currDate.day;
+  }
+
+  Future<void> tickTimer() async {
+    final ChatRoom room = await _chatService.getChatRoom(roomId) as ChatRoom;
+    remainSeconds = calculateRemainSeconds(room.open);
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (remainSeconds! > 0) {
+        remainSeconds = remainSeconds! - 1;
+        notifyListeners();
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  int calculateRemainSeconds(Timestamp openTime) {
+    return openTime.seconds + (42 * 3600) - Timestamp.now().seconds;
+  }
+
+  String parseHMS() {
+    int remain = remainSeconds ?? 42 * 3600;
+
+    int h = remain ~/ 3600;
+
+    remain -= h * 3600;
+
+    int m = remain ~/ 60;
+
+    remain -= m * 60;
+
+    int s = remain;
+
+    return '$h : $m : $s 남음';
   }
 }

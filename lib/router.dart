@@ -31,7 +31,8 @@ class MyRouter {
           return MultiProvider(
             providers: [
               ChangeNotifierProvider(
-                  create: (BuildContext context) => ChatListViewModel()),
+                create: (BuildContext context) => ChatListViewModel(),
+              ),
               ChangeNotifierProvider(
                   create: (BuildContext context) => MyPageViewModel(
                       token: context.read<LoginViewModel>().token,
@@ -44,8 +45,9 @@ class MyRouter {
         path: '$CHAT_PATH/:room_id',
         builder: (context, state) {
           return ChangeNotifierProvider(
-              create: (context) =>
-                  ChatViewModel(roomId: state.pathParameters['room_id']!),
+              create: (context) => ChatViewModel(
+                  roomId: state.pathParameters['room_id']!,
+                  user: context.read<LoginViewModel>().user),
               child: const ChatPage());
         }),
   ]);

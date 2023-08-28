@@ -6,6 +6,7 @@ import 'package:match_42/service/chat_service.dart';
 import 'package:match_42/ui/eat_dialog.dart';
 import 'package:match_42/ui/main_layout.dart';
 import 'package:match_42/ui/subject_dialog.dart';
+import 'package:match_42/ui/talk_dialog.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -129,26 +130,14 @@ class _MatchPageState extends State<MatchPage> {
         ),
         ElevatedButton(
           onPressed: () {
-            chatService.addMessage(
-                '1',
-                Message(
-                  sender: User(
-                      id: 0,
-                      interests: <String?>[],
-                      nickname: 'aaaa',
-                      intra: 'seongjki',
-                      profile: 'eat'),
-                  message: '안녕',
-                  date: Timestamp.now(),
-                ));
-            // showDialog(
-            //     context: context,
-            //     builder: (context) {
-            //       return Dialog(
-            //         surfaceTintColor: Theme.of(context).colorScheme.background,
-            //         child: EatDialog(),
-            //       );
-            //     });
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return Dialog(
+                    surfaceTintColor: Theme.of(context).colorScheme.background,
+                    child: TalkDialog(),
+                  );
+                });
           },
           style: ElevatedButton.styleFrom(
               shape: const CircleBorder(), padding: const EdgeInsets.all(30.0)),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:match_42/data/message.dart';
-import 'package:match_42/data/user.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
+import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class ChatPage extends StatefulWidget {
@@ -33,9 +33,10 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     ChatViewModel chatViewModel = context.watch();
+    LoginViewModel loginViewModel = context.read();
 
     Widget generateMessage(int i) {
-      if (chatViewModel.messages[i].sender.intra == 'seongjki') {
+      if (chatViewModel.messages[i].sender.id == loginViewModel.user.id) {
         return MyChatMessage(msg: chatViewModel.messages[i]);
       } else {
         return OtherChatMessage(msg: chatViewModel.messages[i]);
@@ -48,15 +49,16 @@ class _ChatPageState extends State<ChatPage> {
         scrolledUnderElevation: 0.0,
         centerTitle: false,
         title: Container(
-            width: 120.0,
-            height: 30.0,
+            width: 150.0,
+            height: 45.0,
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 color: colorScheme.secondaryContainer,
                 borderRadius: BorderRadius.circular(20.0)),
-            child: const Text(
-              '06:03 남음',
-              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
+            child: Text(
+              chatViewModel.parseHMS(),
+              style:
+                  const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
             )),
         actions: [
           IconButton(
@@ -107,14 +109,7 @@ class _ChatPageState extends State<ChatPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: MessageSender(
-              sendCallback: () => chatViewModel.send(
-                  User(
-                      id: 0,
-                      nickname: 'aaaa',
-                      intra: 'seongjki',
-                      profile: 'eat',
-                      interests: []),
-                  text),
+              sendCallback: () => chatViewModel.send(loginViewModel.user, text),
               controller: text,
             ),
           )
@@ -133,24 +128,15 @@ class MessageSender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ChatViewModel chatViewModel = context.read();
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         ElevatedButton(
           onPressed: () {
-            chatViewModel.send(
-                User(
-                    id: 0,
-                    nickname: 'bbbb',
-                    intra: 'jiheekan',
-                    profile: 'talk',
-                    interests: []),
-                controller);
+            //TODO: 대화 내용 추천 기능
           },
           style: ElevatedButton.styleFrom(
             shape: const CircleBorder(),
-            backgroundColor: colorScheme.primary,
             foregroundColor: colorScheme.onPrimary,
             padding: EdgeInsets.zero,
           ),
