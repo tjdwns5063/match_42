@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:match_42/ui/main_layout.dart';
 import 'package:match_42/ui/interest_list.dart';
+import 'package:match_42/viewmodel/mypage_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class Interest {
   String title;
@@ -12,50 +14,15 @@ class Interest {
   );
 }
 
-class MyPage extends StatefulWidget {
+class MyPage extends StatelessWidget {
   const MyPage({super.key});
 
   @override
-  State<MyPage> createState() => _MyPageState();
-}
-
-class _MyPageState extends State<MyPage> {
-  List<Interest> interestList = [
-    Interest('운동', false),
-    Interest('코딩', false),
-    Interest('반려동물', false),
-  ];
-
-  void onPressed(int index) {
-    setState(() {
-      interestList[index].isSelect = !interestList[index].isSelect;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return MainLayout(
-        title: '마이페이지',
-        body: Column(
-          children: [
-            Expanded(
-              child: SelectedInterest(interestList, onPressed),
-            ),
-            const Expanded(
-              flex: 3,
-              child: BlockUser(),
-            ),
-            const Expanded(
-              child: Logout(),
-            ),
-          ],
-        ));
-=======
     return Column(
       children: [
         Expanded(
-          child: SelectedInterest(interestList, onPressed),
+          child: SelectedInterest(),
         ),
         const Expanded(
           flex: 3,
@@ -66,17 +33,15 @@ class _MyPageState extends State<MyPage> {
         ),
       ],
     );
->>>>>>> 225ba908287d8a8e05905dd85c650f78a1e9adb6
   }
 }
 
 class SelectedInterest extends StatelessWidget {
-  List<Interest> interestList;
-  final Function onPressed;
-  SelectedInterest(this.interestList, this.onPressed, {super.key});
+  SelectedInterest({super.key});
 
   @override
   Widget build(BuildContext context) {
+    MyPageViewModel myPageViewModel = context.watch();
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -97,8 +62,8 @@ class SelectedInterest extends StatelessWidget {
                   onPressed: () {
                     showDialog(
                         context: context,
-                        builder: (context) =>
-                            InterestView(interestList, onPressed));
+                        builder: (context) => ChangeNotifierProvider.value(
+                            value: myPageViewModel, child: InterestView()));
                   },
                   icon: Icon(
                     Icons.add_circle_outline_rounded,
