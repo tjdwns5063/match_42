@@ -28,14 +28,9 @@ class ChatService {
   }
 
   Future<List<ChatRoom>> getAllChatRoom() async {
-    final List<ChatRoom> result = [];
     final QuerySnapshot<ChatRoom> snapshot = await roomRef.get();
 
-    for (QueryDocumentSnapshot<ChatRoom> doc in snapshot.docs) {
-      result.add(doc.data());
-    }
-
-    return result;
+    return snapshot.docs.map((doc) => doc.data()).toList();
   }
 
   Future<ChatRoom?> getChatRoom(String id) async {
@@ -58,17 +53,17 @@ class ChatService {
 
   void _addUnreadMessageCount(ChatRoom room, Message msg) {
     for (int i = 0; i < room.unread.length; ++i) {
-      String userIntra = room.users[i].intra;
-      String senderIntra = msg.sender.intra;
+      int userId = room.users[i].id;
+      int senderId = msg.sender.id;
 
-      if (_isNotSender(userIntra, senderIntra)) {
+      if (_isNotSender(userId, senderId)) {
         room.unread[i] += 1;
       }
     }
   }
 
-  bool _isNotSender(String userIntra, String senderIntra) {
-    return userIntra != senderIntra;
+  bool _isNotSender(int userId, int senderId) {
+    return userId != senderId;
   }
 
   Future<List<Message>> getAllMessage(String roomId) async {
@@ -85,8 +80,8 @@ class ChatService {
   Future<void> readAllMessage(String roomId, User user) async {
     ChatRoom chatRoom = await getChatRoom(roomId) as ChatRoom;
 
-    chatRoom.unread[chatRoom.users
-        .indexWhere((element) => element.intra == user.intra)] = 0;
+    chatRoom.unread[
+        chatRoom.users.indexWhere((element) => element.id == user.id)] = 0;
 
     roomRef.doc(roomId).update({
       'unread': chatRoom.unread,
