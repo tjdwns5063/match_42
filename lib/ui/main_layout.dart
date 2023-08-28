@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:match_42/ui/chat_list_page.dart';
 import 'package:match_42/ui/match_page.dart';
 import 'package:match_42/ui/my_page.dart';
+import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
+import 'package:match_42/viewmodel/mypage_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
