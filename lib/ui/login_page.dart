@@ -90,12 +90,12 @@ class LoginWeb extends StatelessWidget {
               Uri.parse(request.url).queryParameters['token'] as String;
           print(token);
           loginViewModel.updateToken(token);
-          Response response2 = await http.post(
-              Uri.parse('http://115.85.181.92/api/v1/user/interest'),
-              headers: {'Authorization': 'Bearer $token'},
-              body: {'interest2': 'hobby'});
+          // Response response2 = await http.post(
+          //     Uri.parse('http://115.85.181.92/api/v1/user/interest'),
+          //     headers: {'Authorization': 'Bearer $token'},
+          //     body: {'interest2': 'hobby'});
 
-          print('response2: ${response2.body}');
+          // print('response2: ${response2.body}');
           Response response = await http.get(
               Uri.parse("http://115.85.181.92/api/v1/user/me"),
               headers: {'Authorization': 'Bearer $token'});

@@ -91,37 +91,51 @@ class SelectedInterest extends StatelessWidget {
                 runSpacing: 8.0,
                 alignment: WrapAlignment.start,
                 children: [
-                  TextButton(
-                    onPressed: null,
-                    style: TextButton.styleFrom(
-                      backgroundColor: colorScheme.secondaryContainer,
-                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                    ),
-                    child: Text(
-                      '운동',
-                      style: TextStyle(
-                        color: colorScheme.onSecondaryContainer.withAlpha(240),
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: null,
-                    style: TextButton.styleFrom(
-                      backgroundColor: colorScheme.secondaryContainer,
-                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                    ),
-                    child: Text(
-                      '독서',
-                      style: TextStyle(
-                        color: colorScheme.onSecondaryContainer.withAlpha(240),
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                  for (int i = 0; i < myPageViewModel.interestList.length; ++i)
+                    TextButton(
+                        onPressed: () => myPageViewModel.onPressed(i),
+                        style: TextButton.styleFrom(
+                          backgroundColor: colorScheme.secondaryContainer,
+                          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                        ),
+                        child: Text(myPageViewModel.interestList[i].title,
+                            style: TextStyle(
+                              color: colorScheme.onSecondaryContainer,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ))),
                 ],
+                // TextButton(
+                //   onPressed: null,
+                //   style: TextButton.styleFrom(
+                //     backgroundColor: colorScheme.secondaryContainer,
+                //     padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                //   ),
+                //   child: Text(
+                //     '운동',
+                //     style: TextStyle(
+                //       color: colorScheme.onSecondaryContainer.withAlpha(240),
+                //       fontSize: 15,
+                //       fontWeight: FontWeight.bold,
+                //     ),
+                //   ),
+                // ),
+                // TextButton(
+                //   onPressed: null,
+                //   style: TextButton.styleFrom(
+                //     backgroundColor: colorScheme.secondaryContainer,
+                //     padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                //   ),
+                //   child: Text(
+                //     '독서',
+                //     style: TextStyle(
+                //       color: colorScheme.onSecondaryContainer.withAlpha(240),
+                //       fontSize: 15,
+                //       fontWeight: FontWeight.bold,
+                //     ),
+                //   ),
+                // ),
+                // ],
               ),
             ),
           ),

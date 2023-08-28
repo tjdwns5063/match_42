@@ -5,6 +5,7 @@ import 'package:match_42/ui/login_page.dart';
 import 'package:match_42/ui/main_layout.dart';
 import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
+import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:match_42/viewmodel/mypage_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -32,7 +33,9 @@ class MyRouter {
               ChangeNotifierProvider(
                   create: (BuildContext context) => ChatListViewModel()),
               ChangeNotifierProvider(
-                  create: (BuildContext context) => MyPageViewModel())
+                  create: (BuildContext context) => MyPageViewModel(
+                      token: context.read<LoginViewModel>().token,
+                      user: context.read<LoginViewModel>().user))
             ],
             child: const MainLayout(),
           );
