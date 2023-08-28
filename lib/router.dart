@@ -15,6 +15,11 @@ class MyRouter {
           return const LoginPage();
         }),
     GoRoute(
+        path: '/auth',
+        builder: (context, _) {
+          return LoginWeb();
+        }),
+    GoRoute(
         path: MAIN_PATH,
         builder: (context, _) {
           return const MainLayout();

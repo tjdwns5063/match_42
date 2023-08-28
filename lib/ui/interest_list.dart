@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:match_42/ui/my_page.dart';
+import 'package:match_42/viewmodel/mypage_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class InterestView extends StatelessWidget {
-  // const InterestView({super.key});
-  List<Interest> interestList;
-  final Function onPressed;
-  InterestView(List<Interest> interestList, Function onPressed)
-      : this.interestList = interestList,
-        this.onPressed = onPressed;
 
   @override
   Widget build(BuildContext context) {
+    MyPageViewModel viewModel = context.watch();
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Dialog(
       child: Container(
@@ -60,16 +57,16 @@ class InterestView extends StatelessWidget {
                     runSpacing: 8.0,
                     alignment: WrapAlignment.start,
                     children: [
-                      for (int i = 0; i < interestList.length; ++i)
+                      for (int i = 0; i < viewModel.interestList.length; ++i)
                         TextButton(
-                            onPressed: () => onPressed(i),
+                            onPressed: () => viewModel.onPressed(i),
                             style: TextButton.styleFrom(
-                              backgroundColor: !interestList[i].isSelect
+                              backgroundColor: !viewModel.interestList[i].isSelect
                                   ? colorScheme.onBackground.withAlpha(50)
                                   : colorScheme.secondaryContainer,
                               padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                             ),
-                            child: Text(interestList[i].title,
+                            child: Text(viewModel.interestList[i].title,
                                 style: TextStyle(
                                   color: colorScheme.onSecondaryContainer,
                                   fontSize: 15,
