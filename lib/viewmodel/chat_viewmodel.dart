@@ -8,12 +8,13 @@ import 'package:match_42/data/user.dart';
 import 'package:match_42/service/chat_service.dart';
 
 class ChatViewModel extends ChangeNotifier {
-  ChatViewModel({required this.roomId}) {
+  ChatViewModel({required this.roomId, required this.user}) {
     init();
   }
 
   final ChatService _chatService = ChatService();
   final String roomId;
+  final User user;
 
   List<Message> _messages = [];
   List<Message> get messages => UnmodifiableListView(
@@ -42,14 +43,7 @@ class ChatViewModel extends ChangeNotifier {
   }
 
   Future<void> _readAll() async {
-    await _chatService.readAllMessage(
-        roomId,
-        User(
-            id: 0,
-            interests: <String?>[],
-            nickname: 'aaaa',
-            intra: 'seongjki',
-            profile: 'eat'));
+    await _chatService.readAllMessage(roomId, user);
   }
 
   void listen() {
@@ -63,14 +57,7 @@ class ChatViewModel extends ChangeNotifier {
     final readStream = _chatService.roomRef.doc(roomId).snapshots();
 
     _readSubscription = readStream.listen((event) async {
-      await _chatService.readAllMessage(
-          roomId,
-          User(
-              id: 0,
-              interests: <String?>[],
-              nickname: 'aaaa',
-              intra: 'seongjki',
-              profile: 'eat'));
+      _readAll();
     });
   }
 

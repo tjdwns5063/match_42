@@ -8,7 +8,7 @@ class User {
     required this.intra,
     required this.profile,
     interests,
-  }) : interests = interests;
+  }) : interests = interests ?? [];
 
   final int id;
   String nickname;

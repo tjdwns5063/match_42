@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:match_42/data/message.dart';
-import 'package:match_42/data/user.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
+import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class ChatPage extends StatefulWidget {
@@ -33,6 +33,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     ChatViewModel chatViewModel = context.watch();
+    LoginViewModel loginViewModel = context.read();
 
     Widget generateMessage(int i) {
       if (chatViewModel.messages[i].sender.intra == 'seongjki') {
@@ -107,14 +108,7 @@ class _ChatPageState extends State<ChatPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: MessageSender(
-              sendCallback: () => chatViewModel.send(
-                  User(
-                      id: 0,
-                      nickname: 'aaaa',
-                      intra: 'seongjki',
-                      profile: 'eat',
-                      interests: []),
-                  text),
+              sendCallback: () => chatViewModel.send(loginViewModel.user, text),
               controller: text,
             ),
           )
@@ -133,24 +127,15 @@ class MessageSender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ChatViewModel chatViewModel = context.read();
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         ElevatedButton(
           onPressed: () {
-            chatViewModel.send(
-                User(
-                    id: 0,
-                    nickname: 'bbbb',
-                    intra: 'jiheekan',
-                    profile: 'talk',
-                    interests: []),
-                controller);
+            //TODO: 대화 내용 추천 기능
           },
           style: ElevatedButton.styleFrom(
             shape: const CircleBorder(),
-            backgroundColor: colorScheme.primary,
             foregroundColor: colorScheme.onPrimary,
             padding: EdgeInsets.zero,
           ),
