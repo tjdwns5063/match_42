@@ -5,6 +5,7 @@ import 'package:match_42/ui/my_page.dart';
 import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
 import 'package:match_42/viewmodel/mypage_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:match_42/ui/alarm_page.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -61,7 +62,10 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
               Icons.notifications_none,
               size: 32,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const AlarmPage()));
+            },
           )
         ],
       ),
