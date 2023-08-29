@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:match_42/router.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
@@ -80,12 +81,12 @@ class LoginWeb extends StatelessWidget {
           NavigationDelegate(onNavigationRequest: (NavigationRequest request) {
         if (loginViewModel.isLoginSuccess(request.url)) {
           loginViewModel.updateToken(request.url);
-          loginViewModel.updateUser();
+          loginViewModel.initUser();
         }
 
         return NavigationDecision.navigate;
       }))
-      ..loadRequest(Uri.parse('http://115.85.181.92/api/v1/login/'));
+      ..loadRequest(Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/login/'));
 
     return Scaffold(
       body: Stack(
@@ -100,7 +101,7 @@ class LoginWeb extends StatelessWidget {
               onPressed: () {
                 context.pop();
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_back_ios,
                 size: 32.0,
               ),

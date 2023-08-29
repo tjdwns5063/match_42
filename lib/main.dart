@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:match_42/firebase_options.dart';
 import 'package:match_42/router.dart';
 import 'package:match_42/ui/theme/color_schemes.dart';
@@ -13,6 +14,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await dotenv.load(fileName: '.env');
   runApp(ChangeNotifierProvider(
       create: (context) => LoginViewModel(), child: const MyApp()));
 }
