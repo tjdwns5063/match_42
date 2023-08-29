@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:match_42/data/user.dart';
 import 'package:match_42/router.dart';
-import 'package:http/http.dart' as http;
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'dart:convert';
-import 'package:http/http.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -52,7 +48,7 @@ class LoginPage extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            context.go('/auth');
+            context.push('/auth');
           },
           style: ButtonStyle(
             backgroundColor:
@@ -72,49 +68,46 @@ class LoginPage extends StatelessWidget {
 }
 
 class LoginWeb extends StatelessWidget {
-  LoginWeb({super.key});
-
-  final WebViewController controller = WebViewController();
+  const LoginWeb({super.key});
 
   @override
   Widget build(BuildContext context) {
     LoginViewModel loginViewModel = context.read();
 
-    controller
+    final WebViewController controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate(
-          onNavigationRequest: (NavigationRequest request) async {
-        if (request.url
-            .contains('http://115.85.181.92/api/v1/login/success?token')) {
-          String token =
-              Uri.parse(request.url).queryParameters['token'] as String;
-          print(token);
-          loginViewModel.updateToken(token);
-          // Response response2 = await http.post(
-          //     Uri.parse('http://115.85.181.92/api/v1/user/interest'),
-          //     headers: {'Authorization': 'Bearer $token'},
-          //     body: {'interest2': 'hobby'});
-
-          // print('response2: ${response2.body}');
-          Response response = await http.get(
-              Uri.parse("http://115.85.181.92/api/v1/user/me"),
-              headers: {'Authorization': 'Bearer $token'});
-
-          Map<String, dynamic> json = jsonDecode(response.body);
-          User user = User.fromJson(json);
-          loginViewModel.updateUser(user);
-
-          context.go(MAIN_PATH);
+      ..setNavigationDelegate(
+          NavigationDelegate(onNavigationRequest: (NavigationRequest request) {
+        if (loginViewModel.isLoginSuccess(request.url)) {
+          loginViewModel.updateToken(request.url);
+          loginViewModel.updateUser();
         }
-        print(request.url);
 
         return NavigationDecision.navigate;
       }))
       ..loadRequest(Uri.parse('http://115.85.181.92/api/v1/login/'));
 
     return Scaffold(
-      body: WebViewWidget(
-        controller: controller,
+      body: Stack(
+        alignment: Alignment.topLeft,
+        children: [
+          WebViewWidget(
+            controller: controller,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 48.0, horizontal: 16),
+            child: IconButton(
+              onPressed: () {
+                context.pop();
+              },
+              icon: Icon(
+                Icons.arrow_back_ios,
+                size: 32.0,
+              ),
+              color: Colors.black,
+            ),
+          ),
+        ],
       ),
     );
   }

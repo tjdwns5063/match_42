@@ -14,41 +14,59 @@ const String MAIN_PATH = '/main';
 const String CHAT_PATH = '/chat';
 
 class MyRouter {
-  static GoRouter router = GoRouter(initialLocation: LOGIN_PATH, routes: [
-    GoRoute(
-        path: LOGIN_PATH,
-        builder: (context, _) {
-          return const LoginPage();
-        }),
-    GoRoute(
-        path: '/auth',
-        builder: (context, _) {
-          return LoginWeb();
-        }),
-    GoRoute(
-        path: MAIN_PATH,
-        builder: (context, _) {
-          return MultiProvider(
-            providers: [
-              ChangeNotifierProvider(
-                create: (BuildContext context) => ChatListViewModel(),
-              ),
-              ChangeNotifierProvider(
-                  create: (BuildContext context) => MyPageViewModel(
-                      token: context.read<LoginViewModel>().token,
-                      user: context.read<LoginViewModel>().user))
-            ],
-            child: const MainLayout(),
-          );
-        }),
-    GoRoute(
-        path: '$CHAT_PATH/:room_id',
-        builder: (context, state) {
-          return ChangeNotifierProvider(
-              create: (context) => ChatViewModel(
-                  roomId: state.pathParameters['room_id']!,
-                  user: context.read<LoginViewModel>().user),
-              child: const ChatPage());
-        }),
-  ]);
+  MyRouter({required this.context})
+      : router = GoRouter(
+            initialLocation: LOGIN_PATH,
+            refreshListenable: context.read<LoginViewModel>(),
+            routes: [
+              GoRoute(
+                  path: LOGIN_PATH,
+                  builder: (context, _) {
+                    return const LoginPage();
+                  }),
+              GoRoute(
+                  path: '/auth',
+                  builder: (context, _) {
+                    return const LoginWeb();
+                  },
+                  redirect: (context, state) {
+                    LoginViewModel loginViewModel = context.read();
+
+                    if (loginViewModel.token.isNotEmpty &&
+                        loginViewModel.user != null) {
+                      return MAIN_PATH;
+                    }
+                  }),
+              GoRoute(
+                  path: MAIN_PATH,
+                  builder: (context, _) {
+                    LoginViewModel loginViewModel = context.read();
+                    return MultiProvider(
+                      providers: [
+                        ChangeNotifierProvider(
+                          create: (BuildContext context) => ChatListViewModel(),
+                        ),
+                        ChangeNotifierProvider(
+                            create: (BuildContext context) => MyPageViewModel(
+                                  user: loginViewModel.user!,
+                                  token: loginViewModel.token,
+                                ))
+                      ],
+                      child: const MainLayout(),
+                    );
+                  }),
+              GoRoute(
+                  path: '$CHAT_PATH/:room_id',
+                  builder: (context, state) {
+                    return ChangeNotifierProvider(
+                        create: (context) => ChatViewModel(
+                            roomId: state.pathParameters['room_id']!,
+                            user: context.read<LoginViewModel>().user!),
+                        child: const ChatPage());
+                  }),
+            ]);
+
+  final BuildContext context;
+
+  final GoRouter router;
 }

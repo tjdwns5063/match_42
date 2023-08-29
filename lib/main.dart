@@ -13,7 +13,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+      create: (context) => LoginViewModel(), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -21,18 +22,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => LoginViewModel(),
-      child: MaterialApp.router(
-        title: 'matching 42',
-        theme: ThemeData(
-          colorScheme: lightColorScheme,
-          useMaterial3: true,
-        ),
-        darkTheme: ThemeData(colorScheme: darkColorScheme, useMaterial3: true),
-        debugShowCheckedModeBanner: false,
-        routerConfig: MyRouter.router,
+    return MaterialApp.router(
+      title: 'matching 42',
+      theme: ThemeData(
+        colorScheme: lightColorScheme,
+        useMaterial3: true,
       ),
+      darkTheme: ThemeData(colorScheme: darkColorScheme, useMaterial3: true),
+      debugShowCheckedModeBanner: false,
+      routerConfig: MyRouter(context: context).router,
     );
   }
 }
