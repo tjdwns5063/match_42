@@ -22,14 +22,14 @@ class MyPageViewModel extends ChangeNotifier {
   User user;
   String token;
   late List<Interest> interestList;
-  InterestService interestService = InterestService();
+  InterestService interestService = InterestService.instance;
 
   MyPageViewModel({required this.user, required this.token}) {
     interestList = [];
 
     for (String? interest in user.interests) {
       if (interest != null) {
-        interestList.add(Interest(interest!, true));
+        interestList.add(Interest(interest, true));
       }
     }
     _init();

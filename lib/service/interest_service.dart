@@ -5,6 +5,10 @@ import 'package:http/http.dart' as http;
 import 'package:match_42/data/user.dart';
 
 class InterestService {
+  static final instance = InterestService._create();
+
+  InterestService._create();
+
   Future<List<String>> getInterestsById(int userId, String token) async {
     Uri uri =
         Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/user/interest/$userId');

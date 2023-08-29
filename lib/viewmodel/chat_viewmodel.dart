@@ -13,7 +13,7 @@ class ChatViewModel extends ChangeNotifier {
     init();
   }
 
-  final ChatService _chatService = ChatService();
+  final ChatService _chatService = ChatService.instance;
   final String roomId;
   final User user;
 

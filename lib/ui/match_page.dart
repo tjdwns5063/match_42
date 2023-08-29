@@ -102,7 +102,7 @@ class _MatchPageState extends State<MatchPage> {
     }
   }
 
-  ChatService chatService = ChatService();
+  ChatService chatService = ChatService.instance;
 
   @override
   Widget build(BuildContext context) {
