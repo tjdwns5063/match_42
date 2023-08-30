@@ -3,6 +3,7 @@ import 'package:match_42/data/message.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:match_42/ui/report_page.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -62,7 +63,8 @@ class _ChatPageState extends State<ChatPage> {
             )),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const ReportPage()));},
             icon: const Icon(
               Icons.warning_rounded,
               size: 32.0,
