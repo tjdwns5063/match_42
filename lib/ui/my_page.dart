@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:match_42/router.dart';
-import 'package:match_42/service/error_util.dart';
+import 'package:match_42/error/error_util.dart';
 import 'package:match_42/ui/interest_list.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:match_42/viewmodel/mypage_viewmodel.dart';
@@ -190,7 +190,8 @@ class _BlockUserState extends State<BlockUser> {
                     viewModel
                         .requestDeleteBlockUser(
                             index: index, callback: loginViewModel.updateUser)
-                        .onError((Exception error, _) => onHttpError(context));
+                        .onError((Exception error, _) =>
+                            onHttpError(context, error));
                   },
                 ),
               );
