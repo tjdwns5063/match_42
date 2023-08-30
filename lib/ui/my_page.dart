@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:match_42/router.dart';
+import 'package:match_42/service/error_util.dart';
 import 'package:match_42/ui/interest_list.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:match_42/viewmodel/mypage_viewmodel.dart';
@@ -137,6 +138,8 @@ class _BlockUserState extends State<BlockUser> {
 
   @override
   Widget build(BuildContext context) {
+    MyPageViewModel viewModel = context.watch();
+    LoginViewModel loginViewModel = context.read();
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Column(children: [
       Row(
@@ -155,7 +158,8 @@ class _BlockUserState extends State<BlockUser> {
             onPressed: () {
               showDialog(
                 context: context,
-                builder: (context) => AddBlockUser(),
+                builder: (context) => ChangeNotifierProvider.value(
+                    value: viewModel, child: const AddBlockUser()),
               );
             },
             icon: Icon(
@@ -169,23 +173,25 @@ class _BlockUserState extends State<BlockUser> {
       Expanded(
         child: Scrollbar(
           child: ListView.builder(
-            itemCount: idList.length,
+            itemCount: viewModel.blockUsers.length,
             itemBuilder: (context, index) {
               return ListTile(
-                title: Row(
-                  children: [
-                    const SizedBox(width: 8),
-                    CircleAvatar(child: Image.asset('assets/talk.png')),
-                    const SizedBox(width: 15),
-                    Text(
-                      idList[index],
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onBackground,
-                      ),
-                    ),
-                  ],
+                title: Text(
+                  viewModel.blockUsers[index],
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onBackground,
+                  ),
+                ),
+                trailing: IconButton(
+                  icon: Icon(Icons.cancel),
+                  onPressed: () {
+                    viewModel
+                        .requestDeleteBlockUser(
+                            index: index, callback: loginViewModel.updateUser)
+                        .onError((Exception error, _) => onHttpError(context));
+                  },
                 ),
               );
             },
