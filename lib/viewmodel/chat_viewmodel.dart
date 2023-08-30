@@ -104,7 +104,9 @@ class ChatViewModel extends ChangeNotifier {
   }
 
   String parseHMS() {
-    int remain = remainSeconds ?? 42 * 3600;
+    if (remainSeconds == null) return 'Loading...';
+
+    int remain = remainSeconds!;
 
     int h = remain ~/ 3600;
 
