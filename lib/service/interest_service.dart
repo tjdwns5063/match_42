@@ -29,10 +29,11 @@ class InterestService {
   Future<User> postInterests(List<String> interests, String token) async {
     Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/user/interest');
 
-    http.Response response = await http.post(
+    http.Response response = await http.put(
       uri,
       headers: {
         'Content-Type': 'application/json',
+        'content-encoding': 'utf-8',
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode(interests),

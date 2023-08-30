@@ -35,13 +35,9 @@ class User {
       nickname: json['nickname'] ?? '',
       intra: json['intra'],
       profile: json['profile'] ?? '',
-      interests: <String?>[
-        json['interest1'],
-        json['interest2'],
-        json['interest3'],
-        json['interest4'],
-        json['interest5'],
-      ],
+      interests: json['interests'] == null
+          ? <String>[]
+          : List<String>.from(json['interests']),
     );
   }
 

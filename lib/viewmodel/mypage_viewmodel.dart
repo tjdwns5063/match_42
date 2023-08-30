@@ -19,32 +19,35 @@ const List<String> allInterest = [
 ];
 
 class MyPageViewModel extends ChangeNotifier {
-  User user;
   String token;
-  late List<Interest> interestList;
   InterestService interestService = InterestService.instance;
+  late List<Interest> interestList;
+  late List<Interest> selectedList;
 
-  MyPageViewModel({required this.user, required this.token}) {
-    interestList = [];
+  MyPageViewModel({user, required this.token}) {
+    _initInterestList(user);
+    _initSelectedList();
+    notifyListeners();
+  }
+
+  void _initInterestList(User user) {
+    List<Interest> newInterestList = [];
 
     for (String? interest in user.interests) {
       if (interest != null) {
-        interestList.add(Interest(interest, true));
+        newInterestList.add(Interest(interest, true));
       }
     }
-    _init();
+    interestList = newInterestList;
   }
 
-  Future<void> _init() async {
-    List<String> selected =
-        await interestService.getInterestsById(user.id, token);
+  void _initSelectedList() {
+    List<Interest> newSelectedList = allInterest
+        .map((String title) => Interest(title,
+            interestList.any((Interest interest) => interest.title == title)))
+        .toList();
 
-    for (Interest interest in interestList) {
-      if (selected.contains(interest.title)) {
-        interest.isSelect = true;
-      }
-    }
-    notifyListeners();
+    selectedList = newSelectedList;
   }
 
   bool checkInterest(String interest, List<String?> interestList) {
@@ -54,31 +57,29 @@ class MyPageViewModel extends ChangeNotifier {
     return false;
   }
 
-  late List<Interest> isSelect = [
-    for (int i = 0; i < allInterest.length; i++)
-      Interest(allInterest[i], checkInterest(allInterest[i], user.interests))
-  ];
-
-  bool isSelectEnabled(List<Interest> isSelect, int index) {
-    return !isSelect[index].isSelect &&
-        isSelect.where((element) => element.isSelect).length >= 5;
-  }
-
   void onPressed(int index) {
-    if (isSelectEnabled(isSelect, index)) return;
+    if (isSelectEnabled(index)) return;
 
-    isSelect[index].isSelect = !isSelect[index].isSelect;
+    selectedList[index].isSelect = !selectedList[index].isSelect;
     notifyListeners();
   }
 
+  bool isSelectEnabled(int index) {
+    return !selectedList[index].isSelect &&
+        selectedList.where((element) => element.isSelect).length >= 5;
+  }
+
   Future<void> verifyButton({required Function callback}) async {
-    List<String> selectedList = isSelect
-        .where((Interest interest) => interest.isSelect == true)
+    List<String> selected = selectedList
+        .where((Interest interest) => interest.isSelect)
         .map((Interest interest) => interest.title)
         .toList();
 
-    User user = await interestService.postInterests(selectedList, token);
+    User user = await interestService.postInterests(selected, token);
 
     callback(user);
+    _initInterestList(user);
+
+    notifyListeners();
   }
 }

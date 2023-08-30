@@ -42,18 +42,18 @@ class InterestView extends StatelessWidget {
                   runSpacing: 8.0,
                   alignment: WrapAlignment.start,
                   children: [
-                    for (int i = 0; i < viewModel.isSelect.length; ++i)
+                    for (int i = 0; i < viewModel.selectedList.length; ++i)
                       TextButton(
                           onPressed: () => viewModel.onPressed(
                                 i,
                               ),
                           style: TextButton.styleFrom(
-                            backgroundColor: !viewModel.isSelect[i].isSelect
-                                ? colorScheme.onBackground.withAlpha(50)
-                                : colorScheme.secondaryContainer,
+                            backgroundColor: viewModel.selectedList[i].isSelect
+                                ? colorScheme.secondaryContainer
+                                : colorScheme.onBackground.withAlpha(50),
                             padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                           ),
-                          child: Text(viewModel.isSelect[i].title,
+                          child: Text(allInterest[i],
                               style: TextStyle(
                                 color: colorScheme.onSecondaryContainer,
                                 fontSize: 15,
