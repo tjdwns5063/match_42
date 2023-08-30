@@ -97,7 +97,10 @@ class ChatViewModel extends ChangeNotifier {
   }
 
   int calculateRemainSeconds(Timestamp openTime) {
-    return openTime.seconds + (42 * 3600) - Timestamp.now().seconds;
+    int remainSeconds =
+        openTime.seconds + (42 * 3600) - Timestamp.now().seconds;
+
+    return remainSeconds > 0 ? remainSeconds : 0;
   }
 
   String parseHMS() {
