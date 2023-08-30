@@ -89,26 +89,8 @@ class LoginWeb extends StatelessWidget {
       ..loadRequest(Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/login/'));
 
     return Scaffold(
-      body: Stack(
-        alignment: Alignment.topLeft,
-        children: [
-          WebViewWidget(
-            controller: controller,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 48.0, horizontal: 16),
-            child: IconButton(
-              onPressed: () {
-                context.pop();
-              },
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                size: 32.0,
-              ),
-              color: Colors.black,
-            ),
-          ),
-        ],
+      body: WebViewWidget(
+        controller: controller,
       ),
     );
   }
