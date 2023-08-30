@@ -1,26 +1,62 @@
 import 'package:flutter/cupertino.dart';
+import 'package:match_42/service/block_service.dart';
+import 'package:match_42/service/interest_service.dart';
 import 'package:match_42/ui/my_page.dart';
 import 'package:match_42/data/user.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:match_42/viewmodel/login_viewmodel.dart';
-import 'package:http/http.dart';
-import 'package:provider/provider.dart';
+
+const List<String> allInterest = [
+  '운동',
+  '코딩',
+  '반려동물',
+  'mbti',
+  '독서',
+  '영화',
+  '사업',
+  '42서울',
+  '취업',
+  '게임',
+  '여행',
+  '외국어'
+];
 
 class MyPageViewModel extends ChangeNotifier {
-  User user;
   String token;
+  InterestService interestService = InterestService.instance;
+  BlockService blockService = BlockService.instance;
+
   late List<Interest> interestList;
+  late List<Interest> selectedList;
+  late List<String> blockUsers;
 
-  MyPageViewModel({required this.user, required this.token}) {
-    var lst = user.interests;
-    interestList = <Interest>[];
+  MyPageViewModel({user, required this.token}) {
+    _initInterestList(user);
+    _initSelectedList();
+    _initBlockUsers(user);
+    notifyListeners();
+  }
 
-    for (String? interest in lst) {
+  void _initInterestList(User user) {
+    List<Interest> newInterestList = [];
+
+    for (String? interest in user.interests) {
       if (interest != null) {
-        interestList.add(Interest(interest, true));
+        newInterestList.add(Interest(interest, true));
       }
     }
+    interestList = newInterestList;
+  }
+
+  void _initSelectedList() {
+    List<Interest> newSelectedList = allInterest
+        .map((String title) => Interest(title,
+            interestList.any((Interest interest) => interest.title == title)))
+        .toList();
+
+    selectedList = newSelectedList;
+  }
+
+  void _initBlockUsers(User user) {
+    blockUsers = user.blockUsers;
   }
 
   bool checkInterest(String interest, List<String?> interestList) {
@@ -30,51 +66,39 @@ class MyPageViewModel extends ChangeNotifier {
     return false;
   }
 
-  List<String> allInterest = [
-    // '운동',
-    // '코딩',
-    // '반려동물',
-    'abc',
-    'def',
-    'mbti',
-    '독서',
-    '영화',
-    '사업',
-    '42서울',
-    '취업',
-    '게임',
-    '여행',
-    '외국어'
-  ];
-
-  late List<Interest> isSelect = [
-    for (int i = 0; i < allInterest.length; i++)
-      Interest(allInterest[i], checkInterest(allInterest[i], user.interests))
-  ];
-
   void onPressed(int index) {
-    isSelect[index].isSelect = !isSelect[index].isSelect;
+    if (isSelectEnabled(index)) return;
+
+    selectedList[index].isSelect = !selectedList[index].isSelect;
+    notifyListeners();
+  }
+
+  bool isSelectEnabled(int index) {
+    return !selectedList[index].isSelect &&
+        selectedList.where((element) => element.isSelect).length >= 5;
+  }
+
+  Future<void> verifyButton({required Function callback}) async {
+    List<String> selected = selectedList
+        .where((Interest interest) => interest.isSelect)
+        .map((Interest interest) => interest.title)
+        .toList();
+
+    User user = await interestService.postInterests(selected, token);
+
+    callback(user);
+    _initInterestList(user);
 
     notifyListeners();
   }
 
-  verifyButton(BuildContext context) async {
-    LoginViewModel loginViewModel = context.read();
-    for (int i = 0; i < isSelect.length; i++) {
-      if (isSelect[i].isSelect) {
-        Uri uri = Uri.http('115.85.181.92', '/api/v1/user/interest',
-            {'interest': isSelect[i].title});
-        print(isSelect[i].title);
+  Future<void> requestAddBlockUser(
+      {required String intraId, required Function callback}) async {
+    User user = await blockService.addBlockUser(intraId, token);
 
-        print(uri.toString());
+    callback(user);
+    _initBlockUsers(user);
 
-        Response response =
-            await http.post(uri, headers: {'Authorization': 'Bearer $token'});
-        print('body: ${response.body} ${response.headers}');
-        // Map<String, dynamic> json = jsonDecode(response.body);
-        // User user = User.fromJson(json);
-        // loginViewModel.updateUser(user);
-      }
-    }
+    notifyListeners();
   }
 }

@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:match_42/firebase_options.dart';
 import 'package:match_42/router.dart';
 import 'package:match_42/ui/theme/color_schemes.dart';
@@ -13,7 +14,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  await dotenv.load(fileName: '.env');
+  runApp(ChangeNotifierProvider(
+      create: (context) => LoginViewModel(), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -21,18 +24,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => LoginViewModel(),
-      child: MaterialApp.router(
-        title: 'matching 42',
-        theme: ThemeData(
-          colorScheme: lightColorScheme,
-          useMaterial3: true,
-        ),
-        darkTheme: ThemeData(colorScheme: darkColorScheme, useMaterial3: true),
-        debugShowCheckedModeBanner: false,
-        routerConfig: MyRouter.router,
+    return MaterialApp.router(
+      title: 'matching 42',
+      theme: ThemeData(
+        colorScheme: lightColorScheme,
+        useMaterial3: true,
       ),
+      darkTheme: ThemeData(colorScheme: darkColorScheme, useMaterial3: true),
+      debugShowCheckedModeBanner: false,
+      routerConfig: MyRouter(context: context).router,
     );
   }
 }

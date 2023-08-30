@@ -37,7 +37,7 @@ class _ChatPageState extends State<ChatPage> {
     LoginViewModel loginViewModel = context.read();
 
     Widget generateMessage(int i) {
-      if (chatViewModel.messages[i].sender.id == loginViewModel.user.id) {
+      if (chatViewModel.messages[i].sender.id == loginViewModel.user!.id) {
         return MyChatMessage(msg: chatViewModel.messages[i]);
       } else {
         return OtherChatMessage(msg: chatViewModel.messages[i]);
@@ -111,7 +111,8 @@ class _ChatPageState extends State<ChatPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: MessageSender(
-              sendCallback: () => chatViewModel.send(loginViewModel.user, text),
+              sendCallback: () =>
+                  chatViewModel.send(loginViewModel.user!, text),
               controller: text,
             ),
           )

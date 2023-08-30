@@ -20,7 +20,7 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
     const ChatListPage(),
     const MyPage(),
   ];
-  final List<String> _titles = const ['매칭', '채팅 목록', '채팅 목록'];
+  final List<String> _titles = const ['매칭', '채팅', '마이페이지'];
   late TabController controller;
   late String _title;
 

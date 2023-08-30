@@ -13,7 +13,7 @@ class ChatListViewModel extends ChangeNotifier {
     _init();
   }
 
-  final ChatService _chatService = ChatService();
+  final ChatService _chatService = ChatService.instance;
 
   List<ChatRoom> get rooms => UnmodifiableListView(_rooms);
   List<ChatRoom> _rooms = [];
