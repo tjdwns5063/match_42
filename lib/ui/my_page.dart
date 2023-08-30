@@ -99,7 +99,7 @@ class SelectedInterest extends StatelessWidget {
                         i < myPageViewModel.interestList.length;
                         ++i)
                       TextButton(
-                          onPressed: () => myPageViewModel.onPressed(i),
+                          onPressed: null,
                           style: TextButton.styleFrom(
                             backgroundColor: colorScheme.secondaryContainer,
                             padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
@@ -152,16 +152,17 @@ class _BlockUserState extends State<BlockUser> {
             ),
           ),
           IconButton(
-              onPressed: () {
-                showDialog(
-                        context: context,
-                        builder: (context) => AddBlockUser(),);
-                  },
-              icon: Icon(
-                Icons.add_circle_outline_rounded,
-                size: 25.0,
-                color: colorScheme.onBackground.withAlpha(170),
-              ),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AddBlockUser(),
+              );
+            },
+            icon: Icon(
+              Icons.add_circle_outline_rounded,
+              size: 25.0,
+              color: colorScheme.onBackground.withAlpha(170),
+            ),
           ),
         ],
       ),
@@ -192,7 +193,7 @@ class _BlockUserState extends State<BlockUser> {
         ),
       ),
     ]);
-}
+  }
 }
 
 class Logout extends StatelessWidget {
