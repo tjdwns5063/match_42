@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:match_42/router.dart';
 import 'package:match_42/ui/interest_list.dart';
+import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:match_42/viewmodel/mypage_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -29,25 +32,24 @@ class MyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Expanded(
           child: SelectedInterest(),
         ),
-        const Expanded(
-          flex: 3,
+        Expanded(
+          flex: 2,
           child: BlockUser(),
         ),
-        const Expanded(
-          child: Logout(),
-        ),
+        Logout(),
       ],
     );
   }
 }
 
 class SelectedInterest extends StatelessWidget {
-  SelectedInterest({super.key});
+  const SelectedInterest({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -82,60 +84,33 @@ class SelectedInterest extends StatelessWidget {
                   )),
             ],
           ),
-          SizedBox(
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
-              child: Wrap(
-                spacing: 10.0,
-                runSpacing: 8.0,
-                alignment: WrapAlignment.start,
-                children: [
-                  for (int i = 0; i < myPageViewModel.interestList.length; ++i)
-                    TextButton(
-                        onPressed: () => myPageViewModel.onPressed(i),
-                        style: TextButton.styleFrom(
-                          backgroundColor: colorScheme.secondaryContainer,
-                          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                        ),
-                        child: Text(myPageViewModel.interestList[i].title,
-                            style: TextStyle(
-                              color: colorScheme.onSecondaryContainer,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ))),
-                ],
-                // TextButton(
-                //   onPressed: null,
-                //   style: TextButton.styleFrom(
-                //     backgroundColor: colorScheme.secondaryContainer,
-                //     padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                //   ),
-                //   child: Text(
-                //     '운동',
-                //     style: TextStyle(
-                //       color: colorScheme.onSecondaryContainer.withAlpha(240),
-                //       fontSize: 15,
-                //       fontWeight: FontWeight.bold,
-                //     ),
-                //   ),
-                // ),
-                // TextButton(
-                //   onPressed: null,
-                //   style: TextButton.styleFrom(
-                //     backgroundColor: colorScheme.secondaryContainer,
-                //     padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                //   ),
-                //   child: Text(
-                //     '독서',
-                //     style: TextStyle(
-                //       color: colorScheme.onSecondaryContainer.withAlpha(240),
-                //       fontSize: 15,
-                //       fontWeight: FontWeight.bold,
-                //     ),
-                //   ),
-                // ),
-                // ],
+          Expanded(
+            child: SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
+                child: Wrap(
+                  spacing: 10.0,
+                  runSpacing: 8.0,
+                  alignment: WrapAlignment.start,
+                  children: [
+                    for (int i = 0;
+                        i < myPageViewModel.interestList.length;
+                        ++i)
+                      TextButton(
+                          onPressed: () => myPageViewModel.onPressed(i),
+                          style: TextButton.styleFrom(
+                            backgroundColor: colorScheme.secondaryContainer,
+                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                          ),
+                          child: Text(myPageViewModel.interestList[i].title,
+                              style: TextStyle(
+                                color: colorScheme.onSecondaryContainer,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ))),
+                  ],
+                ),
               ),
             ),
           ),
@@ -219,12 +194,15 @@ class Logout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    LoginViewModel loginViewModel = context.read();
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         TextButton.icon(
-          onPressed: () {},
+          onPressed: () {
+            loginViewModel.logout(redirect: () => context.go(LOGIN_PATH));
+          },
           style: TextButton.styleFrom(
             backgroundColor: colorScheme.primary,
             fixedSize: Size.fromWidth(MediaQuery.of(context).size.width * 0.5),
@@ -243,27 +221,27 @@ class Logout extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 8),
-        TextButton.icon(
-          onPressed: () {},
-          style: TextButton.styleFrom(
-            backgroundColor: colorScheme.primary,
-            fixedSize: Size.fromWidth(MediaQuery.of(context).size.width * 0.5),
-            elevation: 0,
-          ),
-          icon: Icon(
-            Icons.book,
-            color: colorScheme.onPrimary,
-          ),
-          label: Text(
-            '오픈소스 라이선스',
-            style: TextStyle(
-              color: colorScheme.onPrimary,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
-        ),
+        // const SizedBox(height: 8),
+        // TextButton.icon(
+        //   onPressed: () {},
+        //   style: TextButton.styleFrom(
+        //     backgroundColor: colorScheme.primary,
+        //     fixedSize: Size.fromWidth(MediaQuery.of(context).size.width * 0.5),
+        //     elevation: 0,
+        //   ),
+        //   icon: Icon(
+        //     Icons.book,
+        //     color: colorScheme.onPrimary,
+        //   ),
+        //   label: Text(
+        //     '오픈소스 라이선스',
+        //     style: TextStyle(
+        //       color: colorScheme.onPrimary,
+        //       fontWeight: FontWeight.bold,
+        //       fontSize: 16,
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
