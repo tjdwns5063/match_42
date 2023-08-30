@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:match_42/ui/interest_list.dart';
 import 'package:match_42/viewmodel/mypage_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:match_42/ui/add_block_user.dart';
 
 class Interest {
   String title;
@@ -176,12 +177,17 @@ class _BlockUserState extends State<BlockUser> {
             ),
           ),
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+                showDialog(
+                        context: context,
+                        builder: (context) => AddBlockUser(),);
+                  },
               icon: Icon(
                 Icons.add_circle_outline_rounded,
                 size: 25.0,
                 color: colorScheme.onBackground.withAlpha(170),
-              )),
+              ),
+          ),
         ],
       ),
       Expanded(
@@ -211,7 +217,7 @@ class _BlockUserState extends State<BlockUser> {
         ),
       ),
     ]);
-  }
+}
 }
 
 class Logout extends StatelessWidget {
