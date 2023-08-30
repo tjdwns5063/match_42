@@ -33,17 +33,16 @@ class MyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Expanded(
           child: SelectedInterest(),
         ),
         Expanded(
-          flex: 3,
+          flex: 2,
           child: BlockUser(),
         ),
-        Expanded(
-          child: Logout(),
-        ),
+        Logout(),
       ],
     );
   }
@@ -85,29 +84,33 @@ class SelectedInterest extends StatelessWidget {
                   )),
             ],
           ),
-          SizedBox(
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
-              child: Wrap(
-                spacing: 10.0,
-                runSpacing: 8.0,
-                alignment: WrapAlignment.start,
-                children: [
-                  for (int i = 0; i < myPageViewModel.interestList.length; ++i)
-                    TextButton(
-                        onPressed: () => myPageViewModel.onPressed(i),
-                        style: TextButton.styleFrom(
-                          backgroundColor: colorScheme.secondaryContainer,
-                          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                        ),
-                        child: Text(myPageViewModel.interestList[i].title,
-                            style: TextStyle(
-                              color: colorScheme.onSecondaryContainer,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ))),
-                ],
+          Expanded(
+            child: SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
+                child: Wrap(
+                  spacing: 10.0,
+                  runSpacing: 8.0,
+                  alignment: WrapAlignment.start,
+                  children: [
+                    for (int i = 0;
+                        i < myPageViewModel.interestList.length;
+                        ++i)
+                      TextButton(
+                          onPressed: () => myPageViewModel.onPressed(i),
+                          style: TextButton.styleFrom(
+                            backgroundColor: colorScheme.secondaryContainer,
+                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                          ),
+                          child: Text(myPageViewModel.interestList[i].title,
+                              style: TextStyle(
+                                color: colorScheme.onSecondaryContainer,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ))),
+                  ],
+                ),
               ),
             ),
           ),
@@ -218,27 +221,27 @@ class Logout extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 8),
-        TextButton.icon(
-          onPressed: () {},
-          style: TextButton.styleFrom(
-            backgroundColor: colorScheme.primary,
-            fixedSize: Size.fromWidth(MediaQuery.of(context).size.width * 0.5),
-            elevation: 0,
-          ),
-          icon: Icon(
-            Icons.book,
-            color: colorScheme.onPrimary,
-          ),
-          label: Text(
-            '오픈소스 라이선스',
-            style: TextStyle(
-              color: colorScheme.onPrimary,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
-        ),
+        // const SizedBox(height: 8),
+        // TextButton.icon(
+        //   onPressed: () {},
+        //   style: TextButton.styleFrom(
+        //     backgroundColor: colorScheme.primary,
+        //     fixedSize: Size.fromWidth(MediaQuery.of(context).size.width * 0.5),
+        //     elevation: 0,
+        //   ),
+        //   icon: Icon(
+        //     Icons.book,
+        //     color: colorScheme.onPrimary,
+        //   ),
+        //   label: Text(
+        //     '오픈소스 라이선스',
+        //     style: TextStyle(
+        //       color: colorScheme.onPrimary,
+        //       fontWeight: FontWeight.bold,
+        //       fontSize: 16,
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

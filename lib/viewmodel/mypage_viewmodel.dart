@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:match_42/service/block_service.dart';
 import 'package:match_42/service/interest_service.dart';
 import 'package:match_42/ui/my_page.dart';
 import 'package:match_42/data/user.dart';
@@ -21,12 +22,16 @@ const List<String> allInterest = [
 class MyPageViewModel extends ChangeNotifier {
   String token;
   InterestService interestService = InterestService.instance;
+  BlockService blockService = BlockService.instance;
+
   late List<Interest> interestList;
   late List<Interest> selectedList;
+  late List<String> blockUsers;
 
   MyPageViewModel({user, required this.token}) {
     _initInterestList(user);
     _initSelectedList();
+    _initBlockUsers(user);
     notifyListeners();
   }
 
@@ -48,6 +53,10 @@ class MyPageViewModel extends ChangeNotifier {
         .toList();
 
     selectedList = newSelectedList;
+  }
+
+  void _initBlockUsers(User user) {
+    blockUsers = user.blockUsers;
   }
 
   bool checkInterest(String interest, List<String?> interestList) {
@@ -79,6 +88,16 @@ class MyPageViewModel extends ChangeNotifier {
 
     callback(user);
     _initInterestList(user);
+
+    notifyListeners();
+  }
+
+  Future<void> requestAddBlockUser(
+      {required String intraId, required Function callback}) async {
+    User user = await blockService.addBlockUser(intraId, token);
+
+    callback(user);
+    _initBlockUsers(user);
 
     notifyListeners();
   }

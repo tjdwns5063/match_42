@@ -8,26 +8,16 @@ class User {
     required this.intra,
     required this.profile,
     interests,
-  }) : interests = interests ?? [];
+    blockUsers,
+  })  : interests = interests ?? [],
+        blockUsers = blockUsers ?? [];
 
   final int id;
   String nickname;
   final String intra;
   final String profile;
-  List<String?> interests;
-
-  factory User.fromFirestore(
-    DocumentSnapshot<Map<String, dynamic>> snapshot,
-    SnapshotOptions? options,
-  ) {
-    final data = snapshot.data();
-    return User(
-      id: data!['id'],
-      nickname: data['nickname'],
-      intra: data['intra'],
-      profile: data['profile'],
-    );
-  }
+  List<String> interests;
+  List<String> blockUsers;
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -38,6 +28,9 @@ class User {
       interests: json['interests'] == null
           ? <String>[]
           : List<String>.from(json['interests']),
+      blockUsers: json['blockUsers'] == null
+          ? <String>[]
+          : List<String>.from(json['blockUsers']),
     );
   }
 
@@ -52,6 +45,6 @@ class User {
 
   @override
   String toString() {
-    return 'id: $id nickname: $nickname intra: $intra profile: $profile interests: $interests';
+    return 'id: $id nickname: $nickname intra: $intra profile: $profile interests: $interests, blockUsers: $blockUsers';
   }
 }
