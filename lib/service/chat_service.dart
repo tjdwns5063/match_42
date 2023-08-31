@@ -31,8 +31,11 @@ class ChatService {
     await roomRef.doc(chatRoom.id).set(chatRoom);
   }
 
-  Future<List<ChatRoom>> getAllChatRoom() async {
-    final QuerySnapshot<ChatRoom> snapshot = await roomRef.get();
+  Future<List<ChatRoom>> getAllChatRoom(User me) async {
+    final QuerySnapshot<ChatRoom> snapshot =
+        await roomRef.where('users', arrayContains: me.toFirestore()).get();
+
+    print(snapshot.docs.map((doc) => doc.data()).toList());
 
     return snapshot.docs.map((doc) => doc.data()).toList();
   }

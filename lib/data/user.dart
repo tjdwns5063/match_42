@@ -9,8 +9,8 @@ class User {
     required this.profile,
     interests,
     blockUsers,
-  })  : interests = interests ?? [],
-        blockUsers = blockUsers ?? [];
+  })  : interests = interests ?? <String>[],
+        blockUsers = blockUsers ?? <String>[];
 
   final int id;
   String nickname;

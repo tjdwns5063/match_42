@@ -9,8 +9,8 @@ import 'package:match_42/data/user.dart';
 import 'package:match_42/service/chat_service.dart';
 
 class ChatListViewModel extends ChangeNotifier {
-  ChatListViewModel() {
-    _init();
+  ChatListViewModel(User me) {
+    _init(me);
   }
 
   final ChatService _chatService = ChatService.instance;
@@ -26,50 +26,39 @@ class ChatListViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  Future<void> _init() async {
-    _rooms = await _chatService.getAllChatRoom();
-    notifyListeners();
-    listen();
+  Future<void> _init(User me) async {
+    listen(me);
   }
 
-  void listen() {
+  Future<void> _updateRooms(User me) async {
+    _rooms = await _chatService.getAllChatRoom(me);
+    notifyListeners();
+  }
+
+  void listen(User me) {
     final Stream<QuerySnapshot<ChatRoom>> stream =
         _chatService.roomRef.snapshots();
 
-    _subscription = stream.listen((event) {
-      List<ChatRoom> newRooms = [
-        for (QueryDocumentSnapshot<ChatRoom> doc in event.docs) doc.data()
-      ];
-      _rooms = newRooms;
-      notifyListeners();
+    _subscription = stream.listen((event) async {
+      _updateRooms(me);
     });
   }
 
-  void testCreateChatRoom() {
+  void testCreateChatRoom(User user1, User user2) {
     _chatService.addChatRoom(ChatRoom(
         id: _rooms.length.toString(),
         name: 'test${_rooms.length.toString()}',
         type: 'eat',
         open: Timestamp.now(),
         users: [
-          User(
-              id: 0,
-              interests: <String?>[],
-              nickname: 'aaaa',
-              intra: 'seongjki',
-              profile: 'eat'),
-          User(
-              id: 1,
-              interests: <String?>[],
-              nickname: 'bbbb',
-              intra: 'jiheekan',
-              profile: 'eat'),
+          user1,
+          user2,
         ],
         unread: [0, 0],
         lastMsg: Message(
           sender: User(
               id: 0,
-              interests: <String?>[],
+              interests: <String>[],
               nickname: 'system',
               intra: 'system',
               profile: 'system'),

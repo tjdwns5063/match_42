@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:match_42/data/message.dart';
+import 'package:match_42/data/user.dart';
 import 'package:match_42/router.dart';
 import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
+import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class ChatListPage extends StatelessWidget {
@@ -39,7 +41,15 @@ class ChatListPage extends StatelessWidget {
                   )),
               IconButton(
                   onPressed: () {
-                    viewModel.testCreateChatRoom();
+                    User me = context.read<LoginViewModel>().user!;
+                    viewModel.testCreateChatRoom(
+                        me,
+                        User(
+                          id: me.id + 1,
+                          intra: 'jiheekan',
+                          nickname: 'jiheekan',
+                          profile: 'eat',
+                        ));
                   },
                   icon: const Icon(
                     Icons.add,
