@@ -70,7 +70,7 @@ class InterestView extends StatelessWidget {
                       .verifyButton(callback: loginViewModel.updateUser)
                       .onError(
                           (Exception error, _) => onHttpError(context, error));
-                  context.pop();
+                  // context.pop();
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: colorScheme.primary,
