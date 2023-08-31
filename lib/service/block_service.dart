@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:match_42/data/user.dart';
+import 'package:match_42/error/error_util.dart';
+import 'package:match_42/error/http_exception.dart';
 
 class BlockService {
   static BlockService instance = BlockService._create();
@@ -22,12 +24,14 @@ class BlockService {
     });
 
     print(response.body);
+    Map<String, dynamic> json = jsonDecode(response.body);
 
     if (response.statusCode != 200) {
-      return Future.error(Exception(response.statusCode));
+      return Future.error(HttpException(
+          statusCode: response.statusCode, message: json['message'] ?? ''));
     }
 
-    return User.fromJson(jsonDecode(response.body));
+    return User.fromJson(json);
   }
 
   Future<User> deleteBlockUser(String intraId, String token) async {
@@ -39,10 +43,13 @@ class BlockService {
       'Authorization': 'Bearer $token',
     });
 
+    Map<String, dynamic> json = jsonDecode(response.body);
+
     if (response.statusCode != 200) {
-      return Future.error(Exception(response.statusCode));
+      return Future.error(HttpException(
+          statusCode: response.statusCode, message: json['message'] ?? ''));
     }
 
-    return User.fromJson(jsonDecode(response.body));
+    return User.fromJson(json);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:match_42/router.dart';
+import 'package:match_42/error/error_util.dart';
 import 'package:match_42/ui/interest_list.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:match_42/viewmodel/mypage_viewmodel.dart';
@@ -99,7 +100,7 @@ class SelectedInterest extends StatelessWidget {
                         i < myPageViewModel.interestList.length;
                         ++i)
                       TextButton(
-                          onPressed: () => myPageViewModel.onPressed(i),
+                          onPressed: null,
                           style: TextButton.styleFrom(
                             backgroundColor: colorScheme.secondaryContainer,
                             padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
@@ -119,72 +120,72 @@ class SelectedInterest extends StatelessWidget {
   }
 }
 
-class BlockUser extends StatefulWidget {
+class BlockUser extends StatelessWidget {
   const BlockUser({super.key});
 
   @override
-  State<BlockUser> createState() => _BlockUserState();
-}
-
-class _BlockUserState extends State<BlockUser> {
-  var idList = [
-    'jiheekan1',
-    'jiheekan2',
-    'jiheekan3',
-    'jiheekan4',
-    'jiheekan5',
-  ];
-
-  @override
   Widget build(BuildContext context) {
+    MyPageViewModel viewModel = context.watch();
+    LoginViewModel loginViewModel = context.read();
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Column(children: [
       Row(
         children: [
-          const SizedBox(
-            width: 21,
-          ),
-          const Text(
-            '차단한 유저',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+          // const SizedBox(
+          //   width: 21,
+          // ),
+          const Padding(
+            padding: EdgeInsets.only(left: 21.0),
+            child: Text(
+              '차단한 유저',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           IconButton(
-              onPressed: () {
-                showDialog(
-                        context: context,
-                        builder: (context) => AddBlockUser(),);
-                  },
-              icon: Icon(
-                Icons.add_circle_outline_rounded,
-                size: 25.0,
-                color: colorScheme.onBackground.withAlpha(170),
-              ),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => ChangeNotifierProvider.value(
+                    value: viewModel, child: const AddBlockUser()),
+              );
+            },
+            icon: Icon(
+              Icons.add_circle_outline_rounded,
+              size: 25.0,
+              color: colorScheme.onBackground.withAlpha(170),
+            ),
           ),
         ],
       ),
       Expanded(
         child: Scrollbar(
           child: ListView.builder(
-            itemCount: idList.length,
+            itemCount: viewModel.blockUsers.length,
             itemBuilder: (context, index) {
-              return ListTile(
-                title: Row(
-                  children: [
-                    const SizedBox(width: 8),
-                    CircleAvatar(child: Image.asset('assets/talk.png')),
-                    const SizedBox(width: 15),
-                    Text(
-                      idList[index],
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onBackground,
-                      ),
+              return Padding(
+                padding: const EdgeInsets.only(left: 7.0),
+                child: ListTile(
+                  title: Text(
+                    viewModel.blockUsers[index],
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onBackground,
                     ),
-                  ],
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.cancel),
+                    onPressed: () {
+                      viewModel
+                          .requestDeleteBlockUser(
+                              index: index, callback: loginViewModel.updateUser)
+                          .onError((Exception error, _) =>
+                              onHttpError(context, error));
+                    },
+                  ),
                 ),
               );
             },
@@ -192,7 +193,7 @@ class _BlockUserState extends State<BlockUser> {
         ),
       ),
     ]);
-}
+  }
 }
 
 class Logout extends StatelessWidget {

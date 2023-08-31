@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:match_42/data/user.dart';
+import 'package:match_42/error/error_util.dart';
+import 'package:match_42/error/http_exception.dart';
 
 class InterestService {
   static final instance = InterestService._create();
@@ -17,11 +19,12 @@ class InterestService {
       'Authorization': 'Bearer $token',
     });
 
-    if (response.statusCode != 200) {
-      return Future.error(Exception('http error'));
-    }
-
     Map<String, dynamic> json = jsonDecode(response.body);
+
+    if (response.statusCode != 200) {
+      return Future.error(HttpException(
+          statusCode: response.statusCode, message: json['message'] ?? ''));
+    }
 
     return List<String>.from(json['interests'].toList());
   }
@@ -40,11 +43,13 @@ class InterestService {
     );
 
     print(response.body);
+    Map<String, dynamic> json = jsonDecode(response.body);
 
     if (response.statusCode != 200) {
-      return Future.error(Exception('http error'));
+      return Future.error(HttpException(
+          statusCode: response.statusCode, message: json['message'] ?? ''));
     }
 
-    return User.fromJson(jsonDecode(response.body));
+    return User.fromJson(json);
   }
 }
