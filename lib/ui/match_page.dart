@@ -43,6 +43,8 @@ class _MatchPageState extends State<MatchPage> {
   ];
   late PageController controller;
 
+  Map<String, bool> isQ = {'밥': true, '수다': false, '과제': false};
+
   @override
   void initState() {
     controller = PageController(initialPage: 4, viewportFraction: 0.4)
@@ -124,6 +126,7 @@ class _MatchPageState extends State<MatchPage> {
             controller: controller,
             labels: labels,
             selected: selected,
+            isQ: isQ,
             onPageChanged: _onPageChanged,
             onPressed: _onPressed,
           ),
@@ -158,12 +161,14 @@ class MatchPageView extends StatelessWidget {
       required this.controller,
       required this.labels,
       required this.selected,
+      required this.isQ,
       required this.onPageChanged,
       required this.onPressed});
 
   final PageController controller;
   final List<String> labels;
   final List<bool> selected;
+  final Map<String, bool> isQ;
   final ValueChanged<int> onPageChanged;
   final ValueChanged<int> onPressed;
 
@@ -178,6 +183,7 @@ class MatchPageView extends StatelessWidget {
           child: MatchListItem(
             label: labels[index],
             isSelect: selected[index],
+            isQ: isQ[labels[index]]!,
             onPressed: () => onPressed(index),
           ),
         );
@@ -193,6 +199,7 @@ class MatchListItem extends StatelessWidget {
       {super.key,
       required this.label,
       required this.isSelect,
+      required this.isQ,
       required this.onPressed})
       : imagePath = switch (label) {
           '밥' => 'assets/eat.png',
@@ -205,6 +212,7 @@ class MatchListItem extends StatelessWidget {
   final bool isSelect;
   final VoidCallback onPressed;
   final String imagePath;
+  final bool isQ;
 
   @override
   Widget build(BuildContext context) {
@@ -218,19 +226,74 @@ class MatchListItem extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              height: 120.0,
-              width: 100.0,
-              margin: const EdgeInsets.fromLTRB(0, 0, 0, 8.0),
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                  color: colorScheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(30.0)),
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.contain,
-              ),
-            ),
+            isQ
+                ? Container(
+                    height: 140.0,
+                    width: 120.0,
+                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 8.0),
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                        color: colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(30.0)),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Image.asset(
+                          imagePath,
+                          fit: BoxFit.contain,
+                          opacity: const AlwaysStoppedAnimation(.1),
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(
+                                  '매치 중',
+                                  style: TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                    height: 14,
+                                    width: 14,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 3.0,
+                                    )),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                for (int i = 0; i < 4; ++i)
+                                  Icon(
+                                    Icons.circle,
+                                    size: 10,
+                                    color: i == 0
+                                        ? colorScheme.primary
+                                        : Colors.grey,
+                                  )
+                              ],
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                : Container(
+                    height: 140.0,
+                    width: 120.0,
+                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 8.0),
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                        color: colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(30.0)),
+                    child: Image.asset(
+                      imagePath,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
             Text(
               label,
               style: const TextStyle(fontSize: 14.0),
