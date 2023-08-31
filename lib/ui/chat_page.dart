@@ -4,6 +4,7 @@ import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:match_42/ui/report_page.dart';
+import 'package:match_42/ui/make_topic.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -136,7 +137,9 @@ class MessageSender extends StatelessWidget {
       children: [
         ElevatedButton(
           onPressed: () {
-            //TODO: 대화 내용 추천 기능
+            showDialog(
+                        context: context,
+                        builder: (context) => MakeTopic(),);
           },
           style: ElevatedButton.styleFrom(
             shape: const CircleBorder(),
