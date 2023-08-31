@@ -51,8 +51,8 @@ class ChatListViewModel extends ChangeNotifier {
         type: 'eat',
         open: Timestamp.now(),
         users: [
-          user1,
-          user2,
+          user1.id,
+          user2.id,
         ],
         unread: [0, 0],
         lastMsg: Message(

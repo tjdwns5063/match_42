@@ -3,6 +3,8 @@ import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
 
+import '../error/http_exception.dart';
+
 class ChatService {
   static final ChatService instance = ChatService._create();
 
@@ -33,7 +35,7 @@ class ChatService {
 
   Future<List<ChatRoom>> getAllChatRoom(User me) async {
     final QuerySnapshot<ChatRoom> snapshot =
-        await roomRef.where('users', arrayContains: me.toFirestore()).get();
+        await roomRef.where('users', arrayContains: me.id).get();
 
     print(snapshot.docs.map((doc) => doc.data()).toList());
 
@@ -47,9 +49,13 @@ class ChatService {
   }
 
   Future<void> addMessage(String roomId, Message msg) async {
-    ChatRoom? room = await getChatRoom(roomId);
+    ChatRoom room = await getChatRoom(roomId) as ChatRoom;
 
-    if (room == null) return;
+    User updatedUser = msg.sender
+      ..decideNickname(room)
+      ..decideProfile(room);
+
+    msg = Message(sender: updatedUser, message: msg.message, date: msg.date);
 
     _addUnreadMessageCount(room, msg);
     room.lastMsg = msg;
@@ -60,7 +66,7 @@ class ChatService {
 
   void _addUnreadMessageCount(ChatRoom room, Message msg) {
     for (int i = 0; i < room.unread.length; ++i) {
-      int userId = room.users[i].id;
+      int userId = room.users[i];
       int senderId = msg.sender.id;
 
       if (_isNotSender(userId, senderId)) {
@@ -87,8 +93,8 @@ class ChatService {
   Future<void> readAllMessage(String roomId, User user) async {
     ChatRoom chatRoom = await getChatRoom(roomId) as ChatRoom;
 
-    chatRoom.unread[
-        chatRoom.users.indexWhere((element) => element.id == user.id)] = 0;
+    chatRoom
+        .unread[chatRoom.users.indexWhere((element) => element == user.id)] = 0;
 
     roomRef.doc(roomId).update({
       'unread': chatRoom.unread,
