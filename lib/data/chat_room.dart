@@ -17,7 +17,7 @@ class ChatRoom {
   final String name;
   final String type;
   final Timestamp open;
-  final List<User> users;
+  final List<int> users;
   final List<int> unread;
   Message lastMsg;
 
@@ -31,9 +31,7 @@ class ChatRoom {
       name: data['name'],
       type: data['type'],
       open: data['open'],
-      users: [
-        for (Map<String, dynamic> json in data['users']) User.fromJson(json)
-      ],
+      users: List.from(data['users']),
       unread: List.from(data['unread']),
       lastMsg: Message.fromJson(data['lastMsg']),
     );
@@ -45,7 +43,7 @@ class ChatRoom {
       'name': name,
       'type': type,
       'open': open,
-      'users': [for (User user in users) user.toFirestore()],
+      'users': users,
       'unread': unread,
       'lastMsg': lastMsg.toFirestore(),
     };

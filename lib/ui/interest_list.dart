@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:match_42/service/error_util.dart';
+import 'package:match_42/error/error_util.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:match_42/viewmodel/mypage_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -68,7 +68,8 @@ class InterestView extends StatelessWidget {
                 onPressed: () {
                   viewModel
                       .verifyButton(callback: loginViewModel.updateUser)
-                      .onError((error, stackTrace) => onHttpError(context));
+                      .onError(
+                          (Exception error, _) => onHttpError(context, error));
                   context.pop();
                 },
                 style: TextButton.styleFrom(

@@ -64,8 +64,10 @@ class _ChatPageState extends State<ChatPage> {
             )),
         actions: [
           IconButton(
-            onPressed: () {Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const ReportPage()));},
+            onPressed: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const ReportPage()));
+            },
             icon: const Icon(
               Icons.warning_rounded,
               size: 32.0,
@@ -192,7 +194,7 @@ class OtherChatMessage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CircleAvatar(
-          child: Image.asset('assets/eat.png'),
+          child: Image.asset('assets/${msg.sender.profile}'),
         ),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),

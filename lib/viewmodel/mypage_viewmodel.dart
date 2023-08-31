@@ -101,4 +101,14 @@ class MyPageViewModel extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<void> requestDeleteBlockUser(
+      {required int index, required Function callback}) async {
+    User user = await blockService.deleteBlockUser(blockUsers[index], token);
+
+    callback(user);
+    _initBlockUsers(user);
+
+    notifyListeners();
+  }
 }
