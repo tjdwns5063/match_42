@@ -120,21 +120,8 @@ class SelectedInterest extends StatelessWidget {
   }
 }
 
-class BlockUser extends StatefulWidget {
+class BlockUser extends StatelessWidget {
   const BlockUser({super.key});
-
-  @override
-  State<BlockUser> createState() => _BlockUserState();
-}
-
-class _BlockUserState extends State<BlockUser> {
-  var idList = [
-    'jiheekan1',
-    'jiheekan2',
-    'jiheekan3',
-    'jiheekan4',
-    'jiheekan5',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -144,14 +131,17 @@ class _BlockUserState extends State<BlockUser> {
     return Column(children: [
       Row(
         children: [
-          const SizedBox(
-            width: 21,
-          ),
-          const Text(
-            '차단한 유저',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+          // const SizedBox(
+          //   width: 21,
+          // ),
+          const Padding(
+            padding: EdgeInsets.only(left: 21.0),
+            child: Text(
+              '차단한 유저',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           IconButton(
@@ -175,24 +165,27 @@ class _BlockUserState extends State<BlockUser> {
           child: ListView.builder(
             itemCount: viewModel.blockUsers.length,
             itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(
-                  viewModel.blockUsers[index],
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onBackground,
+              return Padding(
+                padding: const EdgeInsets.only(left: 7.0),
+                child: ListTile(
+                  title: Text(
+                    viewModel.blockUsers[index],
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onBackground,
+                    ),
                   ),
-                ),
-                trailing: IconButton(
-                  icon: Icon(Icons.cancel),
-                  onPressed: () {
-                    viewModel
-                        .requestDeleteBlockUser(
-                            index: index, callback: loginViewModel.updateUser)
-                        .onError((Exception error, _) =>
-                            onHttpError(context, error));
-                  },
+                  trailing: IconButton(
+                    icon: const Icon(Icons.cancel),
+                    onPressed: () {
+                      viewModel
+                          .requestDeleteBlockUser(
+                              index: index, callback: loginViewModel.updateUser)
+                          .onError((Exception error, _) =>
+                              onHttpError(context, error));
+                    },
+                  ),
                 ),
               );
             },
