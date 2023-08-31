@@ -30,14 +30,12 @@ class ChatService {
   }
 
   Future<void> addChatRoom(ChatRoom chatRoom) async {
-    await roomRef.doc(chatRoom.id).set(chatRoom);
+    await roomRef.add(chatRoom);
   }
 
   Future<List<ChatRoom>> getAllChatRoom(User me) async {
     final QuerySnapshot<ChatRoom> snapshot =
         await roomRef.where('users', arrayContains: me.id).get();
-
-    print(snapshot.docs.map((doc) => doc.data()).toList());
 
     return snapshot.docs.map((doc) => doc.data()).toList();
   }
