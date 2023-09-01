@@ -37,40 +37,43 @@ class InterestView extends StatelessWidget {
               flex: 2,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 16.0, 0, 16.0),
-                child: Wrap(
-                  spacing: 10.0,
-                  runSpacing: 8.0,
-                  alignment: WrapAlignment.start,
-                  children: [
-                    for (int i = 0; i < viewModel.selectedList.length; ++i)
-                      TextButton(
-                          onPressed: () => viewModel.onPressed(
-                                i,
-                              ),
-                          style: TextButton.styleFrom(
-                            backgroundColor: viewModel.selectedList[i].isSelect
-                                ? colorScheme.secondaryContainer
-                                : colorScheme.onBackground.withAlpha(50),
-                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                          ),
-                          child: Text(allInterest[i],
-                              style: TextStyle(
-                                color: colorScheme.onSecondaryContainer,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ))),
-                  ],
+                child: SingleChildScrollView(
+                  child: Wrap(
+                    spacing: 10.0,
+                    runSpacing: 8.0,
+                    alignment: WrapAlignment.start,
+                    children: [
+                      for (int i = 0; i < viewModel.selectedList.length; ++i)
+                        TextButton(
+                            onPressed: () => viewModel.onPressed(
+                                  i,
+                                ),
+                            style: TextButton.styleFrom(
+                              backgroundColor:
+                                  viewModel.selectedList[i].isSelect
+                                      ? colorScheme.secondaryContainer
+                                      : colorScheme.onBackground.withAlpha(50),
+                              padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                            ),
+                            child: Text(allInterest[i],
+                                style: TextStyle(
+                                  color: colorScheme.onSecondaryContainer,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ))),
+                    ],
+                  ),
                 ),
               ),
             ),
             Center(
               child: TextButton(
-                onPressed: () {
-                  viewModel
+                onPressed: () async {
+                  await viewModel
                       .verifyButton(callback: loginViewModel.updateUser)
                       .onError(
                           (Exception error, _) => onHttpError(context, error));
-                  // context.pop();
+                  context.pop();
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: colorScheme.primary,
