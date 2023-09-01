@@ -4,10 +4,10 @@ class HttpException implements Exception {
   HttpException({required this.statusCode, required this.message});
 
   final int statusCode;
-  final String message;
+  final String? message;
 
   @override
   String toString() {
-    return message;
+    return message ?? '알 수 없는 에러가 발생했습니다.';
   }
 }
