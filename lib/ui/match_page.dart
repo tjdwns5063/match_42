@@ -47,7 +47,7 @@ class _MatchPageState extends State<MatchPage> {
 
   @override
   void initState() {
-    controller = PageController(initialPage: 4, viewportFraction: 0.4)
+    controller = PageController(initialPage: 4, viewportFraction: 0.5)
       ..addListener(() {
         _infiniteScroll();
       });
@@ -246,14 +246,14 @@ class MatchListItem extends StatelessWidget {
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Text(
                                   '매치 중',
                                   style: TextStyle(
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.bold),
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w700),
                                 ),
                                 SizedBox(
                                     height: 14,
@@ -269,7 +269,7 @@ class MatchListItem extends StatelessWidget {
                                 for (int i = 0; i < 4; ++i)
                                   Icon(
                                     Icons.circle,
-                                    size: 10,
+                                    size: 13,
                                     color: i == 0
                                         ? colorScheme.primary
                                         : Colors.grey,
