@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:match_42/data/user.dart';
+import 'package:match_42/error/http_exception.dart';
 
 class LoginViewModel extends ChangeNotifier {
   String _token = '';
@@ -29,6 +30,12 @@ class LoginViewModel extends ChangeNotifier {
         headers: {'Authorization': 'Bearer $token'});
 
     Map<String, dynamic> json = jsonDecode(response.body);
+
+    if (response.statusCode != 200) {
+      return Future.error(HttpException(
+          statusCode: response.statusCode, message: json['message'] ?? ''));
+    }
+
     user = User.fromJson(json);
     notifyListeners();
   }

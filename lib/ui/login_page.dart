@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
+import 'package:match_42/error/error_util.dart';
 import 'package:match_42/router.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,9 @@ class LoginPage extends StatelessWidget {
             height: 220,
             // margin: const EdgeInsets.only(top: 70),
             decoration: BoxDecoration(
+              image: const DecorationImage(
+                image: AssetImage('assets/logo.png'),
+              ),
               color: colorScheme.secondaryContainer,
               borderRadius: const BorderRadius.all(Radius.circular(60.0)),
             ),
@@ -51,6 +55,7 @@ class LoginPage extends StatelessWidget {
         TextButton(
           onPressed: () {
             context.push('/auth');
+            // context.go(MAIN_PATH);
           },
           style: ButtonStyle(
             backgroundColor:
@@ -82,7 +87,9 @@ class LoginWeb extends StatelessWidget {
           NavigationDelegate(onNavigationRequest: (NavigationRequest request) {
         if (loginViewModel.isLoginSuccess(request.url)) {
           loginViewModel.updateToken(request.url);
-          loginViewModel.initUser();
+          loginViewModel
+              .initUser()
+              .onError((Exception error, _) => onHttpError(context, error));
         }
 
         return NavigationDecision.navigate;
