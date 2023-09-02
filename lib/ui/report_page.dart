@@ -34,6 +34,7 @@ class _ReportPageState extends State<ReportPage> {
       appBar: AppBar(title: const Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          SizedBox(width: 65),
           Icon(Icons.warning_rounded,
           size: 32.0,
           color: Colors.red,),

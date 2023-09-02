@@ -34,7 +34,10 @@ class ChatListPage extends StatelessWidget {
                 width: 8.0,
               ),
               IconButton(
-                  onPressed: () {},
+                //   onPressed: () {showDialog(
+                // context: context,
+                // builder: (context) => ChangeNotifierProvider())
+                onPressed: null,
                   icon: const Icon(
                     Icons.filter_list_outlined,
                     size: 28.0,
