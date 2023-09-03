@@ -14,6 +14,7 @@ import 'package:http/http.dart' as http;
 import 'package:match_42/ui/alarm_page.dart';
 
 Future<void> background(RemoteMessage message) async {
+  print('call backgroundMessage: ${message.data}');
   LocalNotification.showNotification(message);
 }
 
@@ -55,7 +56,8 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
         sound: true,
       );
     });
-    FirebaseMessaging.onMessage.listen((event) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+      print('Call ForegroundMessage ${event.data}');
       LocalNotification.showNotification(event);
     });
     FirebaseMessaging.onBackgroundMessage(background);
