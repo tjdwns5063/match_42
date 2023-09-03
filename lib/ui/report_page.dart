@@ -34,10 +34,10 @@ class _ReportPageState extends State<ReportPage> {
       appBar: AppBar(title: const Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          SizedBox(width: 65),
-          Icon(Icons.warning_rounded,
-          size: 32.0,
-          color: Colors.red,),
+          // SizedBox(width: 65),
+          // Icon(Icons.warning_rounded,
+          // size: 32.0,
+          // color: Colors.red,),
             Text(' 신고 사유',
             style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),),
         ],
@@ -46,6 +46,7 @@ class _ReportPageState extends State<ReportPage> {
         children: [
           Expanded(child: 
           ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
                 itemCount: reportName.length,
                 itemBuilder: (context, index) {
                   return CheckboxListTile(
@@ -63,12 +64,14 @@ class _ReportPageState extends State<ReportPage> {
                       ],
                     ),
                     value: reportList[index].isSelect,
-                    onChanged: (value) {},
+                    onChanged: (value) { setState(() {
+      reportList[index].isSelect = value!;
+    });},
                   );
                 },
               ),),
               TextButton(
-                  onPressed: () {},
+                  onPressed: () {Navigator.of(context).pop();},
                   style: TextButton.styleFrom(
                     backgroundColor: colorScheme.primary,
                     padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),

@@ -60,11 +60,11 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
 
       print(uri);
 
-      var response = await http.post(uri, headers: {
-        'token': 'Bearer ${context.read<LoginViewModel>().token}',
-      });
+      // var response = await http.post(uri, headers: {
+      //   'token': 'Bearer ${context.read<LoginViewModel>().token}',
+      // });
 
-      print(response.body);
+      // print(response.body);
 
       uri = Uri.http(
           '118.85.181.92',
@@ -73,9 +73,9 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
             'message': 'test 알림 입니다',
           });
 
-      var response2 = await http.post(uri, headers: {
-        'token': 'Bearer ${context.read<LoginViewModel>().token}',
-      });
+      // var response2 = await http.post(uri, headers: {
+      //   'token': 'Bearer ${context.read<LoginViewModel>().token}',
+      // });
 
       // print(response2.body);
     });

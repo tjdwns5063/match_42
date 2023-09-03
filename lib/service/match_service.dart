@@ -90,6 +90,8 @@ class MatchService {
       'Authorization': 'Bearer $token',
     });
 
+    print(response.body);
+
     Map<String, dynamic> json = jsonDecode(response.body);
 
     if (response.statusCode != 200) {
