@@ -38,13 +38,12 @@ class MatchViewModel extends ChangeNotifier {
       required int capacity,
       bool isGender = false,
       String projectName = '',
-      String footType = ''}) {
+      String menu = ''}) {
     return switch (type) {
       ChatType.talk => matchService.startTalkMatch(capacity, _token),
-      // ChatType.eat => matchService.start,
+      ChatType.eat => matchService.startEatMatch(capacity, menu, _token),
       ChatType.subject =>
         matchService.startSubjectMatch(capacity, projectName, _token),
-      _ => Future.error(Exception('ChatType Error')),
     }
         .then((value) => _init());
   }
@@ -52,9 +51,8 @@ class MatchViewModel extends ChangeNotifier {
   Future<void> matchStop({required ChatType type}) async {
     return switch (type) {
       ChatType.talk => matchService.stopTalkMatch(_token),
-      // ChatType.eat => matchService.start,
+      ChatType.eat => matchService.stopEatMatch(_token),
       ChatType.subject => matchService.stopSubjectMatch(_token),
-      _ => Future.error(Exception('ChatType Error')),
     }
         .then((value) => _init());
   }

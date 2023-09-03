@@ -151,7 +151,7 @@ class _EatDialogState extends State<EatDialog> {
                           .matchStart(
                               type: ChatType.eat,
                               capacity: populationList[0] == true ? 2 : 4,
-                              footType: lists[select])
+                              menu: lists[select])
                           .then((value) => context.pop())
                           .onError((error, stackTrace) =>
                               onHttpError(context, error as Exception));
