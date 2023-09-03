@@ -94,7 +94,7 @@ class ChatService {
     ChatRoom chatRoom = await getChatRoom(roomId) as ChatRoom;
 
     chatRoom
-        .unread[chatRoom.users.indexWhere((element) => element == user.id)] = 0;
+        .unread[chatRoom.users.indexWhere((element) { return element == user.id;})] = 0;
 
     roomRef.doc(roomId).update({
       'unread': chatRoom.unread,
