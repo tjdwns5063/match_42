@@ -27,7 +27,7 @@ class Message {
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
       sender: User.fromJson(json['sender']),
-      message: json['message'] ?? '',
+      message: json['message'] ?? '채팅방이 생성되었습니다.',
       date: json['date'] ?? Timestamp.now(),
     );
   }

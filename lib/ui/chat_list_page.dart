@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/router.dart';
@@ -14,6 +15,7 @@ class ChatListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ChatListViewModel viewModel = context.watch();
+    LoginViewModel loginViewModel = context.read();
 
     void onPressedChatRoom(int index) {
       String chatPath = '$CHAT_PATH/${viewModel.rooms[index].id}';
@@ -56,7 +58,7 @@ class ChatListPage extends StatelessWidget {
                   title: viewModel.rooms[index].name,
                   userCount: viewModel.rooms[index].users.length,
                   lastMsg: viewModel.rooms[index].lastMsg,
-                  unreadMessageCount: viewModel.rooms[index].unread[0],
+                  unreadMessageCount: viewModel.rooms[index].unread[viewModel.rooms[index].users.indexOf(loginViewModel.user!.id)],
                   onPressed: () => onPressedChatRoom(index),
                 );
               },

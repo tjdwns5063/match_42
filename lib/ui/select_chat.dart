@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
 
 class MyRadioListTileWidget extends StatefulWidget {
   @override
@@ -6,7 +7,7 @@ class MyRadioListTileWidget extends StatefulWidget {
 }
 
 class _MyRadioListTileWidgetState extends State<MyRadioListTileWidget> {
-  int _selectedValue = 1; // 초기 선택 값
+  int _selectedValue = 1;
 
   @override
   Widget build(BuildContext context) {
