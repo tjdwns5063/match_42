@@ -27,8 +27,8 @@ class Message {
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
       sender: User.fromJson(json['sender']),
-      message: json['message'],
-      date: json['date'],
+      message: json['message'] ?? '',
+      date: json['date'] ?? Timestamp.now(),
     );
   }
 
