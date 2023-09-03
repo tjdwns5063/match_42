@@ -145,24 +145,38 @@ class _MatchPageState extends State<MatchPage> {
         ),
         ElevatedButton(
           onPressed: () {
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return ChangeNotifierProvider.value(
-                    value: matchViewModel,
-                    child: Dialog(
-                      surfaceTintColor:
-                          Theme.of(context).colorScheme.background,
-                      child: _getDialog(),
-                    ),
-                  );
-                });
+            if (matchViewModel.matchStatus[labels[selected.indexOf(true)]]! !=
+                true) {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return ChangeNotifierProvider.value(
+                      value: matchViewModel,
+                      child: Dialog(
+                        surfaceTintColor:
+                            Theme.of(context).colorScheme.background,
+                        child: _getDialog(),
+                      ),
+                    );
+                  });
+            } else {
+              if (labels[selected.indexOf(true)] == '밥') {
+                matchViewModel.matchStop(type: ChatType.eat);
+              } else if (labels[selected.indexOf(true)] == '수다') {
+                matchViewModel.matchStop(type: ChatType.talk);
+              } else {
+                matchViewModel.matchStop(type: ChatType.subject);
+              }
+            }
           },
           style: ElevatedButton.styleFrom(
               shape: const CircleBorder(), padding: const EdgeInsets.all(30.0)),
-          child: const Text(
-            '시작',
-            style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
+          child: Text(
+            (matchViewModel.matchStatus[labels[selected.indexOf(true)]]! !=
+                    true)
+                ? '시작'
+                : '중단',
+            style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
           ),
         ),
         const SizedBox(height: 32.0),
@@ -190,6 +204,7 @@ class MatchPageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    MatchViewModel matchViewModel = context.watch();
     return PageView.builder(
       scrollDirection: Axis.horizontal,
       onPageChanged: onPageChanged,
@@ -199,7 +214,7 @@ class MatchPageView extends StatelessWidget {
           child: MatchListItem(
             label: labels[index],
             isSelect: selected[index],
-            isQ: isQ[labels[index]]!,
+            isQ: matchViewModel.matchStatus[labels[index]]!,
             onPressed: () => onPressed(index),
           ),
         );

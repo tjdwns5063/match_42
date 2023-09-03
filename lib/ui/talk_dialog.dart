@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:match_42/error/error_util.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:match_42/viewmodel/match_viewmodel.dart';
@@ -127,6 +128,7 @@ class _TalkDialogState extends State<TalkDialog> {
                         .matchStart(
                             type: ChatType.talk,
                             capacity: populationList.indexOf(true) == 0 ? 2 : 4)
+                        .then((value) => context.pop())
                         .onError((error, stackTrace) =>
                             onHttpError(context, error as Exception));
                   },

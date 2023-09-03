@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:match_42/error/error_util.dart';
 import 'package:match_42/viewmodel/match_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -149,6 +150,7 @@ class _SubjectDialogState extends State<SubjectDialog> {
                               capacity:
                                   int.parse(populations[populationSelect]),
                               projectName: subjects[subjectSelect])
+                          .then((value) => context.pop())
                           .onError((error, stackTrace) =>
                               onHttpError(context, error as Exception));
                     },

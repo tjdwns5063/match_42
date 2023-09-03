@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:match_42/error/error_util.dart';
 import 'package:match_42/viewmodel/match_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -151,6 +152,7 @@ class _EatDialogState extends State<EatDialog> {
                               type: ChatType.eat,
                               capacity: populationList[0] == true ? 2 : 4,
                               footType: lists[select])
+                          .then((value) => context.pop())
                           .onError((error, stackTrace) =>
                               onHttpError(context, error as Exception));
                     },

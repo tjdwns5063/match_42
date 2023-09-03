@@ -31,7 +31,9 @@ class MatchService {
   Future<void> stopTalkMatch(String token) async {
     Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/match/chat/stop');
 
-    http.Response response = await http.post(uri);
+    http.Response response = await http.post(uri, headers: {
+      'Authorization': 'Bearer $token',
+    });
 
     print(response.statusCode);
 
@@ -68,7 +70,9 @@ class MatchService {
   Future<void> stopSubjectMatch(String token) async {
     Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/match/subject/stop');
 
-    http.Response response = await http.post(uri);
+    http.Response response = await http.post(uri, headers: {
+      'Authorization': 'Bearer $token',
+    });
 
     print(response.statusCode);
 
@@ -77,5 +81,21 @@ class MatchService {
           statusCode: response.statusCode,
           message: jsonDecode(response.body)['message']));
     }
+  }
+
+  Future<Map<String, dynamic>> getMatchData(String token) async {
+    Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/match/me');
+
+    http.Response response = await http.get(uri, headers: {
+      'Authorization': 'Bearer $token',
+    });
+
+    Map<String, dynamic> json = jsonDecode(response.body);
+
+    if (response.statusCode != 200) {
+      return Future.error(HttpException(
+          statusCode: response.statusCode, message: json['message']));
+    }
+    return json;
   }
 }

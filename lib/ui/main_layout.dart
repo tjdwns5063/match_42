@@ -44,18 +44,13 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
         announcement: true,
         badge: true,
         carPlay: false,
-        criticalAlert: false,
+        criticalAlert: true,
         provisional: true,
         sound: true,
       );
 
       final fcmToken = await FirebaseMessaging.instance.getToken();
       print(fcmToken);
-
-      FirebaseMessaging.instance.sendMessage(
-        to: 'adfsdf',
-        data: {},
-      );
 
       print(context.read<LoginViewModel>().token);
 
