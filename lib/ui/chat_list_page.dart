@@ -6,6 +6,7 @@ import 'package:match_42/router.dart';
 import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:match_42/ui/select_chat.dart';
 
 class ChatListPage extends StatelessWidget {
   const ChatListPage({super.key});
@@ -34,11 +35,13 @@ class ChatListPage extends StatelessWidget {
                 width: 8.0,
               ),
               IconButton(
-                  onPressed: () {},
+                  onPressed: () {showDialog(
+                context: context,
+                builder: (context) => SelectChat());},
                   icon: const Icon(
                     Icons.filter_list_outlined,
                     size: 28.0,
-                  )),
+                  ),),
               IconButton(
                   onPressed: () {
                     User me = context.read<LoginViewModel>().user!;

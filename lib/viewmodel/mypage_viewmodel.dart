@@ -35,6 +35,7 @@ const List<String> allInterest = [
   '종교',
   '전자기기',
   '쇼핑',
+  '애니메이션'
 ];
 
 class MyPageViewModel extends ChangeNotifier {
