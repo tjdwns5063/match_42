@@ -71,9 +71,9 @@ class InterestView extends StatelessWidget {
                 onPressed: () async {
                   await viewModel
                       .verifyButton(callback: loginViewModel.updateUser)
+                      .then((value) => context.pop())
                       .onError(
                           (Exception error, _) => onHttpError(context, error));
-                  context.pop();
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: colorScheme.primary,

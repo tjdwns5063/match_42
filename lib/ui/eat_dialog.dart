@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:match_42/error/error_util.dart';
+import 'package:match_42/viewmodel/match_viewmodel.dart';
+import 'package:provider/provider.dart';
 
-class EatDialog extends StatelessWidget {
+class EatDialog extends StatefulWidget {
   const EatDialog({super.key});
 
+  @override
+  State<EatDialog> createState() => _EatDialogState();
+}
+
+class _EatDialogState extends State<EatDialog> {
   final lists = const ['한식', '중식', '일식', '양식'];
+  int select = 0;
+  List<bool> populationList = [true, false];
+  final ExpansionTileController controller = ExpansionTileController();
 
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
+    MatchViewModel matchViewModel = context.read();
+
     return SizedBox(
       height: 400,
       child: SingleChildScrollView(
@@ -35,8 +48,9 @@ class EatDialog extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ExpansionTile(
+                    controller: controller,
                     title: Text(
-                      '한식',
+                      lists[select],
                       style: TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.w700,
@@ -49,7 +63,18 @@ class EatDialog extends StatelessWidget {
                           itemBuilder: (BuildContext context, int index) {
                             return ListTile(
                               title: Text(lists[index]),
-                              onTap: () {},
+                              onTap: () {
+                                setState(() {
+                                  select = index;
+                                });
+                                controller.collapse();
+                              },
+                              trailing: (select == index)
+                                  ? Icon(
+                                      Icons.check,
+                                      color: colorScheme.primary,
+                                    )
+                                  : const SizedBox(),
                             );
                           },
                           itemCount: lists.length,
@@ -78,7 +103,18 @@ class EatDialog extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 20.0, fontWeight: FontWeight.w700),
                         ),
-                        Checkbox(value: true, onChanged: (value) {}),
+                        Checkbox(
+                            value: populationList[0],
+                            onChanged: (value) {
+                              setState(() {
+                                int currIndex = populationList.indexOf(true);
+
+                                if (currIndex != 0) {
+                                  populationList[0] = true;
+                                  populationList[currIndex] = false;
+                                }
+                              });
+                            }),
                       ],
                     ),
                     Row(
@@ -88,7 +124,18 @@ class EatDialog extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 20.0, fontWeight: FontWeight.w700),
                         ),
-                        Checkbox(value: false, onChanged: (value) {}),
+                        Checkbox(
+                            value: populationList[1],
+                            onChanged: (value) {
+                              setState(() {
+                                int currIndex = populationList.indexOf(true);
+
+                                if (currIndex != 1) {
+                                  populationList[1] = true;
+                                  populationList[currIndex] = false;
+                                }
+                              });
+                            }),
                       ],
                     ),
                   ],
@@ -98,7 +145,15 @@ class EatDialog extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 16.0, vertical: 32.0),
                 child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      matchViewModel
+                          .matchStart(
+                              type: ChatType.eat,
+                              capacity: populationList[0] == true ? 2 : 4,
+                              footType: lists[select])
+                          .onError((error, stackTrace) =>
+                              onHttpError(context, error as Exception));
+                    },
                     child: const SizedBox(
                       width: double.infinity,
                       child: Text(
