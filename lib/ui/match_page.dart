@@ -8,6 +8,7 @@ import 'package:match_42/ui/main_layout.dart';
 import 'package:match_42/ui/subject_dialog.dart';
 import 'package:match_42/ui/talk_dialog.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
+import 'package:match_42/viewmodel/match_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class MatchPage extends StatefulWidget {
@@ -43,7 +44,7 @@ class _MatchPageState extends State<MatchPage> {
   ];
   late PageController controller;
 
-  Map<String, bool> isQ = {'밥': true, '수다': false, '과제': false};
+  Map<String, bool> isQ = {'밥': false, '수다': false, '과제': false};
 
   @override
   void initState() {
@@ -104,11 +105,22 @@ class _MatchPageState extends State<MatchPage> {
     }
   }
 
+  Widget _getDialog() {
+    int selectIndex = selected.indexOf(true);
+
+    return switch (labels[selectIndex]) {
+      '밥' => const EatDialog(),
+      '수다' => const TalkDialog(),
+      _ => const SubjectDialog()
+    };
+  }
+
   ChatService chatService = ChatService.instance;
 
   @override
   Widget build(BuildContext context) {
     LoginViewModel loginViewModel = context.read();
+    MatchViewModel matchViewModel = context.watch();
 
     print(loginViewModel.user);
     return Column(
@@ -136,9 +148,13 @@ class _MatchPageState extends State<MatchPage> {
             showDialog(
                 context: context,
                 builder: (context) {
-                  return Dialog(
-                    surfaceTintColor: Theme.of(context).colorScheme.background,
-                    child: TalkDialog(),
+                  return ChangeNotifierProvider.value(
+                    value: matchViewModel,
+                    child: Dialog(
+                      surfaceTintColor:
+                          Theme.of(context).colorScheme.background,
+                      child: _getDialog(),
+                    ),
                   );
                 });
           },

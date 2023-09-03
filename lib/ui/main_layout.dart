@@ -1,10 +1,14 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:match_42/ui/chat_list_page.dart';
 import 'package:match_42/ui/match_page.dart';
 import 'package:match_42/ui/my_page.dart';
 import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
+import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:match_42/viewmodel/mypage_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 import 'package:match_42/ui/alarm_page.dart';
 
 class MainLayout extends StatefulWidget {
@@ -33,6 +37,53 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
         });
       });
     _title = _titles[controller.index];
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) async {
+      NotificationSettings settings =
+          await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        announcement: true,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: true,
+        sound: true,
+      );
+
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      print(fcmToken);
+
+      FirebaseMessaging.instance.sendMessage(
+        to: 'adfsdf',
+        data: {},
+      );
+
+      print(context.read<LoginViewModel>().token);
+
+      Uri uri = Uri.http('118.85.181.92', '/api/v1/firebase/token/subscribe', {
+        'token': fcmToken,
+      });
+
+      print(uri);
+
+      var response = await http.post(uri, headers: {
+        'token': 'Bearer ${context.read<LoginViewModel>().token}',
+      });
+
+      print(response.body);
+
+      uri = Uri.http(
+          '118.85.181.92',
+          '/api/v1/firebase/message/send/${context.read<LoginViewModel>().user!.id}',
+          {
+            'message': 'test 알림 입니다',
+          });
+
+      var response2 = await http.post(uri, headers: {
+        'token': 'Bearer ${context.read<LoginViewModel>().token}',
+      });
+
+      // print(response2.body);
+    });
     super.initState();
   }
 

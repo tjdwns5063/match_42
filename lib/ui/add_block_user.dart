@@ -55,8 +55,8 @@ class _AddBlockUserState extends State<AddBlockUser> {
                     .requestAddBlockUser(
                         intraId: _controller.text,
                         callback: loginViewModel.updateUser)
-                    .onError((Exception error, stackTrace) =>
-                        onHttpError(context, error));
+                    .onError((Exception error, stackTrace) async =>
+                        await onHttpError(context, error));
                 context.pop();
               },
               style: TextButton.styleFrom(

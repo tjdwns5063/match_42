@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:match_42/error/error_util.dart';
+import 'package:match_42/viewmodel/login_viewmodel.dart';
+import 'package:match_42/viewmodel/match_viewmodel.dart';
+import 'package:provider/provider.dart';
 
-class TalkDialog extends StatelessWidget {
+class TalkDialog extends StatefulWidget {
   const TalkDialog({super.key});
 
-  final lists = const ['한식', '중식', '일식', '양식'];
+  @override
+  State<TalkDialog> createState() => _TalkDialogState();
+}
+
+class _TalkDialogState extends State<TalkDialog> {
+  bool isSameGender = false;
+  List<bool> populationList = [true, false];
 
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
+    MatchViewModel matchViewModel = context.read();
     return SizedBox(
       height: 400,
       child: SingleChildScrollView(
@@ -41,7 +52,13 @@ class TalkDialog extends StatelessWidget {
                 ),
                 Padding(
                     padding: EdgeInsets.only(right: 16.0),
-                    child: Switch(value: false, onChanged: (value) {})),
+                    child: Switch(
+                        value: isSameGender,
+                        onChanged: (value) {
+                          setState(() {
+                            isSameGender = value;
+                          });
+                        })),
               ],
             ),
             const Padding(
@@ -63,7 +80,18 @@ class TalkDialog extends StatelessWidget {
                         style: TextStyle(
                             fontSize: 20.0, fontWeight: FontWeight.w700),
                       ),
-                      Checkbox(value: true, onChanged: (value) {}),
+                      Checkbox(
+                          value: populationList[0],
+                          onChanged: (value) {
+                            setState(() {
+                              int currIndex = populationList.indexOf(true);
+
+                              if (currIndex != 0) {
+                                populationList[0] = true;
+                                populationList[currIndex] = false;
+                              }
+                            });
+                          }),
                     ],
                   ),
                   Row(
@@ -73,7 +101,18 @@ class TalkDialog extends StatelessWidget {
                         style: TextStyle(
                             fontSize: 20.0, fontWeight: FontWeight.w700),
                       ),
-                      Checkbox(value: false, onChanged: (value) {}),
+                      Checkbox(
+                          value: populationList[1],
+                          onChanged: (value) {
+                            setState(() {
+                              int currIndex = populationList.indexOf(true);
+
+                              if (currIndex != 1) {
+                                populationList[1] = true;
+                                populationList[currIndex] = false;
+                              }
+                            });
+                          }),
                     ],
                   ),
                 ],
@@ -83,7 +122,14 @@ class TalkDialog extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
               child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    matchViewModel
+                        .matchStart(
+                            type: ChatType.talk,
+                            capacity: populationList.indexOf(true) == 0 ? 2 : 4)
+                        .onError((error, stackTrace) =>
+                            onHttpError(context, error as Exception));
+                  },
                   child: const SizedBox(
                     width: double.infinity,
                     child: Text(
