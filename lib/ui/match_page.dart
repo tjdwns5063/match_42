@@ -8,6 +8,7 @@ import 'package:match_42/ui/main_layout.dart';
 import 'package:match_42/ui/subject_dialog.dart';
 import 'package:match_42/ui/talk_dialog.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
+import 'package:match_42/viewmodel/match_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class MatchPage extends StatefulWidget {
@@ -43,11 +44,11 @@ class _MatchPageState extends State<MatchPage> {
   ];
   late PageController controller;
 
-  Map<String, bool> isQ = {'밥': true, '수다': false, '과제': false};
+  Map<String, bool> isQ = {'밥': false, '수다': false, '과제': false};
 
   @override
   void initState() {
-    controller = PageController(initialPage: 4, viewportFraction: 0.4)
+    controller = PageController(initialPage: 4, viewportFraction: 0.5)
       ..addListener(() {
         _infiniteScroll();
       });
@@ -104,11 +105,22 @@ class _MatchPageState extends State<MatchPage> {
     }
   }
 
+  Widget _getDialog() {
+    int selectIndex = selected.indexOf(true);
+
+    return switch (labels[selectIndex]) {
+      '밥' => const EatDialog(),
+      '수다' => const TalkDialog(),
+      _ => const SubjectDialog()
+    };
+  }
+
   ChatService chatService = ChatService.instance;
 
   @override
   Widget build(BuildContext context) {
     LoginViewModel loginViewModel = context.read();
+    MatchViewModel matchViewModel = context.watch();
 
     print(loginViewModel.user);
     return Column(
@@ -133,20 +145,38 @@ class _MatchPageState extends State<MatchPage> {
         ),
         ElevatedButton(
           onPressed: () {
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return Dialog(
-                    surfaceTintColor: Theme.of(context).colorScheme.background,
-                    child: TalkDialog(),
-                  );
-                });
+            if (matchViewModel.matchStatus[labels[selected.indexOf(true)]]! !=
+                true) {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return ChangeNotifierProvider.value(
+                      value: matchViewModel,
+                      child: Dialog(
+                        surfaceTintColor:
+                            Theme.of(context).colorScheme.background,
+                        child: _getDialog(),
+                      ),
+                    );
+                  });
+            } else {
+              if (labels[selected.indexOf(true)] == '밥') {
+                matchViewModel.matchStop(type: ChatType.eat);
+              } else if (labels[selected.indexOf(true)] == '수다') {
+                matchViewModel.matchStop(type: ChatType.talk);
+              } else {
+                matchViewModel.matchStop(type: ChatType.subject);
+              }
+            }
           },
           style: ElevatedButton.styleFrom(
               shape: const CircleBorder(), padding: const EdgeInsets.all(30.0)),
-          child: const Text(
-            '시작',
-            style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
+          child: Text(
+            (matchViewModel.matchStatus[labels[selected.indexOf(true)]]! !=
+                    true)
+                ? '시작'
+                : '중단',
+            style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
           ),
         ),
         const SizedBox(height: 32.0),
@@ -174,6 +204,7 @@ class MatchPageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    MatchViewModel matchViewModel = context.watch();
     return PageView.builder(
       scrollDirection: Axis.horizontal,
       onPageChanged: onPageChanged,
@@ -183,7 +214,7 @@ class MatchPageView extends StatelessWidget {
           child: MatchListItem(
             label: labels[index],
             isSelect: selected[index],
-            isQ: isQ[labels[index]]!,
+            isQ: matchViewModel.matchStatus[labels[index]]!,
             onPressed: () => onPressed(index),
           ),
         );
@@ -246,14 +277,14 @@ class MatchListItem extends StatelessWidget {
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Text(
                                   '매치 중',
                                   style: TextStyle(
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.bold),
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w700),
                                 ),
                                 SizedBox(
                                     height: 14,
@@ -269,7 +300,7 @@ class MatchListItem extends StatelessWidget {
                                 for (int i = 0; i < 4; ++i)
                                   Icon(
                                     Icons.circle,
-                                    size: 10,
+                                    size: 13,
                                     color: i == 0
                                         ? colorScheme.primary
                                         : Colors.grey,

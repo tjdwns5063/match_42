@@ -9,7 +9,7 @@ bool isExpireTokenError(Exception exception) {
   return exception is HttpException && exception.statusCode == 302;
 }
 
-void onHttpError(BuildContext context, Exception exception) async {
+Future<void> onHttpError(BuildContext context, Exception exception) async {
   if (isExpireTokenError(exception)) {
     LoginViewModel viewModel = context.read();
 

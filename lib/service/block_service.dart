@@ -28,7 +28,7 @@ class BlockService {
 
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode, message: json['message'] ?? ''));
+          statusCode: response.statusCode, message: json['message']));
     }
 
     return User.fromJson(json);
@@ -45,9 +45,11 @@ class BlockService {
 
     Map<String, dynamic> json = jsonDecode(response.body);
 
+    print(json);
+
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode, message: json['message'] ?? ''));
+          statusCode: response.statusCode, message: json['message']));
     }
 
     return User.fromJson(json);

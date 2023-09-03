@@ -19,15 +19,16 @@ class LoginPage extends StatelessWidget {
       body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         Center(
           child: Container(
-            width: 220,
-            height: 220,
+            width: 150,
+            height: 150,
             // margin: const EdgeInsets.only(top: 70),
             decoration: BoxDecoration(
               image: const DecorationImage(
                 image: AssetImage('assets/logo.png'),
               ),
               color: colorScheme.secondaryContainer,
-              borderRadius: const BorderRadius.all(Radius.circular(60.0)),
+              shape: BoxShape.circle,
+              // borderRadius: const BorderRadius.all(Radius.circular(58.0)),
             ),
           ),
         ),

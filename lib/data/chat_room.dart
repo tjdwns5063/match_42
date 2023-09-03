@@ -27,8 +27,8 @@ class ChatRoom {
   ) {
     final data = snapshot.data();
     return ChatRoom(
-      id: data!['id'],
-      name: data['name'],
+      id: snapshot.id,
+      name: data!['name'],
       type: data['type'],
       open: data['open'],
       users: List.from(data['users']),
@@ -51,6 +51,6 @@ class ChatRoom {
 
   @override
   String toString() {
-    return 'name: $name type: $type open: ${open.toDate()} users: $users';
+    return 'id: $id name: $name type: $type open: ${open.toDate()} users: $users';
   }
 }
