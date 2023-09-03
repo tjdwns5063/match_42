@@ -54,37 +54,8 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
         provisional: true,
         sound: true,
       );
-
-      final fcmToken = await FirebaseMessaging.instance.getToken();
-      print(fcmToken);
-
-      print(context.read<LoginViewModel>().token);
-
-      Uri uri = Uri.http('118.85.181.92', '/api/v1/firebase/token/subscribe', {
-        'token': fcmToken,
-      });
-
-      print(uri);
-
-      var response = await http.post(uri, headers: {
-        'token': 'Bearer ${context.read<LoginViewModel>().token}',
-      });
-
-      print(response.body);
-
-      uri = Uri.http(
-          '118.85.181.92',
-          '/api/v1/firebase/message/send/${context.read<LoginViewModel>().user!.id}',
-          {
-            'message': 'test 알림 입니다',
-          });
-
-      var response2 = await http.post(uri, headers: {
-        'token': 'Bearer ${context.read<LoginViewModel>().token}',
-      });
     });
     FirebaseMessaging.onMessage.listen((event) {
-      print('herererererere');
       LocalNotification.showNotification(event);
     });
     FirebaseMessaging.onBackgroundMessage(background);

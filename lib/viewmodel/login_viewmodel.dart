@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -17,6 +18,7 @@ class LoginViewModel extends ChangeNotifier {
     String token = Uri.parse(url).queryParameters['token'] as String;
 
     _token = token;
+    print(token);
   }
 
   void logout({required Function redirect}) {
@@ -33,11 +35,28 @@ class LoginViewModel extends ChangeNotifier {
 
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode, message: json['message'] ?? ''));
+          statusCode: response.statusCode, message: json['message']));
     }
 
     user = User.fromJson(json);
     notifyListeners();
+  }
+
+  Future<void> submitFCMToken() async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+
+    Uri uri = Uri.parse(
+        'http://115.85.181.92/api/v1/firebase/token/subscribe?token=$fcmToken');
+
+    http.Response response = await http.post(uri, headers: {
+      'accept': '*/*',
+      'Authorization': 'Bearer $token',
+    });
+
+    if (response.statusCode != 200) {
+      return Future.error(HttpException(
+          statusCode: response.statusCode, message: 'FCM 토큰 등록에 실패했습니다.'));
+    }
   }
 
   void updateUser(User user) {
