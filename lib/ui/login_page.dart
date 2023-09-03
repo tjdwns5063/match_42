@@ -84,11 +84,12 @@ class LoginWeb extends StatelessWidget {
 
     final WebViewController controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-          NavigationDelegate(onNavigationRequest: (NavigationRequest request) {
+      ..setNavigationDelegate(NavigationDelegate(
+          onNavigationRequest: (NavigationRequest request) async {
         if (loginViewModel.isLoginSuccess(request.url)) {
           loginViewModel.updateToken(request.url);
-          loginViewModel
+          await loginViewModel.submitFCMToken();
+          await loginViewModel
               .initUser()
               .onError((Exception error, _) => onHttpError(context, error));
         }

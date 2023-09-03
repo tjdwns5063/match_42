@@ -37,29 +37,15 @@ class ChatListPage extends StatelessWidget {
                 width: 8.0,
               ),
               IconButton(
-                  onPressed: () {showDialog(
-                context: context,
-                builder: (context) => SelectChat());},
-                  icon: const Icon(
-                    Icons.filter_list_outlined,
-                    size: 28.0,
-                  ),),
-              IconButton(
-                  onPressed: () {
-                    User me = context.read<LoginViewModel>().user!;
-                    viewModel.testCreateChatRoom(
-                        me,
-                        User(
-                          id: me.id + 1,
-                          intra: 'jiheekan',
-                          nickname: 'jiheekan',
-                          profile: 'eat',
-                        ));
-                  },
-                  icon: const Icon(
-                    Icons.add,
-                    size: 28.0,
-                  ))
+                onPressed: () {
+                  showDialog(
+                      context: context, builder: (context) => SelectChat());
+                },
+                icon: const Icon(
+                  Icons.filter_list_outlined,
+                  size: 28.0,
+                ),
+              ),
             ],
           ),
         ),

@@ -1,6 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:match_42/local_notification.dart';
 import 'package:match_42/ui/chat_list_page.dart';
 import 'package:match_42/ui/match_page.dart';
 import 'package:match_42/ui/my_page.dart';
@@ -10,6 +12,11 @@ import 'package:match_42/viewmodel/mypage_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:match_42/ui/alarm_page.dart';
+
+Future<void> background(RemoteMessage message) async {
+  print('call backgroundMessage: ${message.data}');
+  LocalNotification.showNotification(message);
+}
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -48,37 +55,12 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
         provisional: true,
         sound: true,
       );
-
-      final fcmToken = await FirebaseMessaging.instance.getToken();
-      print(fcmToken);
-
-      print(context.read<LoginViewModel>().token);
-
-      Uri uri = Uri.http('118.85.181.92', '/api/v1/firebase/token/subscribe', {
-        'token': fcmToken,
-      });
-
-      print(uri);
-
-      // var response = await http.post(uri, headers: {
-      //   'token': 'Bearer ${context.read<LoginViewModel>().token}',
-      // });
-
-      // print(response.body);
-
-      uri = Uri.http(
-          '118.85.181.92',
-          '/api/v1/firebase/message/send/${context.read<LoginViewModel>().user!.id}',
-          {
-            'message': 'test 알림 입니다',
-          });
-
-      // var response2 = await http.post(uri, headers: {
-      //   'token': 'Bearer ${context.read<LoginViewModel>().token}',
-      // });
-
-      // print(response2.body);
     });
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+      print('Call ForegroundMessage ${event.data}');
+      LocalNotification.showNotification(event);
+    });
+    FirebaseMessaging.onBackgroundMessage(background);
     super.initState();
   }
 
