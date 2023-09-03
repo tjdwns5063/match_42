@@ -1,9 +1,0 @@
-{
-    "Simulator Target Bundle" : "com.joyfulpace.apnsTest",
-    "aps" : {
-        "alert" : {
-            "title" : "최고의 iOS 개발팀 맴버",
-            "body" : "쉘든, 제이든, 플라, 네오, 줄리, 셀리나, 루키, 헤이, 세일러, 바트, 스티브, 가브리엘, 딘, 조나단, 토미",
-        },
-    },
-}
