@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:match_42/data/message.dart';
+import 'package:match_42/ui/user_interest.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
+import 'package:match_42/viewmodel/match_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:match_42/ui/report_page.dart';
 import 'package:match_42/ui/make_topic.dart';
@@ -140,8 +142,9 @@ class MessageSender extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             showDialog(
-                        context: context,
-                        builder: (context) => MakeTopic(),);
+              context: context,
+              builder: (context) => MakeTopic(),
+            );
           },
           style: ElevatedButton.styleFrom(
             shape: const CircleBorder(),
@@ -193,8 +196,15 @@ class OtherChatMessage extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CircleAvatar(
-          child: Image.asset('assets/${msg.sender.profile}'),
+        InkWell(
+          onTap: () {
+            showModalBottomSheet<void>(
+                context: context,
+                builder: (context) => UserInterest(userId: msg.sender.id));
+          },
+          child: CircleAvatar(
+            child: Image.asset('assets/${msg.sender.profile}'),
+          ),
         ),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
