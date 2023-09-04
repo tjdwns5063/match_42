@@ -14,21 +14,21 @@ enum ChatType {
 
 class MatchViewModel extends ChangeNotifier {
   MatchViewModel(String token) : _token = token {
-    _init();
+    updateStatus();
   }
 
   MatchService matchService = MatchService.instance;
   final String _token;
   Map<String, bool> matchStatus = {'밥': false, '수다': false, '과제': false};
 
-  Future<void> _init() async {
+  Future<void> updateStatus() async {
     Map<String, dynamic> data = await matchService.getMatchData(_token);
 
-    matchStatus[ChatType.talk.typeName] = data['mealMatchId'] != 0;
+    matchStatus[ChatType.eat.typeName] = data['mealMatchId'] != 0;
     matchStatus[ChatType.subject.typeName] = data['subjectMatchId'] != 0;
     matchStatus[ChatType.talk.typeName] = data['chatMatchId'] != 0;
 
-    print(data);
+    print(matchStatus);
 
     notifyListeners();
   }
@@ -38,24 +38,22 @@ class MatchViewModel extends ChangeNotifier {
       required int capacity,
       bool isGender = false,
       String projectName = '',
-      String footType = ''}) {
+      String menu = ''}) {
     return switch (type) {
       ChatType.talk => matchService.startTalkMatch(capacity, _token),
-      // ChatType.eat => matchService.start,
+      ChatType.eat => matchService.startEatMatch(capacity, menu, _token),
       ChatType.subject =>
         matchService.startSubjectMatch(capacity, projectName, _token),
-      _ => Future.error(Exception('ChatType Error')),
     }
-        .then((value) => _init());
+        .then((value) => updateStatus());
   }
 
   Future<void> matchStop({required ChatType type}) async {
     return switch (type) {
       ChatType.talk => matchService.stopTalkMatch(_token),
-      // ChatType.eat => matchService.start,
+      ChatType.eat => matchService.stopEatMatch(_token),
       ChatType.subject => matchService.stopSubjectMatch(_token),
-      _ => Future.error(Exception('ChatType Error')),
     }
-        .then((value) => _init());
+        .then((value) => updateStatus());
   }
 }

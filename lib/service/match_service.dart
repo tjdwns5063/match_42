@@ -83,6 +83,44 @@ class MatchService {
     }
   }
 
+  Future<void> startEatMatch(int capacity, String menu, String token) async {
+    Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/match/meal/start');
+
+    http.Response response = await http.post(uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'capacity': capacity,
+          'menu': menu,
+        }));
+
+    print(response.body);
+
+    if (response.statusCode != 200) {
+      return Future.error(HttpException(
+          statusCode: response.statusCode,
+          message: jsonDecode(response.body)['message']));
+    }
+  }
+
+  Future<void> stopEatMatch(String token) async {
+    Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/match/meal/stop');
+
+    http.Response response = await http.post(uri, headers: {
+      'Authorization': 'Bearer $token',
+    });
+
+    print(response.statusCode);
+
+    if (response.statusCode != 200) {
+      return Future.error(HttpException(
+          statusCode: response.statusCode,
+          message: jsonDecode(response.body)['message']));
+    }
+  }
+
   Future<Map<String, dynamic>> getMatchData(String token) async {
     Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/match/me');
 

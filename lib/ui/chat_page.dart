@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:match_42/data/message.dart';
+import 'package:match_42/ui/user_interest.dart';
+import 'package:match_42/ui/yes_or_no.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
+import 'package:match_42/viewmodel/match_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:match_42/ui/report_page.dart';
 import 'package:match_42/ui/make_topic.dart';
@@ -38,7 +41,10 @@ class _ChatPageState extends State<ChatPage> {
     LoginViewModel loginViewModel = context.read();
 
     Widget generateMessage(int i) {
-      if (chatViewModel.messages[i].sender.id == loginViewModel.user!.id) {
+      if (chatViewModel.messages[i].sender.id == 0) {
+        return SystemMessage(msg: chatViewModel.messages[i]);
+      } else if (chatViewModel.messages[i].sender.id ==
+          loginViewModel.user!.id) {
         return MyChatMessage(msg: chatViewModel.messages[i]);
       } else {
         return OtherChatMessage(msg: chatViewModel.messages[i]);
@@ -76,51 +82,115 @@ class _ChatPageState extends State<ChatPage> {
           )
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.separated(
-                reverse: true,
-                controller: scroll,
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                itemBuilder: (context, index) {
-                  int i = chatViewModel.messages.length - index - 1;
-                  Message msg = chatViewModel.messages[i];
+      body: ((chatViewModel.remainSeconds ?? 42) > 0)
+          ? Column(
+              children: [
+                Expanded(
+                  child: ListView.separated(
+                      reverse: true,
+                      controller: scroll,
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      itemBuilder: (context, index) {
+                        int i = chatViewModel.messages.length - index - 1;
+                        Message msg = chatViewModel.messages[i];
 
-                  if (i == 0) {
-                    return Column(
-                      children: [
-                        DateSeparator(date: msg.date.toDate()),
-                        generateMessage(i),
-                      ],
-                    );
-                  } else {
-                    return generateMessage(i);
-                  }
-                },
-                separatorBuilder: (context, index) {
-                  int i = chatViewModel.messages.length - index - 1;
-                  Message msg = chatViewModel.messages[i];
+                        if (i == 0) {
+                          return Column(
+                            children: [
+                              DateSeparator(date: msg.date.toDate()),
+                              generateMessage(i),
+                            ],
+                          );
+                        } else {
+                          return generateMessage(i);
+                        }
+                      },
+                      separatorBuilder: (context, index) {
+                        int i = chatViewModel.messages.length - index - 1;
+                        Message msg = chatViewModel.messages[i];
 
-                  if (chatViewModel.isChangeDate(i)) {
-                    return DateSeparator(date: msg.date.toDate());
-                  }
-                  return const SizedBox(
-                    height: 16.0,
-                  );
-                },
-                itemCount: chatViewModel.messages.length),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: MessageSender(
-              sendCallback: () =>
-                  chatViewModel.send(loginViewModel.user!, text),
-              controller: text,
+                        if (chatViewModel.isChangeDate(i)) {
+                          return DateSeparator(date: msg.date.toDate());
+                        }
+                        return const SizedBox(
+                          height: 16.0,
+                        );
+                      },
+                      itemCount: chatViewModel.messages.length),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: MessageSender(
+                    sendCallback: () =>
+                        chatViewModel.send(loginViewModel.user!, text),
+                    controller: text,
+                  ),
+                )
+              ],
+            )
+          : Column(
+              children: [
+                YesOrNo(),
+              ],
             ),
-          )
-        ],
-      ),
+    );
+  }
+}
+
+class SystemMessage extends StatelessWidget {
+  const SystemMessage({super.key, required this.msg});
+
+  final Message msg;
+
+  @override
+  Widget build(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CircleAvatar(
+          child: Image.asset('assets/system.png'),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                msg.sender.nickname,
+              ),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width - 68.0,
+                    maxHeight: MediaQuery.of(context).size.height -
+                        kToolbarHeight * 2),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Flexible(
+                        child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                          color: colorScheme.secondaryContainer,
+                          borderRadius: BorderRadius.circular(10.0)),
+                      child: Text(msg.message),
+                    )),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4.0,
+                      ),
+                      child: Text(
+                        msg.date.toFormatString(),
+                        style: const TextStyle(fontSize: 10.0),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -134,14 +204,17 @@ class MessageSender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ChatViewModel viewModel = context.read();
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         ElevatedButton(
           onPressed: () {
             showDialog(
-                        context: context,
-                        builder: (context) => MakeTopic(),);
+              context: context,
+              builder: (context) => ChangeNotifierProvider.value(
+                  value: viewModel, child: const MakeTopic()),
+            );
           },
           style: ElevatedButton.styleFrom(
             shape: const CircleBorder(),
@@ -193,8 +266,15 @@ class OtherChatMessage extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CircleAvatar(
-          child: Image.asset('assets/${msg.sender.profile}'),
+        InkWell(
+          onTap: () {
+            showModalBottomSheet<void>(
+                context: context,
+                builder: (context) => UserInterest(userId: msg.sender.id));
+          },
+          child: CircleAvatar(
+            child: Image.asset('assets/${msg.sender.profile}'),
+          ),
         ),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),

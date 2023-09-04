@@ -23,8 +23,25 @@ void main() async {
       create: (context) => LoginViewModel(), child: const MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    FirebaseMessageController.instance.listenMessage();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    FirebaseMessageController.instance.cancelSubscribe();
+  }
 
   @override
   Widget build(BuildContext context) {

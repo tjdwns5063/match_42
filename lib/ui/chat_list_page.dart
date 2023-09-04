@@ -39,7 +39,9 @@ class ChatListPage extends StatelessWidget {
               IconButton(
                 onPressed: () {
                   showDialog(
-                      context: context, builder: (context) => SelectChat());
+                      context: context,
+                      builder: (context) => ChangeNotifierProvider.value(
+                          value: viewModel, child: const SelectChat()));
                 },
                 icon: const Icon(
                   Icons.filter_list_outlined,
@@ -58,7 +60,9 @@ class ChatListPage extends StatelessWidget {
                   title: viewModel.rooms[index].name,
                   userCount: viewModel.rooms[index].users.length,
                   lastMsg: viewModel.rooms[index].lastMsg,
-                  unreadMessageCount: viewModel.rooms[index].unread[viewModel.rooms[index].users.indexOf(loginViewModel.user!.id)],
+                  unreadMessageCount: viewModel.rooms[index].unread[viewModel
+                      .rooms[index].users
+                      .indexOf(loginViewModel.user!.id)],
                   onPressed: () => onPressedChatRoom(index),
                 );
               },

@@ -15,10 +15,17 @@ class ChatListViewModel extends ChangeNotifier {
 
   final ChatService _chatService = ChatService.instance;
 
-  List<ChatRoom> get rooms => UnmodifiableListView(_rooms);
+  List<ChatRoom> get rooms => UnmodifiableListView(filterChatRoom());
   List<ChatRoom> _rooms = [];
 
   late StreamSubscription _subscription;
+  int _isOn = 1;
+  int get isOn => _isOn;
+
+  set isOn(int value) {
+    _isOn = value;
+    notifyListeners();
+  }
 
   @override
   void dispose() {
@@ -65,5 +72,17 @@ class ChatListViewModel extends ChangeNotifier {
           message: '채팅방이 생성되었습니다',
           date: Timestamp.now(),
         )));
+  }
+
+  List<ChatRoom> filterChatRoom() {
+    if (isOn == 1) {
+      return _rooms;
+    }
+    return _rooms
+        .where((element) =>
+            DateTime.now().compareTo(
+                element.open.toDate().add(const Duration(hours: 42))) >
+            0)
+        .toList();
   }
 }

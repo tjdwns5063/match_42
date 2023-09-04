@@ -131,9 +131,6 @@ class BlockUser extends StatelessWidget {
     return Column(children: [
       Row(
         children: [
-          // const SizedBox(
-          //   width: 21,
-          // ),
           const Padding(
             padding: EdgeInsets.only(left: 21.0),
             child: Text(
@@ -228,27 +225,6 @@ class Logout extends StatelessWidget {
             ),
           ),
         ),
-        // const SizedBox(height: 8),
-        // TextButton.icon(
-        //   onPressed: () {},
-        //   style: TextButton.styleFrom(
-        //     backgroundColor: colorScheme.primary,
-        //     fixedSize: Size.fromWidth(MediaQuery.of(context).size.width * 0.5),
-        //     elevation: 0,
-        //   ),
-        //   icon: Icon(
-        //     Icons.book,
-        //     color: colorScheme.onPrimary,
-        //   ),
-        //   label: Text(
-        //     '오픈소스 라이선스',
-        //     style: TextStyle(
-        //       color: colorScheme.onPrimary,
-        //       fontWeight: FontWeight.bold,
-        //       fontSize: 16,
-        //     ),
-        //   ),
-        // ),
       ],
     );
   }
