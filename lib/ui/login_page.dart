@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:match_42/error/error_util.dart';
+import 'package:match_42/local_notification.dart';
 import 'package:match_42/router.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -84,14 +85,10 @@ class LoginWeb extends StatelessWidget {
 
     final WebViewController controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate(
-          onNavigationRequest: (NavigationRequest request) async {
+      ..setNavigationDelegate(
+          NavigationDelegate(onNavigationRequest: (NavigationRequest request) {
         if (loginViewModel.isLoginSuccess(request.url)) {
-          loginViewModel.updateToken(request.url);
-          await loginViewModel.submitFCMToken();
-          await loginViewModel
-              .initUser()
-              .onError((Exception error, _) => onHttpError(context, error));
+          loginViewModel.login(request.url);
         }
 
         return NavigationDecision.navigate;

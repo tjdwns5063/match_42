@@ -6,6 +6,10 @@
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
 
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="chat_channel" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -24,9 +28,7 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
-            <meta-data
-                android:name="com.google.firebase.messaging.default_notification_channel_id"
-                android:value="chat_channel" />
+
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

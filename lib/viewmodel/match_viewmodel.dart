@@ -14,14 +14,14 @@ enum ChatType {
 
 class MatchViewModel extends ChangeNotifier {
   MatchViewModel(String token) : _token = token {
-    _init();
+    updateStatus();
   }
 
   MatchService matchService = MatchService.instance;
   final String _token;
   Map<String, bool> matchStatus = {'밥': false, '수다': false, '과제': false};
 
-  Future<void> _init() async {
+  Future<void> updateStatus() async {
     Map<String, dynamic> data = await matchService.getMatchData(_token);
 
     matchStatus[ChatType.talk.typeName] = data['mealMatchId'] != 0;
@@ -45,7 +45,7 @@ class MatchViewModel extends ChangeNotifier {
       ChatType.subject =>
         matchService.startSubjectMatch(capacity, projectName, _token),
     }
-        .then((value) => _init());
+        .then((value) => updateStatus());
   }
 
   Future<void> matchStop({required ChatType type}) async {
@@ -54,6 +54,6 @@ class MatchViewModel extends ChangeNotifier {
       ChatType.eat => matchService.stopEatMatch(_token),
       ChatType.subject => matchService.stopSubjectMatch(_token),
     }
-        .then((value) => _init());
+        .then((value) => updateStatus());
   }
 }

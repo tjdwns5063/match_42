@@ -14,6 +14,13 @@ class LoginViewModel extends ChangeNotifier {
 
   User? user;
 
+  Future<void> login(String url) async {
+    updateToken(url);
+    await submitFCMToken();
+    await initUser();
+    notifyListeners();
+  }
+
   void updateToken(String url) {
     String token = Uri.parse(url).queryParameters['token'] as String;
 
@@ -39,7 +46,6 @@ class LoginViewModel extends ChangeNotifier {
     }
 
     user = User.fromJson(json);
-    notifyListeners();
   }
 
   Future<void> submitFCMToken() async {
