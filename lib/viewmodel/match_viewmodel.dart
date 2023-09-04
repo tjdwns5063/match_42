@@ -24,11 +24,11 @@ class MatchViewModel extends ChangeNotifier {
   Future<void> updateStatus() async {
     Map<String, dynamic> data = await matchService.getMatchData(_token);
 
-    matchStatus[ChatType.talk.typeName] = data['mealMatchId'] != 0;
+    matchStatus[ChatType.eat.typeName] = data['mealMatchId'] != 0;
     matchStatus[ChatType.subject.typeName] = data['subjectMatchId'] != 0;
     matchStatus[ChatType.talk.typeName] = data['chatMatchId'] != 0;
 
-    print(data);
+    print(matchStatus);
 
     notifyListeners();
   }

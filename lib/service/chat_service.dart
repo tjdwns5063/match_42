@@ -46,6 +46,10 @@ class ChatService {
     return snapshot.data();
   }
 
+  Future<void> addSystemMessage(String roomId, Message msg) async {
+    await createMessageRef(roomId).add(msg);
+  }
+
   Future<void> addMessage(String roomId, Message msg) async {
     ChatRoom room = await getChatRoom(roomId) as ChatRoom;
 
@@ -91,8 +95,9 @@ class ChatService {
   Future<void> readAllMessage(String roomId, User user) async {
     ChatRoom chatRoom = await getChatRoom(roomId) as ChatRoom;
 
-    chatRoom
-        .unread[chatRoom.users.indexWhere((element) { return element == user.id;})] = 0;
+    chatRoom.unread[chatRoom.users.indexWhere((element) {
+      return element == user.id;
+    })] = 0;
 
     roomRef.doc(roomId).update({
       'unread': chatRoom.unread,

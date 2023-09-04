@@ -1,4 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:match_42/data/message.dart';
+import 'package:match_42/data/user.dart';
+import 'package:match_42/viewmodel/chat_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 const List<String> topics = [
   '서로의 취미에 대해 얘기해보세요.',
@@ -41,33 +48,37 @@ class MakeTopic extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
-    return 
-    Dialog(
+    ChatViewModel viewModel = context.read();
+    return Dialog(
       elevation: 0,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.7,
-        height: 52,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          color: colorScheme.primary,),
-          child: 
-      TextButton(
-                onPressed: () {},
-                style: TextButton.styleFrom(
-                  backgroundColor: colorScheme.primary,
-                  padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                  // fixedSize: Size.fromHeight(18),
-                ),
-                child: Text(
-                  '랜덤 대화주제 생성하기',
-                  style: TextStyle(
-                    color: colorScheme.onPrimary.withAlpha(240),
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              )
-   ),
-   );
+          width: MediaQuery.of(context).size.width * 0.7,
+          height: 52,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            color: colorScheme.primary,
+          ),
+          child: TextButton(
+            onPressed: () {
+              int index =
+                  Random(DateTime.now().millisecond).nextInt(topics.length);
+              viewModel.sendSystem(topics[index]);
+              context.pop();
+            },
+            style: TextButton.styleFrom(
+              backgroundColor: colorScheme.primary,
+              padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+              // fixedSize: Size.fromHeight(18),
+            ),
+            child: Text(
+              '랜덤 대화주제 생성하기',
+              style: TextStyle(
+                color: colorScheme.onPrimary.withAlpha(240),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          )),
+    );
   }
 }

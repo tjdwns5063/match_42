@@ -75,6 +75,15 @@ class ChatViewModel extends ChangeNotifier {
     msg.clear();
   }
 
+  void sendSystem(String msg) {
+    if (msg.isEmpty) return;
+
+    User system = User(id: 0, nickname: 'system', intra: 'system');
+
+    _chatService.addSystemMessage(
+        roomId, Message(sender: system, message: msg, date: Timestamp.now()));
+  }
+
   bool isChangeDate(int i) {
     DateTime prevDate = messages[i - 1].date.toDate();
     DateTime currDate = messages[i].date.toDate();

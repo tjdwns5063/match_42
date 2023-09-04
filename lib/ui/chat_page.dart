@@ -40,7 +40,10 @@ class _ChatPageState extends State<ChatPage> {
     LoginViewModel loginViewModel = context.read();
 
     Widget generateMessage(int i) {
-      if (chatViewModel.messages[i].sender.id == loginViewModel.user!.id) {
+      if (chatViewModel.messages[i].sender.id == 0) {
+        return SystemMessage(msg: chatViewModel.messages[i]);
+      } else if (chatViewModel.messages[i].sender.id ==
+          loginViewModel.user!.id) {
         return MyChatMessage(msg: chatViewModel.messages[i]);
       } else {
         return OtherChatMessage(msg: chatViewModel.messages[i]);
@@ -127,6 +130,64 @@ class _ChatPageState extends State<ChatPage> {
   }
 }
 
+class SystemMessage extends StatelessWidget {
+  const SystemMessage({super.key, required this.msg});
+
+  final Message msg;
+
+  @override
+  Widget build(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CircleAvatar(
+          child: Image.asset('assets/system.png'),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                msg.sender.nickname,
+              ),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width - 68.0,
+                    maxHeight: MediaQuery.of(context).size.height -
+                        kToolbarHeight * 2),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Flexible(
+                        child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                          color: colorScheme.secondaryContainer,
+                          borderRadius: BorderRadius.circular(10.0)),
+                      child: Text(msg.message),
+                    )),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4.0,
+                      ),
+                      child: Text(
+                        msg.date.toFormatString(),
+                        style: const TextStyle(fontSize: 10.0),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class MessageSender extends StatelessWidget {
   const MessageSender(
       {super.key, required this.sendCallback, required this.controller});
@@ -136,6 +197,7 @@ class MessageSender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ChatViewModel viewModel = context.read();
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
@@ -143,7 +205,8 @@ class MessageSender extends StatelessWidget {
           onPressed: () {
             showDialog(
               context: context,
-              builder: (context) => MakeTopic(),
+              builder: (context) => ChangeNotifierProvider.value(
+                  value: viewModel, child: const MakeTopic()),
             );
           },
           style: ElevatedButton.styleFrom(
