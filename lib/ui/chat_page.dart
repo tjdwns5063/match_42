@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/ui/user_interest.dart';
+import 'package:match_42/ui/yes_or_no.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:match_42/viewmodel/match_viewmodel.dart';
@@ -81,51 +82,57 @@ class _ChatPageState extends State<ChatPage> {
           )
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.separated(
-                reverse: true,
-                controller: scroll,
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                itemBuilder: (context, index) {
-                  int i = chatViewModel.messages.length - index - 1;
-                  Message msg = chatViewModel.messages[i];
+      body: ((chatViewModel.remainSeconds ?? 42) > 0)
+          ? Column(
+              children: [
+                Expanded(
+                  child: ListView.separated(
+                      reverse: true,
+                      controller: scroll,
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      itemBuilder: (context, index) {
+                        int i = chatViewModel.messages.length - index - 1;
+                        Message msg = chatViewModel.messages[i];
 
-                  if (i == 0) {
-                    return Column(
-                      children: [
-                        DateSeparator(date: msg.date.toDate()),
-                        generateMessage(i),
-                      ],
-                    );
-                  } else {
-                    return generateMessage(i);
-                  }
-                },
-                separatorBuilder: (context, index) {
-                  int i = chatViewModel.messages.length - index - 1;
-                  Message msg = chatViewModel.messages[i];
+                        if (i == 0) {
+                          return Column(
+                            children: [
+                              DateSeparator(date: msg.date.toDate()),
+                              generateMessage(i),
+                            ],
+                          );
+                        } else {
+                          return generateMessage(i);
+                        }
+                      },
+                      separatorBuilder: (context, index) {
+                        int i = chatViewModel.messages.length - index - 1;
+                        Message msg = chatViewModel.messages[i];
 
-                  if (chatViewModel.isChangeDate(i)) {
-                    return DateSeparator(date: msg.date.toDate());
-                  }
-                  return const SizedBox(
-                    height: 16.0,
-                  );
-                },
-                itemCount: chatViewModel.messages.length),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: MessageSender(
-              sendCallback: () =>
-                  chatViewModel.send(loginViewModel.user!, text),
-              controller: text,
+                        if (chatViewModel.isChangeDate(i)) {
+                          return DateSeparator(date: msg.date.toDate());
+                        }
+                        return const SizedBox(
+                          height: 16.0,
+                        );
+                      },
+                      itemCount: chatViewModel.messages.length),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: MessageSender(
+                    sendCallback: () =>
+                        chatViewModel.send(loginViewModel.user!, text),
+                    controller: text,
+                  ),
+                )
+              ],
+            )
+          : Column(
+              children: [
+                YesOrNo(),
+              ],
             ),
-          )
-        ],
-      ),
     );
   }
 }

@@ -39,7 +39,7 @@ class _EatDialogState extends State<EatDialog> {
               const Padding(
                 padding: EdgeInsets.fromLTRB(16.0, 16.0, 0.0, 0.0),
                 child: Text(
-                  '과제 선택',
+                  '메뉴 선택',
                   style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
                 ),
               ),
