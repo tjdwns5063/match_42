@@ -2,20 +2,38 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/service/chat_service.dart';
+import 'package:match_42/service/user_service.dart';
 
 class ChatViewModel extends ChangeNotifier {
-  ChatViewModel({required this.roomId, required this.user}) {
+  ChatViewModel(
+      {required this.roomId, required this.user, required this.token}) {
     init();
   }
 
   final ChatService _chatService = ChatService.instance;
+  final UserService _userService = UserService.instance;
   final String roomId;
   final User user;
+  final String token;
+
+  ChatRoom get chatRoom => _chatRoom;
+  ChatRoom _chatRoom = ChatRoom(
+      id: '0',
+      name: 'test',
+      type: 'eat',
+      open: Timestamp.now(),
+      users: [0, 0],
+      unread: [0, 0],
+      lastMsg: Message(
+          sender: User(id: 0, nickname: '', intra: ''),
+          message: '',
+          date: Timestamp.now()));
 
   List<Message> _messages = [];
   List<Message> get messages => UnmodifiableListView(
@@ -56,6 +74,7 @@ class ChatViewModel extends ChangeNotifier {
     final chatStream = _chatService.createMessageRef(roomId).snapshots();
 
     _chatSubscription = chatStream.listen((event) async {
+      print('here1');
       _messages = await _chatService.getAllMessage(roomId);
       notifyListeners();
     });
@@ -63,15 +82,34 @@ class ChatViewModel extends ChangeNotifier {
     final readStream = _chatService.roomRef.doc(roomId).snapshots();
 
     _readSubscription = readStream.listen((event) async {
+      _chatRoom = event.data()!;
       _readAll();
+      notifyListeners();
     });
   }
 
   void send(User sender, TextEditingController msg) {
     if (msg.text.isEmpty) return;
 
-    _chatService.addMessage(roomId,
-        Message(sender: sender, message: msg.text, date: Timestamp.now()));
+    _chatService.addMessage(
+        roomId,
+        Message(
+            sender: sender
+              ..decideProfile(chatRoom)
+              ..decideNickname(chatRoom),
+            message: msg.text,
+            date: Timestamp.now()));
+
+    print(chatRoom.type);
+    print(user);
+    for (int userId in chatRoom.users) {
+      if (user.id == userId) continue;
+      _userService.sendNotification(
+          userId,
+          '${(chatRoom.type.toLowerCase() == 'chat') ? sender.nickname : sender.intra}: ${msg.text}',
+          token);
+    }
+
     msg.clear();
   }
 
@@ -128,5 +166,23 @@ class ChatViewModel extends ChangeNotifier {
     int s = remain;
 
     return '$h : $m : $s 남음';
+  }
+
+  bool isAllOk(ChatRoom chatRoom) {
+    return chatRoom.isOpen!.every((element) => element == true);
+  }
+
+  Future<void> updateOpenResult() async {
+    _chatRoom = await _chatService.setIsOpen(roomId, true, user.id);
+
+    print(chatRoom.isOpen);
+    if (isAllOk(chatRoom)) {
+      for (int userId in chatRoom.users) {
+        _userService.sendNotification(
+            userId, 'seongjki 님과 ilko 님이 매치되었습니다', token);
+      }
+    }
+
+    notifyListeners();
   }
 }

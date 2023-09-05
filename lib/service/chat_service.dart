@@ -53,11 +53,11 @@ class ChatService {
   Future<void> addMessage(String roomId, Message msg) async {
     ChatRoom room = await getChatRoom(roomId) as ChatRoom;
 
-    User updatedUser = msg.sender
-      ..decideNickname(room)
-      ..decideProfile(room);
+    // User updatedUser = msg.sender
+    //   ..decideNickname(room)
+    //   ..decideProfile(room);
 
-    msg = Message(sender: updatedUser, message: msg.message, date: msg.date);
+    // msg = Message(sender: msg.sender, message: msg.message, date: msg.date);
 
     _addUnreadMessageCount(room, msg);
     room.lastMsg = msg;
@@ -102,5 +102,17 @@ class ChatService {
     roomRef.doc(roomId).update({
       'unread': chatRoom.unread,
     });
+  }
+
+  Future<ChatRoom> setIsOpen(String roomId, bool isOpen, int id) async {
+    ChatRoom chatRoom = await getChatRoom(roomId) as ChatRoom;
+
+    chatRoom.isOpen![chatRoom.users.indexOf(id)] = true;
+
+    roomRef.doc(roomId).update({
+      'isOpen': chatRoom.isOpen,
+    });
+
+    return chatRoom;
   }
 }

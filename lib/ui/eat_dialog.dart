@@ -149,7 +149,7 @@ class _EatDialogState extends State<EatDialog> {
                     onPressed: () {
                       matchViewModel
                           .matchStart(
-                              type: ChatType.eat,
+                              type: ChatType.meal,
                               capacity: populationList[0] == true ? 2 : 4,
                               menu: lists[select])
                           .then((value) => context.pop())
