@@ -91,8 +91,7 @@ class MatchService {
 
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode,
-          message: jsonDecode(response.body)['message']));
+          statusCode: response.statusCode, message: response.body));
     }
 
     Map<String, dynamic> json = jsonDecode(response.body);
@@ -111,8 +110,7 @@ class MatchService {
 
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode,
-          message: jsonDecode(response.body)['message']));
+          statusCode: response.statusCode, message: response.body));
     }
   }
 
@@ -134,8 +132,7 @@ class MatchService {
 
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode,
-          message: jsonDecode(response.body)['message']));
+          statusCode: response.statusCode, message: response.body));
     }
 
     Map<String, dynamic> json = jsonDecode(response.body);
@@ -154,8 +151,7 @@ class MatchService {
 
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode,
-          message: jsonDecode(response.body)['message']));
+          statusCode: response.statusCode, message: response.body));
     }
   }
 
@@ -177,8 +173,7 @@ class MatchService {
 
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode,
-          message: jsonDecode(response.body)['message']));
+          statusCode: response.statusCode, message: response.body));
     }
 
     Map<String, dynamic> json = jsonDecode(response.body);
@@ -197,8 +192,7 @@ class MatchService {
 
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode,
-          message: jsonDecode(response.body)['message']));
+          statusCode: response.statusCode, message: response.body));
     }
   }
 
@@ -211,12 +205,11 @@ class MatchService {
 
     // print(response.body);
 
-    Map<String, dynamic> json = jsonDecode(response.body);
-
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode, message: json['message']));
+          statusCode: response.statusCode, message: response.body));
     }
+    Map<String, dynamic> json = jsonDecode(response.body);
 
     return json;
   }
@@ -234,12 +227,12 @@ class MatchService {
 
     print('body: ${response.body}');
 
-    Map<String, dynamic> json = jsonDecode(response.body);
-
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode, message: json['message']));
+          statusCode: response.statusCode, message: response.body));
     }
+    Map<String, dynamic> json = jsonDecode(response.body);
+
     return MatchData.fromJson(json);
   }
 }

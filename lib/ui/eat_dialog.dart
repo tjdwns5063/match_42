@@ -12,7 +12,7 @@ class EatDialog extends StatefulWidget {
 }
 
 class _EatDialogState extends State<EatDialog> {
-  final lists = const ['한식', '중식', '일식', '양식'];
+  final lists = const ['한식', '중식', '일식', '양식', '아무거나'];
   int select = 0;
   List<bool> populationList = [true, false];
   final ExpansionTileController controller = ExpansionTileController();

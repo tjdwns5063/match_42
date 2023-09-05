@@ -94,8 +94,8 @@ class ChatListItem extends StatelessWidget {
   final VoidCallback onPressed;
 
   String getImagePath() {
-    return switch (type) {
-      'eat' => 'assets/eat.png',
+    return switch (type.toLowerCase()) {
+      'meal' => 'assets/eat.png',
       'subject' => 'assets/subject.png',
       _ => 'assets/talk.png'
     };
@@ -112,9 +112,13 @@ class ChatListItem extends StatelessWidget {
       ),
       title: Row(
         children: [
-          Text(
-            title,
-            style: TextStyle(color: colorScheme.onSecondaryContainer),
+          Flexible(
+            child: Text(
+              title,
+              style: TextStyle(
+                  color: colorScheme.onSecondaryContainer,
+                  overflow: TextOverflow.ellipsis),
+            ),
           ),
           const SizedBox(
             width: 8.0,

@@ -64,6 +64,7 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
+    ChatListViewModel chatListViewModel = context.watch();
 
     return Scaffold(
       appBar: AppBar(
@@ -91,14 +92,16 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
       bottomNavigationBar: SafeArea(
         child: TabBar(
           controller: controller,
-          tabs: const [
-            Tab(
+          tabs: [
+            const Tab(
               icon: Icon(Icons.person_search_rounded),
             ),
             Tab(
-              icon: Icon(Icons.chat),
+              icon: ChatIcon(
+                unread: chatListViewModel.totalUnread,
+              ),
             ),
-            Tab(
+            const Tab(
               icon: Icon(Icons.person),
             )
           ],
@@ -110,5 +113,47 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
         children: _pages,
       ),
     );
+  }
+}
+
+class ChatIcon extends StatelessWidget {
+  const ChatIcon({super.key, required this.unread});
+
+  final int unread;
+
+  @override
+  Widget build(BuildContext context) {
+    return (unread == 0)
+        ? const Icon(Icons.chat)
+        : Stack(
+            alignment: Alignment.topRight,
+            children: [
+              const Align(
+                alignment: Alignment.center,
+                widthFactor: 1.5,
+                child: Icon(
+                  Icons.chat,
+                  size: 25.0,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 2.0),
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 18,
+                  width: 18,
+                  decoration: const BoxDecoration(
+                      shape: BoxShape.circle, color: Colors.red),
+                  child: Text(
+                    '${unread > 99 ? 99 : unread}',
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11.0,
+                        overflow: TextOverflow.ellipsis),
+                  ),
+                ),
+              )
+            ],
+          );
   }
 }

@@ -25,11 +25,11 @@ class LoginPage extends StatelessWidget {
             // margin: const EdgeInsets.only(top: 70),
             decoration: BoxDecoration(
               image: const DecorationImage(
-                image: AssetImage('assets/logo.png'),
+                image: AssetImage('assets/new_logo.png'),
               ),
               color: colorScheme.secondaryContainer,
-              shape: BoxShape.circle,
-              // borderRadius: const BorderRadius.all(Radius.circular(58.0)),
+              shape: BoxShape.rectangle,
+              borderRadius: const BorderRadius.all(Radius.circular(58.0)),
             ),
           ),
         ),

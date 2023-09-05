@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
+import 'package:match_42/error/error_util.dart';
 import 'package:match_42/service/chat_service.dart';
 import 'package:match_42/ui/eat_dialog.dart';
 import 'package:match_42/ui/main_layout.dart';
@@ -160,11 +163,17 @@ class _MatchPageState extends State<MatchPage> {
                   });
             } else {
               if (labels[selected.indexOf(true)] == '밥') {
-                matchViewModel.matchStop(type: ChatType.meal);
+                matchViewModel.matchStop(type: ChatType.meal).onError(
+                    (error, stackTrace) =>
+                        onHttpError(context, error as Exception));
               } else if (labels[selected.indexOf(true)] == '수다') {
-                matchViewModel.matchStop(type: ChatType.chat);
+                matchViewModel.matchStop(type: ChatType.chat).onError(
+                    (error, stackTrace) =>
+                        onHttpError(context, error as Exception));
               } else {
-                matchViewModel.matchStop(type: ChatType.subject);
+                matchViewModel.matchStop(type: ChatType.subject).onError(
+                    (error, stackTrace) =>
+                        onHttpError(context, error as Exception));
               }
             }
           },
@@ -296,11 +305,17 @@ class MatchListItem extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                for (int i = 0; i < 4; ++i)
+                                for (int i = 0;
+                                    i <
+                                        matchViewModel
+                                            .matchStatus[label]!.capacity;
+                                    ++i)
                                   Icon(
                                     Icons.circle,
                                     size: 13,
-                                    color: i == 0
+                                    color: i <
+                                            matchViewModel
+                                                .matchStatus[label]!.size
                                         ? colorScheme.primary
                                         : Colors.grey,
                                   )

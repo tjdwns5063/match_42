@@ -10,11 +10,13 @@ bool isExpireTokenError(Exception exception) {
 }
 
 Future<void> onHttpError(BuildContext context, Exception exception) async {
+  print('exception1: $exception');
   if (isExpireTokenError(exception)) {
     LoginViewModel viewModel = context.read();
 
     viewModel.logout(redirect: () => context.go(LOGIN_PATH));
   } else {
+    print('exception2: $exception');
     await showDialog(
         context: context,
         builder: (context) => AlertDialog(

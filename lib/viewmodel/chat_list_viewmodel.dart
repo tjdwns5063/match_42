@@ -9,7 +9,7 @@ import 'package:match_42/data/user.dart';
 import 'package:match_42/service/chat_service.dart';
 
 class ChatListViewModel extends ChangeNotifier {
-  ChatListViewModel(User me) {
+  ChatListViewModel(User me) : _user = me {
     _init(me);
   }
 
@@ -18,9 +18,14 @@ class ChatListViewModel extends ChangeNotifier {
   List<ChatRoom> get rooms => UnmodifiableListView(filterChatRoom());
   List<ChatRoom> _rooms = [];
 
+  User _user;
   late StreamSubscription _subscription;
   int _isOn = 1;
   int get isOn => _isOn;
+  int get totalUnread => _rooms.fold(
+      0,
+      (previousValue, element) =>
+          previousValue + element.unread[element.users.indexOf(_user.id)]);
 
   set isOn(int value) {
     _isOn = value;
@@ -47,41 +52,30 @@ class ChatListViewModel extends ChangeNotifier {
         _chatService.roomRef.snapshots();
 
     _subscription = stream.listen((event) async {
-      _updateRooms(me);
+      List<ChatRoom> newList = [];
+      for (final doc in event.docs) {
+        newList.add(doc.data());
+      }
+      _rooms = newList;
+      print('totalUnread: $totalUnread');
+      notifyListeners();
+      // _updateRooms(me);
     });
-  }
-
-  void testCreateChatRoom(User user1, User user2) {
-    _chatService.addChatRoom(ChatRoom(
-        id: _rooms.length.toString(),
-        name: 'test${_rooms.length.toString()}',
-        type: 'eat',
-        open: Timestamp.now(),
-        users: [
-          user1.id,
-          user2.id,
-        ],
-        unread: [0, 0],
-        lastMsg: Message(
-          sender: User(
-              id: 0,
-              interests: <String>[],
-              nickname: 'system',
-              intra: 'system',
-              profile: 'system'),
-          message: '채팅방이 생성되었습니다',
-          date: Timestamp.now(),
-        )));
   }
 
   List<ChatRoom> filterChatRoom() {
     if (isOn == 1) {
-      return _rooms;
+      return _rooms
+          .where((element) =>
+              DateTime.now().compareTo(
+                  element.open.toDate().add(const Duration(hours: 42))) <
+              0)
+          .toList();
     }
     return _rooms
         .where((element) =>
             DateTime.now().compareTo(
-                element.open.toDate().add(const Duration(hours: 42))) >
+                element.open.toDate().add(const Duration(hours: 42))) >=
             0)
         .toList();
   }
