@@ -295,7 +295,7 @@ class OtherChatMessage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                (viewModel.chatRoom.type == 'chat')
+                (viewModel.chatRoom.type.toLowerCase() == 'chat')
                     ? msg.sender.nickname
                     : msg.sender.intra,
               ),

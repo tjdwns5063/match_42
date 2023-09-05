@@ -33,7 +33,7 @@ class MatchViewModel extends ChangeNotifier {
     Map<String, dynamic> ids = await matchService.getMatchData(_token);
 
     for (MapEntry<String, dynamic> entry in ids.entries) {
-      if (entry.value == 0) continue;
+      if (entry.key == 'id' || entry.value == 0) continue;
 
       String key = switch (entry.key) {
         'mealMatchId' => ChatType.meal.typeName,
