@@ -12,7 +12,7 @@ class UserService {
   Future<List<String>> getUserIntraNames(List<int> ids, String token) async {
     Uri uri = Uri.http(
         '${dotenv.env['ROOT_URL']}'.substring(7), '/api/v1/user/intra', {
-      'userIdList': ids.map((e) => e.toString()).toList(),
+      'useridList': ids.map((e) => e.toString()).toList(),
     });
 
     print(uri);
@@ -26,9 +26,10 @@ class UserService {
           statusCode: response.statusCode, message: response.body));
     }
 
-    print(response.body);
+    // print(response.body);
+    // print(jsonDecode(response.body));
 
-    return [];
+    return List<String>.from(jsonDecode(response.body));
   }
 
   Future<void> sendNotification(int userId, String msg, String token) async {

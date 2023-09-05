@@ -177,9 +177,16 @@ class ChatViewModel extends ChangeNotifier {
 
     print(chatRoom.isOpen);
     if (isAllOk(chatRoom)) {
+      List<String> intras =
+          await _userService.getUserIntraNames(chatRoom.users, token);
+      String names = intras.toString();
+
+      print('names: $names');
+      print(names.substring(1, names.length - 1));
+
       for (int userId in chatRoom.users) {
-        _userService.sendNotification(
-            userId, 'seongjki 님과 ilko 님이 매치되었습니다', token);
+        _userService.sendNotification(userId,
+            '${names.substring(1, names.length - 1)} 님이 매치되었습니다', token);
       }
     }
 
