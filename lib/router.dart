@@ -65,10 +65,12 @@ class MyRouter {
               GoRoute(
                   path: '$CHAT_PATH/:room_id',
                   builder: (context, state) {
+                    LoginViewModel loginViewModel = context.read();
                     return ChangeNotifierProvider(
                         create: (context) => ChatViewModel(
                             roomId: state.pathParameters['room_id']!,
-                            user: context.read<LoginViewModel>().user!),
+                            user: loginViewModel.user!,
+                            token: loginViewModel.token),
                         child: const ChatPage());
                   }),
             ]);

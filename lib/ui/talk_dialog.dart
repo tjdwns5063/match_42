@@ -126,7 +126,7 @@ class _TalkDialogState extends State<TalkDialog> {
                   onPressed: () {
                     matchViewModel
                         .matchStart(
-                            type: ChatType.talk,
+                            type: ChatType.chat,
                             capacity: populationList.indexOf(true) == 0 ? 2 : 4)
                         .then((value) => context.pop())
                         .onError((error, stackTrace) =>

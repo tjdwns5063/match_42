@@ -1,11 +1,14 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:match_42/service/chat_service.dart';
 import 'package:match_42/service/match_service.dart';
 
 enum ChatType {
-  talk('수다'),
-  eat('밥'),
+  chat('수다'),
+  meal('밥'),
   subject('과제');
 
   const ChatType(this.typeName);
@@ -14,23 +17,59 @@ enum ChatType {
 
 class MatchViewModel extends ChangeNotifier {
   MatchViewModel(String token) : _token = token {
-    updateStatus();
+    init();
+    // updateStatus();
   }
 
   MatchService matchService = MatchService.instance;
   final String _token;
-  Map<String, bool> matchStatus = {'밥': false, '수다': false, '과제': false};
+  Map<String, StreamSubscription<DocumentSnapshot<MatchData>>?>
+      matchSubscription = {'밥': null, '수다': null, '과제': null};
+  Map<String, MatchData?> matchStatus = {'밥': null, '수다': null, '과제': null};
+  Map<String, bool> get matching =>
+      matchStatus.map((key, value) => MapEntry(key, isMatching(key)));
 
-  Future<void> updateStatus() async {
-    Map<String, dynamic> data = await matchService.getMatchData(_token);
+  Future<void> init() async {
+    Map<String, dynamic> ids = await matchService.getMatchData(_token);
 
-    matchStatus[ChatType.eat.typeName] = data['mealMatchId'] != 0;
-    matchStatus[ChatType.subject.typeName] = data['subjectMatchId'] != 0;
-    matchStatus[ChatType.talk.typeName] = data['chatMatchId'] != 0;
+    for (MapEntry<String, dynamic> entry in ids.entries) {
+      if (entry.value == 0) continue;
 
-    print(matchStatus);
+      String key = switch (entry.key) {
+        'mealMatchId' => ChatType.meal.typeName,
+        'subjectMatchId' => ChatType.subject.typeName,
+        _ => ChatType.chat.typeName,
+      };
+      matchStatus[key] =
+          await matchService.getMatchDataById(entry.value, _token);
 
-    notifyListeners();
+      matchService.matchRef
+          .doc(matchStatus[key]!.firebaseMatchId)
+          .snapshots()
+          .listen((event) {
+        print('event called1 ${event.data()}');
+        matchStatus[key] = event.data();
+        print('1111 ${matchStatus[key]}');
+        notifyListeners();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    for (MapEntry<String,
+            StreamSubscription<DocumentSnapshot<MatchData>>?> entry
+        in matchSubscription.entries) {
+      entry.value?.cancel();
+    }
+  }
+
+  bool isMatching(String type) {
+    if (matchStatus[type] == null) return false;
+
+    return matchStatus[type]!.capacity > matchStatus[type]!.size;
   }
 
   Future<void> matchStart(
@@ -38,22 +77,52 @@ class MatchViewModel extends ChangeNotifier {
       required int capacity,
       bool isGender = false,
       String projectName = '',
-      String menu = ''}) {
+      String menu = ''}) async {
     return switch (type) {
-      ChatType.talk => matchService.startTalkMatch(capacity, _token),
-      ChatType.eat => matchService.startEatMatch(capacity, menu, _token),
+      ChatType.chat => matchService.startTalkMatch(capacity, _token),
+      ChatType.meal => matchService.startEatMatch(capacity, menu, _token),
       ChatType.subject =>
         matchService.startSubjectMatch(capacity, projectName, _token),
     }
-        .then((value) => updateStatus());
+        .then((value) {
+      if (matchSubscription[type.typeName] == null) {
+        matchSubscription[type.typeName] = matchService.matchRef
+            .doc(value.firebaseMatchId)
+            .snapshots()
+            .listen((event) {
+          MatchData? data = event.data();
+          print('event called2 ${event.data()}');
+          print('222 ${matchStatus[type.typeName]}');
+
+          if (data != null && data.capacity <= data.size) {
+            matchService.matchRef
+                .doc(matchStatus[type.typeName]?.firebaseMatchId)
+                .delete();
+            matchSubscription[type.typeName]?.cancel();
+            matchSubscription[type.typeName] = null;
+          }
+          matchStatus[type.typeName] = event.data();
+          notifyListeners();
+        });
+      }
+    });
   }
 
   Future<void> matchStop({required ChatType type}) async {
     return switch (type) {
-      ChatType.talk => matchService.stopTalkMatch(_token),
-      ChatType.eat => matchService.stopEatMatch(_token),
+      ChatType.chat => matchService.stopTalkMatch(_token),
+      ChatType.meal => matchService.stopEatMatch(_token),
       ChatType.subject => matchService.stopSubjectMatch(_token),
     }
-        .then((value) => updateStatus());
+        .then((value) {
+      matchService.matchRef
+          .doc(matchStatus[type.typeName]?.firebaseMatchId)
+          .delete();
+      matchSubscription[type.typeName]?.cancel();
+      matchSubscription[type.typeName] = null;
+      matchStatus[type.typeName] = null;
+
+      notifyListeners();
+    });
   }
 }

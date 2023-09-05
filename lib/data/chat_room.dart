@@ -11,6 +11,7 @@ class ChatRoom {
     required this.users,
     required this.unread,
     required this.lastMsg,
+    this.isOpen,
   });
 
   final String id;
@@ -19,6 +20,7 @@ class ChatRoom {
   final Timestamp open;
   final List<int> users;
   final List<int> unread;
+  List<bool>? isOpen;
   Message lastMsg;
 
   factory ChatRoom.fromFirestore(
@@ -33,6 +35,9 @@ class ChatRoom {
       open: data['open'],
       users: List.from(data['users']),
       unread: List.from(data['unread']),
+      isOpen: data['isOpen'] == null
+          ? List.filled(List.from(data['users']).length, false)
+          : List.from(data['isOpen']),
       lastMsg: Message.fromJson(data['lastMsg']),
     );
   }
@@ -45,6 +50,7 @@ class ChatRoom {
       'open': open,
       'users': users,
       'unread': unread,
+      'isOpen': isOpen,
       'lastMsg': lastMsg.toFirestore(),
     };
   }

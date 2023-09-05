@@ -51,6 +51,68 @@ class _ChatPageState extends State<ChatPage> {
       }
     }
 
+    Widget buildChatPage() {
+      return Column(
+        children: [
+          Expanded(
+            child: ListView.separated(
+                reverse: true,
+                controller: scroll,
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                itemBuilder: (context, index) {
+                  int i = chatViewModel.messages.length - index - 1;
+                  Message msg = chatViewModel.messages[i];
+
+                  if (i == 0) {
+                    return Column(
+                      children: [
+                        DateSeparator(date: msg.date.toDate()),
+                        generateMessage(i),
+                      ],
+                    );
+                  } else {
+                    return generateMessage(i);
+                  }
+                },
+                separatorBuilder: (context, index) {
+                  int i = chatViewModel.messages.length - index - 1;
+                  Message msg = chatViewModel.messages[i];
+
+                  if (chatViewModel.isChangeDate(i)) {
+                    return DateSeparator(date: msg.date.toDate());
+                  }
+                  return const SizedBox(
+                    height: 16.0,
+                  );
+                },
+                itemCount: chatViewModel.messages.length),
+          ),
+          (chatViewModel.remainSeconds ?? 42) > 0
+              ? Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: MessageSender(
+                    sendCallback: () =>
+                        chatViewModel.send(loginViewModel.user!, text),
+                    controller: text,
+                  ),
+                )
+              : const SizedBox(),
+        ],
+      );
+    }
+
+    Widget builder() {
+      if ((chatViewModel.remainSeconds ?? 42) > 0) {
+        return buildChatPage();
+      } else if ((chatViewModel.remainSeconds ?? 42) <= 0 &&
+          chatViewModel.chatRoom.isOpen![
+              chatViewModel.chatRoom.users.indexOf(loginViewModel.user!.id)]) {
+        return buildChatPage();
+      } else {
+        return const YesOrNo();
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
@@ -82,57 +144,7 @@ class _ChatPageState extends State<ChatPage> {
           )
         ],
       ),
-      body: ((chatViewModel.remainSeconds ?? 42) > 0)
-          ? Column(
-              children: [
-                Expanded(
-                  child: ListView.separated(
-                      reverse: true,
-                      controller: scroll,
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      itemBuilder: (context, index) {
-                        int i = chatViewModel.messages.length - index - 1;
-                        Message msg = chatViewModel.messages[i];
-
-                        if (i == 0) {
-                          return Column(
-                            children: [
-                              DateSeparator(date: msg.date.toDate()),
-                              generateMessage(i),
-                            ],
-                          );
-                        } else {
-                          return generateMessage(i);
-                        }
-                      },
-                      separatorBuilder: (context, index) {
-                        int i = chatViewModel.messages.length - index - 1;
-                        Message msg = chatViewModel.messages[i];
-
-                        if (chatViewModel.isChangeDate(i)) {
-                          return DateSeparator(date: msg.date.toDate());
-                        }
-                        return const SizedBox(
-                          height: 16.0,
-                        );
-                      },
-                      itemCount: chatViewModel.messages.length),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: MessageSender(
-                    sendCallback: () =>
-                        chatViewModel.send(loginViewModel.user!, text),
-                    controller: text,
-                  ),
-                )
-              ],
-            )
-          : Column(
-              children: [
-                YesOrNo(),
-              ],
-            ),
+      body: builder(),
     );
   }
 }
@@ -262,6 +274,7 @@ class OtherChatMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
+    ChatViewModel viewModel = context.read();
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,7 +295,9 @@ class OtherChatMessage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                msg.sender.nickname,
+                (viewModel.chatRoom.type == 'chat')
+                    ? msg.sender.nickname
+                    : msg.sender.intra,
               ),
               ConstrainedBox(
                 constraints: BoxConstraints(

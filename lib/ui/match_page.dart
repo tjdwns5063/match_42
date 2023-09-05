@@ -138,15 +138,14 @@ class _MatchPageState extends State<MatchPage> {
             controller: controller,
             labels: labels,
             selected: selected,
-            isQ: isQ,
+            isQ: matchViewModel.matching,
             onPageChanged: _onPageChanged,
             onPressed: _onPressed,
           ),
         ),
         ElevatedButton(
           onPressed: () {
-            if (matchViewModel.matchStatus[labels[selected.indexOf(true)]]! !=
-                true) {
+            if (!matchViewModel.matching[labels[selected.indexOf(true)]]!) {
               showDialog(
                   context: context,
                   builder: (context) {
@@ -161,9 +160,9 @@ class _MatchPageState extends State<MatchPage> {
                   });
             } else {
               if (labels[selected.indexOf(true)] == '밥') {
-                matchViewModel.matchStop(type: ChatType.eat);
+                matchViewModel.matchStop(type: ChatType.meal);
               } else if (labels[selected.indexOf(true)] == '수다') {
-                matchViewModel.matchStop(type: ChatType.talk);
+                matchViewModel.matchStop(type: ChatType.chat);
               } else {
                 matchViewModel.matchStop(type: ChatType.subject);
               }
@@ -172,8 +171,7 @@ class _MatchPageState extends State<MatchPage> {
           style: ElevatedButton.styleFrom(
               shape: const CircleBorder(), padding: const EdgeInsets.all(30.0)),
           child: Text(
-            (matchViewModel.matchStatus[labels[selected.indexOf(true)]]! !=
-                    true)
+            (!matchViewModel.matching[labels[selected.indexOf(true)]]!)
                 ? '시작'
                 : '중단',
             style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
@@ -214,7 +212,7 @@ class MatchPageView extends StatelessWidget {
           child: MatchListItem(
             label: labels[index],
             isSelect: selected[index],
-            isQ: matchViewModel.matchStatus[labels[index]]!,
+            isQ: matchViewModel.matching[labels[index]]!,
             onPressed: () => onPressed(index),
           ),
         );
@@ -248,6 +246,7 @@ class MatchListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
+    MatchViewModel matchViewModel = context.watch();
 
     return AnimatedScale(
       scale: isSelect ? 1.5 : 1.0,
@@ -257,7 +256,7 @@ class MatchListItem extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            isQ
+            matchViewModel.matching[label]!
                 ? Container(
                     height: 140.0,
                     width: 120.0,
