@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -51,7 +52,7 @@ class YesOrNo extends StatelessWidget {
               SizedBox(width: 20),
               TextButton(
                 onPressed: () {
-                  // Navigator.of(context).pop(false);
+                  context.pop();
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: colorScheme.secondaryContainer,

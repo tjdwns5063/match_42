@@ -115,9 +115,18 @@ class MatchViewModel extends ChangeNotifier {
       ChatType.subject => matchService.stopSubjectMatch(_token),
     }
         .then((value) {
-      matchService.matchRef
-          .doc(matchStatus[type.typeName]?.firebaseMatchId)
-          .delete();
+      if (matchStatus[type.typeName] != null &&
+          matchStatus[type.typeName]!.size == 1) {
+        matchService.matchRef
+            .doc(matchStatus[type.typeName]?.firebaseMatchId)
+            .delete();
+      } else {
+        matchService.matchRef
+            .doc(matchStatus[type.typeName]?.firebaseMatchId)
+            .update({
+          'size': matchStatus[type.typeName]!.size - 1,
+        });
+      }
       matchSubscription[type.typeName]?.cancel();
       matchSubscription[type.typeName] = null;
       matchStatus[type.typeName] = null;

@@ -138,6 +138,7 @@ class ChatViewModel extends ChangeNotifier {
         remainSeconds = remainSeconds! - 1;
         notifyListeners();
       } else {
+        notifyListeners();
         timer.cancel();
       }
     });

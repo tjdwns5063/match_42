@@ -33,7 +33,7 @@ class UserInterest extends StatelessWidget {
                   backgroundColor: colorScheme.secondaryContainer,
                   padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                 ),
-                child: Text(allInterest[i],
+                child: Text(interests[i],
                     style: TextStyle(
                       color: colorScheme.onSecondaryContainer,
                       fontSize: 22,

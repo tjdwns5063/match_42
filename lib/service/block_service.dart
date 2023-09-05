@@ -17,19 +17,15 @@ class BlockService {
       'blockUser': intraId,
     });
 
-    print(uri);
-
     http.Response response = await http.post(uri, headers: {
       'Authorization': 'Bearer $token',
     });
 
-    print(response.body);
-    Map<String, dynamic> json = jsonDecode(response.body);
-
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode, message: json['message']));
+          statusCode: response.statusCode, message: response.body));
     }
+    Map<String, dynamic> json = jsonDecode(response.body);
 
     return User.fromJson(json);
   }
@@ -43,14 +39,11 @@ class BlockService {
       'Authorization': 'Bearer $token',
     });
 
-    Map<String, dynamic> json = jsonDecode(response.body);
-
-    print(json);
-
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode, message: json['message']));
+          statusCode: response.statusCode, message: response.body));
     }
+    Map<String, dynamic> json = jsonDecode(response.body);
 
     return User.fromJson(json);
   }

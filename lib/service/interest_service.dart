@@ -19,12 +19,11 @@ class InterestService {
       'Authorization': 'Bearer $token',
     });
 
-    Map<String, dynamic> json = jsonDecode(response.body);
-
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode, message: json['message'] ?? ''));
+          statusCode: response.statusCode, message: response.body));
     }
+    Map<String, dynamic> json = jsonDecode(response.body);
 
     return List<String>.from(json['interests'].toList());
   }
@@ -43,12 +42,12 @@ class InterestService {
     );
 
     print(response.body);
-    Map<String, dynamic> json = jsonDecode(response.body);
 
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode, message: json['message'] ?? ''));
+          statusCode: response.statusCode, message: response.body));
     }
+    Map<String, dynamic> json = jsonDecode(response.body);
 
     return User.fromJson(json);
   }

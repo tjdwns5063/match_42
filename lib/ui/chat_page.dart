@@ -230,7 +230,7 @@ class MessageSender extends StatelessWidget {
           },
           style: ElevatedButton.styleFrom(
             shape: const CircleBorder(),
-            foregroundColor: colorScheme.onPrimary,
+            backgroundColor: colorScheme.primary,
             padding: EdgeInsets.zero,
           ),
           child: ImageIcon(
