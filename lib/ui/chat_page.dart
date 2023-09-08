@@ -276,6 +276,16 @@ class OtherChatMessage extends StatelessWidget {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     ChatViewModel viewModel = context.read();
 
+    String decideNickname() {
+      if (viewModel.chatRoom.type.toLowerCase() == 'chat') {
+        if (viewModel.isAllOk(viewModel.chatRoom)) {
+          return msg.sender.intra;
+        }
+        return msg.sender.nickname;
+      }
+      return msg.sender.intra;
+    }
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -295,9 +305,7 @@ class OtherChatMessage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                (viewModel.chatRoom.type.toLowerCase() == 'chat')
-                    ? msg.sender.nickname
-                    : msg.sender.intra,
+                decideNickname(),
               ),
               ConstrainedBox(
                 constraints: BoxConstraints(
