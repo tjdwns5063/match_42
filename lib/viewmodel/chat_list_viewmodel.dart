@@ -54,7 +54,11 @@ class ChatListViewModel extends ChangeNotifier {
     _subscription = stream.listen((event) async {
       List<ChatRoom> newList = [];
       for (final doc in event.docs) {
-        newList.add(doc.data());
+        ChatRoom chatRoom = doc.data();
+
+        if (chatRoom.users.contains(_user.id)) {
+          newList.add(doc.data());
+        }
       }
       _rooms = newList;
       print('totalUnread: $totalUnread');
@@ -65,12 +69,7 @@ class ChatListViewModel extends ChangeNotifier {
 
   List<ChatRoom> filterChatRoom() {
     if (isOn == 1) {
-      return _rooms
-          .where((element) =>
-              DateTime.now().compareTo(
-                  element.open.toDate().add(const Duration(hours: 42))) <
-              0)
-          .toList();
+      return _rooms;
     }
     return _rooms
         .where((element) =>
