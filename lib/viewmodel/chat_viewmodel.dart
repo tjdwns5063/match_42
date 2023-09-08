@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
+import 'package:match_42/data/remain_timer.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/service/chat_service.dart';
 import 'package:match_42/service/user_service.dart';
@@ -42,39 +42,25 @@ class ChatViewModel extends ChangeNotifier {
   late StreamSubscription _chatSubscription;
   late StreamSubscription _readSubscription;
 
-  late Timer _timer;
-  int? remainSeconds;
+  RemainTimer? timer;
+  int get remainTime => timer?.remainTime ?? 42;
 
   @override
   void dispose() {
     _chatSubscription.cancel();
     _readSubscription.cancel();
-    _timer.cancel();
+    timer?.timer.cancel();
     super.dispose();
   }
 
   Future<void> init() async {
-    _updateChat();
-    _readAll();
-    tickTimer();
     listen();
-  }
-
-  Future<void> _updateChat() async {
-    _messages = await _chatService.getAllMessage(roomId);
-    await _readAll();
-    notifyListeners();
-  }
-
-  Future<void> _readAll() async {
-    await _chatService.readAllMessage(roomId, user);
   }
 
   void listen() {
     final chatStream = _chatService.createMessageRef(roomId).snapshots();
 
     _chatSubscription = chatStream.listen((event) async {
-      print('here1');
       _messages = await _chatService.getAllMessage(roomId);
       notifyListeners();
     });
@@ -83,34 +69,33 @@ class ChatViewModel extends ChangeNotifier {
 
     _readSubscription = readStream.listen((event) async {
       _chatRoom = event.data()!;
+      timer = RemainTimer(openTime: _chatRoom.open, notify: notifyListeners);
       _readAll();
       notifyListeners();
     });
   }
 
-  void send(User sender, TextEditingController msg) {
-    if (msg.text.isEmpty) return;
+  void send(User sender, TextEditingController text) {
+    if (text.text.isEmpty) return;
 
-    _chatService.addMessage(
-        roomId,
-        Message(
-            sender: sender
-              ..decideProfile(chatRoom)
-              ..decideNickname(chatRoom),
-            message: msg.text,
-            date: Timestamp.now()));
+    Message message = Message(
+        sender: sender
+          ..decideProfile(chatRoom)
+          ..decideNickname(chatRoom),
+        message: text.text,
+        date: Timestamp.now());
 
-    print(chatRoom.type);
-    print(user);
+    _addMessage(message);
+
     for (int userId in chatRoom.users) {
       if (user.id == userId) continue;
       _userService.sendNotification(
           userId,
-          '${(chatRoom.type.toLowerCase() == 'chat') ? sender.nickname : sender.intra}: ${msg.text}',
+          '${(chatRoom.type.toLowerCase() == 'chat') ? sender.nickname : sender.intra}: ${text.text}',
           token);
     }
 
-    msg.clear();
+    text.clear();
   }
 
   void sendSystem(String msg) {
@@ -122,39 +107,10 @@ class ChatViewModel extends ChangeNotifier {
         roomId, Message(sender: system, message: msg, date: Timestamp.now()));
   }
 
-  bool isChangeDate(int i) {
-    DateTime prevDate = messages[i - 1].date.toDate();
-    DateTime currDate = messages[i].date.toDate();
-
-    return i > 0 && prevDate.day != currDate.day;
-  }
-
-  Future<void> tickTimer() async {
-    final ChatRoom room = await _chatService.getChatRoom(roomId) as ChatRoom;
-    remainSeconds = calculateRemainSeconds(room.open);
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (remainSeconds! > 0) {
-        remainSeconds = remainSeconds! - 1;
-        notifyListeners();
-      } else {
-        notifyListeners();
-        timer.cancel();
-      }
-    });
-  }
-
-  int calculateRemainSeconds(Timestamp openTime) {
-    int remainSeconds =
-        openTime.seconds + (42 * 3600) - Timestamp.now().seconds;
-
-    return remainSeconds > 0 ? remainSeconds : 0;
-  }
-
   String parseHMS() {
-    if (remainSeconds == null) return 'Loading...';
+    if (timer == null) return 'Loading...';
 
-    int remain = remainSeconds!;
+    int remain = remainTime;
 
     int h = remain ~/ 3600;
 
@@ -169,28 +125,37 @@ class ChatViewModel extends ChangeNotifier {
     return '$h : $m : $s 남음';
   }
 
-  bool isAllOk(ChatRoom chatRoom) {
-    return chatRoom.isOpen!.every((element) => element == true);
+  Future<void> updateOpenResult() async {
+    _chatRoom.updateIsOpen(user.id);
+
+    if (_chatRoom.isEveryOpened()) {
+      _sendMatchMessage();
+    }
+    notifyListeners();
   }
 
-  Future<void> updateOpenResult() async {
-    _chatRoom = await _chatService.setIsOpen(roomId, true, user.id);
+  Future<void> _sendMatchMessage() async {
+    List<String> intras =
+        await _userService.getUserIntraNames(chatRoom.users, token);
+    String names = intras.toString();
 
-    print(chatRoom.isOpen);
-    if (isAllOk(chatRoom)) {
-      List<String> intras =
-          await _userService.getUserIntraNames(chatRoom.users, token);
-      String names = intras.toString();
-
-      print('names: $names');
-      print(names.substring(1, names.length - 1));
-
-      for (int userId in chatRoom.users) {
-        _userService.sendNotification(userId,
-            '${names.substring(1, names.length - 1)} 님이 매치되었습니다', token);
-      }
+    for (int userId in chatRoom.users) {
+      _userService.sendNotification(
+          userId, '${names.substring(1, names.length - 1)} 님이 매치되었습니다', token);
     }
+  }
 
-    notifyListeners();
+  Future<void> _addMessage(Message msg) async {
+    _chatRoom.addUnreadMessage(msg);
+    _chatRoom.lastMsg = msg;
+
+    await _chatService.createMessageRef(roomId).add(msg);
+    await _chatService.roomRef.doc(roomId).set(_chatRoom);
+  }
+
+  Future<void> _readAll() async {
+    _chatRoom.readAll(user.id);
+
+    await _chatService.updateUnread(_chatRoom);
   }
 }

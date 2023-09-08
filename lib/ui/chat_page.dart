@@ -77,8 +77,9 @@ class _ChatPageState extends State<ChatPage> {
                 separatorBuilder: (context, index) {
                   int i = chatViewModel.messages.length - index - 1;
                   Message msg = chatViewModel.messages[i];
+                  Message prevMsg = chatViewModel.messages[i - 1];
 
-                  if (chatViewModel.isChangeDate(i)) {
+                  if (i > 0 && msg.isChangeDate(prevMsg.date.toDate())) {
                     return DateSeparator(date: msg.date.toDate());
                   }
                   return const SizedBox(
@@ -87,7 +88,7 @@ class _ChatPageState extends State<ChatPage> {
                 },
                 itemCount: chatViewModel.messages.length),
           ),
-          (chatViewModel.remainSeconds ?? 42) > 0
+          (chatViewModel.remainTime) > 0
               ? Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: MessageSender(
@@ -102,9 +103,9 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     Widget builder() {
-      if ((chatViewModel.remainSeconds ?? 42) > 0) {
+      if ((chatViewModel.remainTime) > 0) {
         return buildChatPage();
-      } else if ((chatViewModel.remainSeconds ?? 42) <= 0 &&
+      } else if ((chatViewModel.remainTime) <= 0 &&
           chatViewModel.chatRoom.isOpen![
               chatViewModel.chatRoom.users.indexOf(loginViewModel.user!.id)]) {
         return buildChatPage();
@@ -278,7 +279,7 @@ class OtherChatMessage extends StatelessWidget {
 
     String decideNickname() {
       if (viewModel.chatRoom.type.toLowerCase() == 'chat') {
-        if (viewModel.isAllOk(viewModel.chatRoom)) {
+        if (viewModel.chatRoom.isEveryOpened()) {
           return msg.sender.intra;
         }
         return msg.sender.nickname;

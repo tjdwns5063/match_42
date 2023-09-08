@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:match_42/data/message.dart';
-import 'package:match_42/data/user.dart';
 
 class ChatRoom {
   ChatRoom({
@@ -11,8 +10,8 @@ class ChatRoom {
     required this.users,
     required this.unread,
     required this.lastMsg,
-    this.isOpen,
-  });
+    List<bool>? isOpen,
+  }) : isOpen = isOpen ?? [];
 
   final String id;
   final String name;
@@ -20,7 +19,7 @@ class ChatRoom {
   final Timestamp open;
   final List<int> users;
   final List<int> unread;
-  List<bool>? isOpen;
+  final List<bool> isOpen;
   Message lastMsg;
 
   factory ChatRoom.fromFirestore(
@@ -28,17 +27,23 @@ class ChatRoom {
     SnapshotOptions? options,
   ) {
     final data = snapshot.data();
+    print(data);
+
+    return ChatRoom.fromJson(snapshot.id, data!);
+  }
+
+  factory ChatRoom.fromJson(String id, Map<String, dynamic> json) {
     return ChatRoom(
-      id: snapshot.id,
-      name: data!['name'],
-      type: data['type'],
-      open: data['open'],
-      users: List.from(data['users']),
-      unread: List.from(data['unread']),
-      isOpen: data['isOpen'] == null
-          ? List.filled(List.from(data['users']).length, false)
-          : List.from(data['isOpen']),
-      lastMsg: Message.fromJson(data['lastMsg']),
+      id: id,
+      name: json['name'],
+      type: json['type'],
+      open: json['open'],
+      users: List.from(json['users']),
+      unread: List.from(json['unread']),
+      isOpen: json['isOpen'] == null
+          ? List.filled(List.from(json['users']).length, false)
+          : List.from(json['isOpen']),
+      lastMsg: Message.fromJson(json['lastMsg']),
     );
   }
 
@@ -53,6 +58,30 @@ class ChatRoom {
       'isOpen': isOpen,
       'lastMsg': lastMsg.toFirestore(),
     };
+  }
+
+  void addUnreadMessage(Message msg) {
+    for (int i = 0; i < unread.length; ++i) {
+      int userId = users[i];
+
+      if (msg.isNotSender(userId)) {
+        unread[i] += 1;
+      }
+    }
+  }
+
+  void updateIsOpen(int userId) {
+    isOpen[users.indexOf(userId)] = true;
+  }
+
+  bool isEveryOpened() {
+    return isOpen.every((element) => element == true);
+  }
+
+  void readAll(int userId) {
+    unread[users.indexWhere((element) {
+      return element == userId;
+    })] = 0;
   }
 
   @override
