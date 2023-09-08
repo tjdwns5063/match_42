@@ -29,9 +29,10 @@ class ChatListPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
             children: [
-              const Text(
-                '채팅',
-                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
+              Text(
+                viewModel.isOn == 1 ? '모든 방' : '비활성화 된 방',
+                style: const TextStyle(
+                    fontSize: 20.0, fontWeight: FontWeight.w700),
               ),
               const SizedBox(
                 width: 8.0,
