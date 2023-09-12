@@ -27,7 +27,6 @@ class ChatRoom {
     SnapshotOptions? options,
   ) {
     final data = snapshot.data();
-    print(data);
 
     return ChatRoom.fromJson(snapshot.id, data!);
   }

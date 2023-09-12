@@ -61,7 +61,6 @@ class ChatListViewModel extends ChangeNotifier {
         }
       }
       _rooms = newList;
-      print('totalUnread: $totalUnread');
       notifyListeners();
       // _updateRooms(me);
     });

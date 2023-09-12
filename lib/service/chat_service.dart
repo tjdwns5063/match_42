@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
@@ -29,8 +31,8 @@ class ChatService {
             toFirestore: (Message msg, options) => msg.toFirestore());
   }
 
-  Future<void> addChatRoom(ChatRoom chatRoom) async {
-    await roomRef.add(chatRoom);
+  Future<DocumentReference<ChatRoom>> addChatRoom(ChatRoom chatRoom) async {
+    return await roomRef.add(chatRoom);
   }
 
   Future<List<ChatRoom>> getAllChatRoom(User me) async {

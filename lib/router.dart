@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:match_42/service/chat_service.dart';
+import 'package:match_42/service/user_service.dart';
 import 'package:match_42/ui/chat_page.dart';
 import 'package:match_42/ui/login_page.dart';
 import 'package:match_42/ui/main_layout.dart';
@@ -70,7 +72,9 @@ class MyRouter {
                         create: (context) => ChatViewModel(
                             roomId: state.pathParameters['room_id']!,
                             user: loginViewModel.user!,
-                            token: loginViewModel.token),
+                            token: loginViewModel.token,
+                            chatService: ChatService.instance,
+                            userService: UserService.instance),
                         child: const ChatPage());
                   }),
             ]);

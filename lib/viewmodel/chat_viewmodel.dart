@@ -12,12 +12,18 @@ import 'package:match_42/service/user_service.dart';
 
 class ChatViewModel extends ChangeNotifier {
   ChatViewModel(
-      {required this.roomId, required this.user, required this.token}) {
+      {required this.roomId,
+      required this.user,
+      required this.token,
+      required ChatService chatService,
+      required UserService userService})
+      : _chatService = chatService,
+        _userService = userService {
     init();
   }
 
-  final ChatService _chatService = ChatService.instance;
-  final UserService _userService = UserService.instance;
+  final ChatService _chatService;
+  final UserService _userService;
   final String roomId;
   final User user;
   final String token;
@@ -28,7 +34,7 @@ class ChatViewModel extends ChangeNotifier {
       name: 'test',
       type: 'eat',
       open: Timestamp.now(),
-      users: [0, 0],
+      users: [1, 2],
       unread: [0, 0],
       lastMsg: Message(
           sender: User(id: 0, nickname: '', intra: ''),
@@ -68,14 +74,15 @@ class ChatViewModel extends ChangeNotifier {
     final readStream = _chatService.roomRef.doc(roomId).snapshots();
 
     _readSubscription = readStream.listen((event) async {
-      _chatRoom = event.data()!;
+      _chatRoom = event.data() ?? _chatRoom;
+
       timer = RemainTimer(openTime: _chatRoom.open, notify: notifyListeners);
-      _readAll();
+      await _readAll();
       notifyListeners();
     });
   }
 
-  void send(User sender, TextEditingController text) {
+  Future<void> send(User sender, TextEditingController text) async {
     if (text.text.isEmpty) return;
 
     Message message = Message(
@@ -85,7 +92,7 @@ class ChatViewModel extends ChangeNotifier {
         message: text.text,
         date: Timestamp.now());
 
-    _addMessage(message);
+    await _addMessage(message);
 
     for (int userId in chatRoom.users) {
       if (user.id == userId) continue;
