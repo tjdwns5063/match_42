@@ -85,11 +85,10 @@ void checkAllUserIsOpenTest() {
 
 void main() {
   group('ChatRoom', () {
-    test('send message should increment unread message',
-        () => incrementUnreadMessageCountTest());
-    test('read message should clear unread message',
+    test('읽지 않은 메세지가 적절하게 증가하는지 테스트', () => incrementUnreadMessageCountTest());
+    test('메세지를 읽었을때 적절하게 읽지 않은 메세지가 감소하는지 테스트',
         () => readMessagesThenClearUnreadMessageCountTest());
-    test('update isOpen should be true', () => updateOpenStateTest());
-    test('check all user isOpen true', () => checkAllUserIsOpenTest());
+    test('아이디 공개 여부 결정이 잘 작동하는지 테스트', () => updateOpenStateTest());
+    test('모든 유저가 아이디를 공개했는지를 테스트', () => checkAllUserIsOpenTest());
   });
 }

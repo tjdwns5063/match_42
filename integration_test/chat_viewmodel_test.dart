@@ -76,9 +76,8 @@ Future<void> main() async {
   });
 
   group('chat viewmodel test', () {
-    test('when send message, check adding message successfully',
-        () => sendMessageTest());
-    test('when remain time zero, all user decide open id test',
+    test('메세지 전송 기능 테스트', () => sendMessageTest());
+    test('채팅 시간이 끝난 후, 모두 아이디 공개를 결정한 경우를 테스트',
         () => whenRemainTimeZeroAllUserDecideOpenIdTest());
   });
 }
