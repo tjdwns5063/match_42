@@ -21,10 +21,10 @@ Future<void> sendMessageTest() async {
   MockUserService userService = MockUserService();
   ChatService chatService = ChatService.instance;
   ChatRoom chatRoom = ChatRoomCreator.create();
-  await chatService.addChatRoom(chatRoom);
+  final ref = await chatService.addChatRoom(chatRoom);
 
   ChatViewModel chatViewModel = ChatViewModel(
-      chatRoom: chatRoom,
+      roomId: ref.id,
       user: me,
       token: 'token',
       chatService: chatService,
@@ -32,8 +32,8 @@ Future<void> sendMessageTest() async {
 
   await chatViewModel.send(me, TextEditingController(text: 'hello'));
 
-  verify(userService.sendNotification(2, 'seongjki: hello', 'token'));
   expect(chatViewModel.messages[0].message, 'hello');
+  verify(userService.sendNotification(2, 'seongjki: hello', 'token'));
 
   chatViewModel.dispose();
 }
@@ -43,18 +43,20 @@ Future<void> whenRemainTimeZeroAllUserDecideOpenIdTest() async {
   MockUserService userService = MockUserService();
   ChatService chatService = ChatService.instance;
   ChatRoom chatRoom = ChatRoomCreator.create();
-  chatRoom.updateIsOpen(2);
-  await chatService.addChatRoom(chatRoom);
+  final ref = await chatService.addChatRoom(chatRoom);
 
   when(userService.getUserIntraNames([1, 2], 'token'))
       .thenAnswer((_) => Future.value(['seongjki', 'jiheekan']));
 
   ChatViewModel chatViewModel = ChatViewModel(
-      chatRoom: chatRoom,
+      roomId: ref.id,
       user: me,
       token: 'token',
       chatService: chatService,
       userService: userService);
+
+  await chatViewModel.init();
+  chatViewModel.chatRoom.updateIsOpen(2);
 
   await chatViewModel.updateOpenResult();
 
@@ -66,6 +68,22 @@ Future<void> whenRemainTimeZeroAllUserDecideOpenIdTest() async {
   ]);
 
   chatViewModel.dispose();
+}
+
+Future<void> sendSystemMessageTest() async {
+  User me = User(id: 1, nickname: '', intra: 'seongjki', profile: '');
+  MockUserService userService = MockUserService();
+  ChatService chatService = ChatService.instance;
+  ChatRoom chatRoom = ChatRoomCreator.create();
+  final ref = await chatService.addChatRoom(chatRoom);
+  ChatViewModel chatViewModel = ChatViewModel(
+      roomId: ref.id,
+      user: me,
+      token: 'token',
+      chatService: chatService,
+      userService: userService);
+
+  chatViewModel.sendSystem('')
 }
 
 Future<void> main() async {
