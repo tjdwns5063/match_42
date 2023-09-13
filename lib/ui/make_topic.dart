@@ -60,9 +60,7 @@ class MakeTopic extends StatelessWidget {
           ),
           child: TextButton(
             onPressed: () {
-              int index =
-                  Random(DateTime.now().millisecond).nextInt(topics.length);
-              viewModel.sendSystem(topics[index]);
+              viewModel.makeTopic();
               context.pop();
             },
             style: TextButton.styleFrom(

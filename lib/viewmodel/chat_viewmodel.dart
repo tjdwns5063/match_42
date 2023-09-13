@@ -103,7 +103,11 @@ class ChatViewModel extends ChangeNotifier {
     final chatStream = _chatService.createMessageRef(chatRoom.id).snapshots();
 
     _chatSubscription = chatStream.listen((event) async {
-      _messages = await _chatService.getAllMessage(chatRoom.id);
+      List<Message> newMessages = [];
+      for (QueryDocumentSnapshot<Message> doc in event.docs) {
+        newMessages.add(doc.data());
+      }
+      _messages = newMessages;
       notifyListeners();
     });
 
@@ -143,7 +147,7 @@ class ChatViewModel extends ChangeNotifier {
     text.clear();
   }
 
-  Future<void> sendSystem(String msg) async {
+  Future<void> _sendSystem(String msg) async {
     if (msg.isEmpty) return;
 
     User system = User(id: 0, nickname: 'system', intra: 'system');
@@ -189,5 +193,10 @@ class ChatViewModel extends ChangeNotifier {
 
   bool isRemainTime() {
     return (timer?.remainTime ?? 42 * 3600) > 0;
+  }
+
+  Future<void> makeTopic() async {
+    int index = Random(DateTime.now().millisecond).nextInt(topics.length);
+    await _sendSystem(topics[index]);
   }
 }

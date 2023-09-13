@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:match_42/data/chat_room.dart';
@@ -55,7 +52,6 @@ Future<void> whenRemainTimeZeroAllUserDecideOpenIdTest() async {
       chatService: chatService,
       userService: userService);
 
-  await chatViewModel.init();
   chatViewModel.chatRoom.updateIsOpen(2);
 
   await chatViewModel.updateOpenResult();
@@ -70,7 +66,7 @@ Future<void> whenRemainTimeZeroAllUserDecideOpenIdTest() async {
   chatViewModel.dispose();
 }
 
-Future<void> sendSystemMessageTest() async {
+Future<void> conversationTopicRecommendationTest() async {
   User me = User(id: 1, nickname: '', intra: 'seongjki', profile: '');
   MockUserService userService = MockUserService();
   ChatService chatService = ChatService.instance;
@@ -83,19 +79,24 @@ Future<void> sendSystemMessageTest() async {
       chatService: chatService,
       userService: userService);
 
-  chatViewModel.sendSystem('')
+  await chatViewModel.makeTopic();
+
+  expect(topics.contains(chatViewModel.messages[0].message), true);
+
+  chatViewModel.dispose();
 }
 
 Future<void> main() async {
   await FirebaseSetter.init();
 
   setUp(() async {
-    FirebaseSetter.deleteFirestore();
+    await FirebaseSetter.deleteFirestore();
   });
 
   group('chat viewmodel test', () {
     test('메세지 전송 기능 테스트', () => sendMessageTest());
     test('채팅 시간이 끝난 후, 모두 아이디 공개를 결정한 경우를 테스트',
         () => whenRemainTimeZeroAllUserDecideOpenIdTest());
+    test('대화 주제 추천 기능 테스트', () => conversationTopicRecommendationTest());
   });
 }
