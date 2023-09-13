@@ -88,7 +88,7 @@ class _ChatPageState extends State<ChatPage> {
                 },
                 itemCount: chatViewModel.messages.length),
           ),
-          (chatViewModel.remainTime) > 0
+          chatViewModel.isRemainTime()
               ? Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: MessageSender(
@@ -103,10 +103,10 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     Widget builder() {
-      if ((chatViewModel.remainTime) > 0) {
+      if (chatViewModel.isRemainTime()) {
         return buildChatPage();
-      } else if ((chatViewModel.remainTime) <= 0 &&
-          chatViewModel.chatRoom.isOpen![
+      } else if (!chatViewModel.isRemainTime() &&
+          chatViewModel.chatRoom.isOpen[
               chatViewModel.chatRoom.users.indexOf(loginViewModel.user!.id)]) {
         return buildChatPage();
       } else {
@@ -127,7 +127,7 @@ class _ChatPageState extends State<ChatPage> {
                 color: colorScheme.secondaryContainer,
                 borderRadius: BorderRadius.circular(20.0)),
             child: Text(
-              chatViewModel.parseHMS(),
+              chatViewModel.remainTime,
               style:
                   const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
             )),

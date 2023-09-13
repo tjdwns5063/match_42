@@ -4,18 +4,38 @@ import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
 import 'package:test/test.dart';
 
+class ChatRoomCreator {
+  static ChatRoom createGroup() {
+    return ChatRoom(
+        id: '0',
+        name: 'test',
+        type: 'meal',
+        open: Timestamp.now(),
+        users: [1, 2, 3, 4],
+        unread: [0, 0, 0, 0],
+        lastMsg: Message(
+            sender: User(id: 1, intra: 'test1', nickname: 'test'),
+            message: 'hi',
+            date: Timestamp.now()));
+  }
+
+  static ChatRoom create() {
+    return ChatRoom(
+        id: '0',
+        name: 'test',
+        type: 'meal',
+        open: Timestamp.now(),
+        users: [1, 2],
+        unread: [0, 0],
+        lastMsg: Message(
+            sender: User(id: 1, intra: 'test1', nickname: 'test'),
+            message: 'hi',
+            date: Timestamp.now()));
+  }
+}
+
 void incrementUnreadMessageCountTest() {
-  ChatRoom chatRoom = ChatRoom(
-      id: '0',
-      name: 'test',
-      type: 'meal',
-      open: Timestamp.now(),
-      users: [1, 2, 3, 4],
-      unread: [0, 0, 0, 0],
-      lastMsg: Message(
-          sender: User(id: 1, intra: 'test1', nickname: 'test'),
-          message: 'hi',
-          date: Timestamp.now()));
+  ChatRoom chatRoom = ChatRoomCreator.createGroup();
 
   Message message = Message(
       sender: User(id: 2, intra: 'test2', nickname: 'test2'),
@@ -35,21 +55,32 @@ void incrementUnreadMessageCountTest() {
 }
 
 void readMessagesThenClearUnreadMessageCountTest() {
-  ChatRoom chatRoom = ChatRoom(
-      id: '0',
-      name: 'test',
-      type: 'meal',
-      open: Timestamp.now(),
-      users: [1, 2, 3, 4],
-      unread: [2, 3, 4, 5],
-      lastMsg: Message(
-          sender: User(id: 1, intra: 'test1', nickname: 'test'),
-          message: 'hi',
-          date: Timestamp.now()));
+  ChatRoom chatRoom = ChatRoomCreator.createGroup();
 
   chatRoom.readAll(3);
 
   expect(chatRoom.unread[chatRoom.users.indexOf(3)], 0);
+}
+
+void updateOpenStateTest() {
+  User me = User(id: 1, nickname: 'me', intra: 'seongjki');
+
+  ChatRoom chatRoom = ChatRoomCreator.create();
+
+  chatRoom.updateIsOpen(me.id);
+
+  expect(chatRoom.isOpen[chatRoom.users.indexOf(me.id)], true);
+}
+
+void checkAllUserIsOpenTest() {
+  ChatRoom chatRoom = ChatRoomCreator.create();
+
+  chatRoom.updateIsOpen(1);
+  chatRoom.updateIsOpen(2);
+
+  bool result = chatRoom.isEveryOpened();
+
+  expect(result, true);
 }
 
 void main() {
@@ -58,5 +89,7 @@ void main() {
         () => incrementUnreadMessageCountTest());
     test('read message should clear unread message',
         () => readMessagesThenClearUnreadMessageCountTest());
+    test('update isOpen should be true', () => updateOpenStateTest());
+    test('check all user isOpen true', () => checkAllUserIsOpenTest());
   });
 }

@@ -68,9 +68,13 @@ class MyRouter {
                   path: '$CHAT_PATH/:room_id',
                   builder: (context, state) {
                     LoginViewModel loginViewModel = context.read();
+                    ChatListViewModel chatListViewModel = context.read();
                     return ChangeNotifierProvider(
                         create: (context) => ChatViewModel(
-                            roomId: state.pathParameters['room_id']!,
+                            chatRoom: chatListViewModel.rooms.firstWhere(
+                                (element) =>
+                                    element.id ==
+                                    state.pathParameters['room_id']),
                             user: loginViewModel.user!,
                             token: loginViewModel.token,
                             chatService: ChatService.instance,

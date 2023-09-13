@@ -1,73 +1,84 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:match_42/data/chat_room.dart';
-import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/service/chat_service.dart';
 import 'package:match_42/service/user_service.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:mockito/annotations.dart';
-import 'package:integration_test/integration_test.dart';
-import 'package:http/http.dart' as http;
+import 'package:mockito/mockito.dart';
 
+import '../test/chat_room_test.dart';
+import 'FirebaseSetter.dart';
 @GenerateNiceMocks([MockSpec<UserService>()])
 import 'chat_viewmodel_test.mocks.dart';
 
-Future<void> deleteFirestore() async {
-  Uri uri = Uri.http('10.0.2.2:8080',
-      '/emulator/v1/projects/match-42/databases/(default)/documents');
+Future<void> sendMessageTest() async {
+  User me = User(id: 1, nickname: '', intra: 'seongjki', profile: '');
+  MockUserService userService = MockUserService();
+  ChatService chatService = ChatService.instance;
+  ChatRoom chatRoom = ChatRoomCreator.create();
+  await chatService.addChatRoom(chatRoom);
 
-  http.Response response =
-      await http.delete(uri, headers: {'Authorization': 'Bearer owner'});
+  ChatViewModel chatViewModel = ChatViewModel(
+      chatRoom: chatRoom,
+      user: me,
+      token: 'token',
+      chatService: chatService,
+      userService: userService);
 
-  if (response.statusCode != 200) {
-    print('Firestore clear failed!');
-  }
+  await chatViewModel.send(me, TextEditingController(text: 'hello'));
+
+  verify(userService.sendNotification(2, 'seongjki: hello', 'token'));
+  expect(chatViewModel.messages[0].message, 'hello');
+
+  chatViewModel.dispose();
+}
+
+Future<void> whenRemainTimeZeroAllUserDecideOpenIdTest() async {
+  User me = User(id: 1, nickname: '', intra: 'seongjki', profile: '');
+  MockUserService userService = MockUserService();
+  ChatService chatService = ChatService.instance;
+  ChatRoom chatRoom = ChatRoomCreator.create();
+  chatRoom.updateIsOpen(2);
+  await chatService.addChatRoom(chatRoom);
+
+  when(userService.getUserIntraNames([1, 2], 'token'))
+      .thenAnswer((_) => Future.value(['seongjki', 'jiheekan']));
+
+  ChatViewModel chatViewModel = ChatViewModel(
+      chatRoom: chatRoom,
+      user: me,
+      token: 'token',
+      chatService: chatService,
+      userService: userService);
+
+  await chatViewModel.updateOpenResult();
+
+  expect(chatViewModel.chatRoom.isEveryOpened(), true);
+  verifyInOrder([
+    userService.getUserIntraNames([1, 2], 'token'),
+    userService.sendNotification(1, 'seongjki, jiheekan 님이 매치되었습니다', 'token'),
+    userService.sendNotification(2, 'seongjki, jiheekan 님이 매치되었습니다', 'token')
+  ]);
+
+  chatViewModel.dispose();
 }
 
 Future<void> main() async {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  await FirebaseSetter.init();
 
   setUp(() async {
-    await Firebase.initializeApp();
-    FirebaseFirestore.instance
-        .useFirestoreEmulator('localhost', 8080, sslEnabled: false);
-    FirebaseFirestore.instance.settings =
-        const Settings(persistenceEnabled: false);
-    deleteFirestore();
+    FirebaseSetter.deleteFirestore();
   });
 
-  test('when send message, check adding message successfully', () async {
-    User user = User(id: 1, nickname: '', intra: 'seongjki', profile: '');
-    TextEditingController textEditingController =
-        TextEditingController(text: 'hello');
-    UserService userService = MockUserService();
-    ChatRoom chatRoom = ChatRoom(
-        id: '',
-        name: 'test',
-        type: 'meal',
-        open: Timestamp.now(),
-        users: [1, 2],
-        unread: [0, 0],
-        lastMsg: Message(
-            sender: User(id: 0, nickname: '', intra: ''),
-            message: 'hi',
-            date: Timestamp.now()));
-
-    ChatService chatService = ChatService.instance;
-
-    DocumentReference<ChatRoom> ref = await chatService.addChatRoom(chatRoom);
-
-    ChatViewModel chatViewModel = ChatViewModel(
-        roomId: ref.id,
-        user: user,
-        token: 'token',
-        chatService: chatService,
-        userService: userService);
-
-    await chatViewModel.send(user, textEditingController);
-    expect(chatViewModel.messages[0].message, 'hello');
-  }, onPlatform: {'browser': Skip(), 'windows': Skip(), 'linux': Skip()});
+  group('chat viewmodel test', () {
+    test('when send message, check adding message successfully',
+        () => sendMessageTest());
+    test('when remain time zero, all user decide open id test',
+        () => whenRemainTimeZeroAllUserDecideOpenIdTest());
+  });
 }

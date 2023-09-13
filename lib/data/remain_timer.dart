@@ -22,6 +22,22 @@ class RemainTimer {
     return remainSeconds > 0 ? remainSeconds : 0;
   }
 
+  String parseRemainTime() {
+    int remainTime = _remainTime;
+
+    int h = remainTime ~/ 3600;
+
+    remainTime -= h * 3600;
+
+    int m = remainTime ~/ 60;
+
+    remainTime -= m * 60;
+
+    int s = remainTime;
+
+    return '$h : $m : $s 남음';
+  }
+
   void startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainTime > 0) {

@@ -11,7 +11,7 @@ class ChatRoom {
     required this.unread,
     required this.lastMsg,
     List<bool>? isOpen,
-  }) : isOpen = isOpen ?? [];
+  }) : isOpen = isOpen ?? List.filled(users.length, false);
 
   final String id;
   final String name;

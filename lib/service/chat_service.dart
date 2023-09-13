@@ -1,11 +1,7 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
-
-import '../error/http_exception.dart';
 
 class ChatService {
   static final ChatService instance = ChatService._create();
@@ -48,7 +44,7 @@ class ChatService {
     return snapshot.data();
   }
 
-  Future<void> addSystemMessage(String roomId, Message msg) async {
+  Future<void> addMessage(String roomId, Message msg) async {
     await createMessageRef(roomId).add(msg);
   }
 
@@ -63,6 +59,10 @@ class ChatService {
     return result;
   }
 
+  Future<void> updateChatRoom(ChatRoom chatRoom) async {
+    await roomRef.doc(chatRoom.id).set(chatRoom);
+  }
+
   Future<void> updateUnread(ChatRoom chatRoom) async {
     roomRef.doc(chatRoom.id).update({
       'unread': chatRoom.unread,
@@ -70,14 +70,8 @@ class ChatService {
   }
 
   Future<void> updateIsOpen(ChatRoom chatRoom) async {
-    // ChatRoom chatRoom = await getChatRoom(roomId) as ChatRoom;
-
-    // chatRoom.isOpen![chatRoom.users.indexOf(id)] = true;
-
     roomRef.doc(chatRoom.id).update({
       'isOpen': chatRoom.isOpen,
     });
-
-    // return chatRoom;
   }
 }
