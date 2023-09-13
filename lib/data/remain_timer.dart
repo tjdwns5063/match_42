@@ -1,11 +1,10 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 
 class RemainTimer {
   RemainTimer({required Timestamp openTime, required this.notify})
-      : _remainTime = calculateRemainSeconds(openTime) {
+      : _remainTime = _calculateRemainSeconds(openTime) {
     startTimer();
   }
 
@@ -15,7 +14,7 @@ class RemainTimer {
 
   late Timer timer;
 
-  static int calculateRemainSeconds(Timestamp openTime) {
+  static int _calculateRemainSeconds(Timestamp openTime) {
     int remainSeconds =
         openTime.seconds + (42 * 3600) - Timestamp.now().seconds;
 
@@ -26,14 +25,8 @@ class RemainTimer {
     int remainTime = _remainTime;
 
     int h = remainTime ~/ 3600;
-
-    remainTime -= h * 3600;
-
-    int m = remainTime ~/ 60;
-
-    remainTime -= m * 60;
-
-    int s = remainTime;
+    int m = remainTime % 3600 ~/ 60;
+    int s = remainTime % 3600 % 60;
 
     return '$h : $m : $s 남음';
   }
