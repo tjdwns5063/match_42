@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:match_42/service/block_service.dart';
 import 'package:match_42/service/chat_service.dart';
+import 'package:match_42/service/interest_service.dart';
 import 'package:match_42/service/user_service.dart';
 import 'package:match_42/ui/chat_page.dart';
 import 'package:match_42/ui/login_page.dart';
@@ -54,6 +56,8 @@ class MyRouter {
                         ),
                         ChangeNotifierProvider(
                             create: (BuildContext context) => MyPageViewModel(
+                                  BlockService.instance,
+                                  InterestService.instance,
                                   user: loginViewModel.user!,
                                   token: loginViewModel.token,
                                 )),
