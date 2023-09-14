@@ -85,19 +85,19 @@ class MyPageViewModel extends ChangeNotifier {
     return false;
   }
 
-  void onPressed(int index) {
-    if (isSelectEnabled(index)) return;
+  void onSelect(int index) {
+    if (_isSelectEnabled(index)) return;
 
     selectedList[index].isSelect = !selectedList[index].isSelect;
     notifyListeners();
   }
 
-  bool isSelectEnabled(int index) {
+  bool _isSelectEnabled(int index) {
     return !selectedList[index].isSelect &&
         selectedList.where((element) => element.isSelect).length >= 5;
   }
 
-  Future<void> verifyButton({required Function callback}) async {
+  Future<void> requestPutInterests({required Function callback}) async {
     List<String> selected = selectedList
         .where((Interest interest) => interest.isSelect)
         .map((Interest interest) => interest.title)

@@ -17,13 +17,6 @@ class Interest {
     this.isSelect,
   );
 
-  Map<String, dynamic> toFirestore() {
-    return {
-      'title': title,
-      'isSelect': isSelect,
-    };
-  }
-
   factory Interest.fromJson(Map<String, dynamic> json) {
     return Interest(json['title'], json['isSelect']);
   }
