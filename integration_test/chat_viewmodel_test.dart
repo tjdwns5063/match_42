@@ -40,8 +40,6 @@ class ChatViewModelTest {
 
     expect(chatViewModel.messages[0].message, 'hello');
     verify(userService.sendNotification(2, 'seongjki: hello', 'token'));
-
-    chatViewModel.dispose();
   }
 
   Future<void> whenRemainTimeZeroAllUserDecideOpenIdTest() async {
@@ -58,16 +56,12 @@ class ChatViewModelTest {
       userService.sendNotification(1, 'seongjki, jiheekan 님이 매치되었습니다', 'token'),
       userService.sendNotification(2, 'seongjki, jiheekan 님이 매치되었습니다', 'token')
     ]);
-
-    chatViewModel.dispose();
   }
 
   Future<void> conversationTopicRecommendationTest() async {
     await chatViewModel.makeTopic();
 
     expect(topics.contains(chatViewModel.messages[0].message), true);
-
-    chatViewModel.dispose();
   }
 }
 
@@ -79,6 +73,8 @@ Future<void> main() async {
     await FirebaseSetter.deleteFirestore();
     await chatViewModelTest.init();
   });
+
+  tearDown(() => chatViewModelTest.chatViewModel.dispose());
 
   group('chat viewmodel test', () {
     test('메세지 전송 기능 테스트', () => chatViewModelTest.sendMessageTest());

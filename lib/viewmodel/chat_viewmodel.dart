@@ -181,8 +181,8 @@ class ChatViewModel extends ChangeNotifier {
     _chatRoom.addUnreadMessage(msg);
     _chatRoom.lastMsg = msg;
 
+    await _chatService.updateChatRoom(_chatRoom);
     await _chatService.addMessage(chatRoom.id, msg);
-    await _chatService.updateChatRoom(chatRoom);
   }
 
   Future<void> _readAll() async {

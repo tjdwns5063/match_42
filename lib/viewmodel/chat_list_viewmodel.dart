@@ -4,21 +4,20 @@ import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:match_42/data/chat_room.dart';
-import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/service/chat_service.dart';
 
 class ChatListViewModel extends ChangeNotifier {
-  ChatListViewModel(User me) : _user = me {
-    _init(me);
+  ChatListViewModel(this._user, this._chatService) {
+    _init(_user);
   }
 
-  final ChatService _chatService = ChatService.instance;
+  final ChatService _chatService;
 
   List<ChatRoom> get rooms => UnmodifiableListView(filterChatRoom());
   List<ChatRoom> _rooms = [];
 
-  User _user;
+  final User _user;
   late StreamSubscription _subscription;
   int _isOn = 1;
   int get isOn => _isOn;
@@ -42,11 +41,6 @@ class ChatListViewModel extends ChangeNotifier {
     listen(me);
   }
 
-  Future<void> _updateRooms(User me) async {
-    _rooms = await _chatService.getAllChatRoom(me);
-    notifyListeners();
-  }
-
   void listen(User me) {
     final Stream<QuerySnapshot<ChatRoom>> stream =
         _chatService.roomRef.snapshots();
@@ -62,7 +56,6 @@ class ChatListViewModel extends ChangeNotifier {
       }
       _rooms = newList;
       notifyListeners();
-      // _updateRooms(me);
     });
   }
 
