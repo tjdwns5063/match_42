@@ -45,7 +45,7 @@ class InterestView extends StatelessWidget {
                     children: [
                       for (int i = 0; i < viewModel.selectedList.length; ++i)
                         TextButton(
-                            onPressed: () => viewModel.onPressed(
+                            onPressed: () => viewModel.onSelect(
                                   i,
                                 ),
                             style: TextButton.styleFrom(
@@ -70,7 +70,7 @@ class InterestView extends StatelessWidget {
               child: TextButton(
                 onPressed: () async {
                   await viewModel
-                      .verifyButton(callback: loginViewModel.updateUser)
+                      .requestPutInterests(callback: loginViewModel.updateUser)
                       .then((value) => context.pop())
                       .onError(
                           (Exception error, _) => onHttpError(context, error));

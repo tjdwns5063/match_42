@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:match_42/service/block_service.dart';
+import 'package:match_42/service/chat_service.dart';
+import 'package:match_42/service/interest_service.dart';
+import 'package:match_42/service/user_service.dart';
 import 'package:match_42/ui/chat_page.dart';
 import 'package:match_42/ui/login_page.dart';
 import 'package:match_42/ui/main_layout.dart';
@@ -47,11 +51,13 @@ class MyRouter {
                     return MultiProvider(
                       providers: [
                         ChangeNotifierProvider(
-                          create: (BuildContext context) =>
-                              ChatListViewModel(loginViewModel.user!),
+                          create: (BuildContext context) => ChatListViewModel(
+                              loginViewModel.user!, ChatService.instance),
                         ),
                         ChangeNotifierProvider(
                             create: (BuildContext context) => MyPageViewModel(
+                                  BlockService.instance,
+                                  InterestService.instance,
                                   user: loginViewModel.user!,
                                   token: loginViewModel.token,
                                 )),
@@ -67,10 +73,14 @@ class MyRouter {
                   builder: (context, state) {
                     LoginViewModel loginViewModel = context.read();
                     return ChangeNotifierProvider(
-                        create: (context) => ChatViewModel(
-                            roomId: state.pathParameters['room_id']!,
-                            user: loginViewModel.user!,
-                            token: loginViewModel.token),
+                        create: (context) {
+                          return ChatViewModel(
+                              roomId: state.pathParameters['room_id']!,
+                              user: loginViewModel.user!,
+                              token: loginViewModel.token,
+                              chatService: ChatService.instance,
+                              userService: UserService.instance);
+                        },
                         child: const ChatPage());
                   }),
             ]);

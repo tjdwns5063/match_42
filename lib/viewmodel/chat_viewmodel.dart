@@ -1,39 +1,81 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
+import 'package:match_42/data/remain_timer.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/service/chat_service.dart';
 import 'package:match_42/service/user_service.dart';
 
+const List<String> topics = [
+  '서로의 취미에 대해 얘기해보세요.',
+  '본과정에서 가장 힘들었던 순간에 대해 얘기해보세요.',
+  '코딩을 하며 성취감을 느꼈던 순간에 대해 얘기해보세요.',
+  '코딩에 관심을 가지게 된 계기에 대해 얘기해보세요.',
+  '최근 즐겨보는 유튜브나 넷플릭스 영상에 대해 얘기해보세요.',
+  '클러스터 근처에서 맛있게 먹었던 메뉴에 대해 얘기해보세요.',
+  '좋아하는 영화에 대해 얘기해보세요.',
+  '요즘 즐겨듣는 음악에 대해 얘기해보세요.',
+  '가장 힘들었던 과제에 대해 얘기해보세요.',
+  '서로에게 좋았던 책 한 권씩을 추천해주세요.',
+  '자신의 패션에 대해 얘기해보세요.',
+  '여가시간에 주로 무엇을 하며 시간을 보내는지 얘기해보세요.',
+  '최근 새로 생긴 관심사가 있다면 얘기해보세요.',
+  '여행 계획이나 다녀왔던 여행에 대해 얘기해보세요.',
+  '좋아하는 음식에 대해 얘기해보세요.',
+  '어제 하루 어떻게 보냈는지에 대해 얘기해보세요.',
+  '가장 단기적인 목표에 대해서 얘기해보세요.',
+  '서로의 꿈에 대해 얘기해보세요.',
+  '최근 가장 즐거웠던 순간에 대해 얘기해보세요.',
+  '자신의 장점에 대해 얘기해보세요.',
+  '새롭게 배워보고 싶은 분야에 대해 얘기해보세요.',
+  '좋아하는 게임에 대해 얘기해보세요.',
+  '끝말잇기를 해서 5번째로 나온 단어에 대해 얘기해보세요.',
+  '내일의 계획에 대해 얘기해보세요.',
+  '최근 만족스러웠던 소비에 대해 얘기해보세요.',
+  '어릴 적 꿈에 대해 얘기해보세요.',
+  '요즘 사고싶은 물건에 대해 얘기해보세요.',
+  '로또 1등에 당첨된다면 무엇을 하고싶은지 얘기해보세요.',
+  '노년에 어떤 삶을 살고싶은지 얘기해보세요.',
+  '서로의 버킷리스트에 대해 얘기해보세요.',
+  '최근 하고있는 고민에 대해 얘기해보세요.',
+  '요즘 나를 즐겁게 해주는 것들에 대해 얘기해보세요.',
+];
+
 class ChatViewModel extends ChangeNotifier {
   ChatViewModel(
-      {required this.roomId, required this.user, required this.token}) {
+      {required this.roomId,
+      required this.user,
+      required this.token,
+      required ChatService chatService,
+      required UserService userService})
+      : _chatService = chatService,
+        _userService = userService,
+        _chatRoom = ChatRoom(
+            id: roomId,
+            name: '',
+            type: '',
+            open: Timestamp.now(),
+            users: [1, 2],
+            unread: [0, 0],
+            lastMsg:
+                Message(sender: user, message: '', date: Timestamp.now())) {
     init();
   }
 
-  final ChatService _chatService = ChatService.instance;
-  final UserService _userService = UserService.instance;
   final String roomId;
+
+  final ChatService _chatService;
+  final UserService _userService;
   final User user;
   final String token;
 
   ChatRoom get chatRoom => _chatRoom;
-  ChatRoom _chatRoom = ChatRoom(
-      id: '0',
-      name: 'test',
-      type: 'eat',
-      open: Timestamp.now(),
-      users: [0, 0],
-      unread: [0, 0],
-      lastMsg: Message(
-          sender: User(id: 0, nickname: '', intra: ''),
-          message: '',
-          date: Timestamp.now()));
+  ChatRoom _chatRoom;
 
   List<Message> _messages = [];
   List<Message> get messages => UnmodifiableListView(
@@ -42,155 +84,119 @@ class ChatViewModel extends ChangeNotifier {
   late StreamSubscription _chatSubscription;
   late StreamSubscription _readSubscription;
 
-  late Timer _timer;
-  int? remainSeconds;
+  RemainTimer? timer;
+  String get remainTime => timer?.parseRemainTime() ?? '42:0:0 남음';
 
   @override
   void dispose() {
     _chatSubscription.cancel();
     _readSubscription.cancel();
-    _timer.cancel();
+    timer?.timer.cancel();
     super.dispose();
   }
 
   Future<void> init() async {
-    _updateChat();
-    _readAll();
-    tickTimer();
     listen();
   }
 
-  Future<void> _updateChat() async {
-    _messages = await _chatService.getAllMessage(roomId);
-    await _readAll();
-    notifyListeners();
-  }
-
-  Future<void> _readAll() async {
-    await _chatService.readAllMessage(roomId, user);
-  }
-
   void listen() {
-    final chatStream = _chatService.createMessageRef(roomId).snapshots();
+    final chatStream = _chatService.createMessageRef(chatRoom.id).snapshots();
 
     _chatSubscription = chatStream.listen((event) async {
-      print('here1');
-      _messages = await _chatService.getAllMessage(roomId);
+      List<Message> newMessages = [];
+      for (QueryDocumentSnapshot<Message> doc in event.docs) {
+        newMessages.add(doc.data());
+      }
+      _messages = newMessages;
       notifyListeners();
     });
 
-    final readStream = _chatService.roomRef.doc(roomId).snapshots();
+    final readStream = _chatService.roomRef.doc(chatRoom.id).snapshots();
 
     _readSubscription = readStream.listen((event) async {
-      _chatRoom = event.data()!;
-      _readAll();
+      _chatRoom = event.data() ?? _chatRoom;
+
+      timer = RemainTimer(openTime: _chatRoom.open, notify: notifyListeners);
+      await _readAll();
       notifyListeners();
     });
   }
 
-  void send(User sender, TextEditingController msg) {
-    if (msg.text.isEmpty) return;
-
-    _chatService.addMessage(
-        roomId,
-        Message(
-            sender: sender
-              ..decideProfile(chatRoom)
-              ..decideNickname(chatRoom),
-            message: msg.text,
-            date: Timestamp.now()));
-
-    print(chatRoom.type);
-    print(user);
+  void _sendNotificationInChatRoom(User sender, String text) {
     for (int userId in chatRoom.users) {
       if (user.id == userId) continue;
       _userService.sendNotification(
           userId,
-          '${(chatRoom.type.toLowerCase() == 'chat') ? sender.nickname : sender.intra}: ${msg.text}',
+          '${(chatRoom.type.toLowerCase() == 'chat') ? sender.nickname : sender.intra}: $text',
           token);
     }
-
-    msg.clear();
   }
 
-  void sendSystem(String msg) {
+  Future<void> send(User sender, TextEditingController text) async {
+    if (text.text.isEmpty) return;
+
+    Message message = Message(
+        sender: sender
+          ..decideProfile(chatRoom)
+          ..decideNickname(chatRoom),
+        message: text.text,
+        date: Timestamp.now());
+
+    await _addMessage(message);
+    _sendNotificationInChatRoom(sender, text.text);
+    text.clear();
+  }
+
+  Future<void> _sendSystem(String msg) async {
     if (msg.isEmpty) return;
 
     User system = User(id: 0, nickname: 'system', intra: 'system');
 
-    _chatService.addSystemMessage(
-        roomId, Message(sender: system, message: msg, date: Timestamp.now()));
-  }
-
-  bool isChangeDate(int i) {
-    DateTime prevDate = messages[i - 1].date.toDate();
-    DateTime currDate = messages[i].date.toDate();
-
-    return i > 0 && prevDate.day != currDate.day;
-  }
-
-  Future<void> tickTimer() async {
-    final ChatRoom room = await _chatService.getChatRoom(roomId) as ChatRoom;
-    remainSeconds = calculateRemainSeconds(room.open);
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (remainSeconds! > 0) {
-        remainSeconds = remainSeconds! - 1;
-        notifyListeners();
-      } else {
-        notifyListeners();
-        timer.cancel();
-      }
-    });
-  }
-
-  int calculateRemainSeconds(Timestamp openTime) {
-    int remainSeconds =
-        openTime.seconds + (42 * 3600) - Timestamp.now().seconds;
-
-    return remainSeconds > 0 ? remainSeconds : 0;
-  }
-
-  String parseHMS() {
-    if (remainSeconds == null) return 'Loading...';
-
-    int remain = remainSeconds!;
-
-    int h = remain ~/ 3600;
-
-    remain -= h * 3600;
-
-    int m = remain ~/ 60;
-
-    remain -= m * 60;
-
-    int s = remain;
-
-    return '$h : $m : $s 남음';
-  }
-
-  bool isAllOk(ChatRoom chatRoom) {
-    return chatRoom.isOpen!.every((element) => element == true);
+    await _chatService.addMessage(chatRoom.id,
+        Message(sender: system, message: msg, date: Timestamp.now()));
   }
 
   Future<void> updateOpenResult() async {
-    _chatRoom = await _chatService.setIsOpen(roomId, true, user.id);
+    _chatRoom.updateIsOpen(user.id);
+    await _chatService.updateIsOpen(chatRoom);
 
-    print(chatRoom.isOpen);
-    if (isAllOk(chatRoom)) {
-      List<String> intras =
-          await _userService.getUserIntraNames(chatRoom.users, token);
-      String names = intras.toString();
-
-      print('names: $names');
-      print(names.substring(1, names.length - 1));
-
-      for (int userId in chatRoom.users) {
-        _userService.sendNotification(userId,
-            '${names.substring(1, names.length - 1)} 님이 매치되었습니다', token);
-      }
+    if (_chatRoom.isEveryOpened()) {
+      await _sendMatchMessage();
     }
-
     notifyListeners();
+  }
+
+  Future<void> _sendMatchMessage() async {
+    List<String> intras =
+        await _userService.getUserIntraNames(chatRoom.users, token);
+    String names = intras.toString();
+
+    for (int userId in chatRoom.users) {
+      await _userService.sendNotification(
+          userId, '${names.substring(1, names.length - 1)} 님이 매치되었습니다', token);
+    }
+  }
+
+  Future<void> _addMessage(Message msg) async {
+    _chatRoom.addUnreadMessage(msg);
+    _chatRoom.lastMsg = msg;
+
+    await _chatService.updateChatRoom(_chatRoom);
+    await _chatService.addMessage(chatRoom.id, msg);
+  }
+
+  Future<void> _readAll() async {
+    _chatRoom.readAll(user.id);
+
+    await _chatService.updateUnread(_chatRoom);
+  }
+
+  bool isRemainTime() {
+    return (timer?.remainTime ?? 42 * 3600) > 0;
+  }
+
+  Future<void> makeTopic() async {
+    int index = Random(DateTime.now().millisecond).nextInt(topics.length);
+    await _sendSystem(topics[index]);
   }
 }

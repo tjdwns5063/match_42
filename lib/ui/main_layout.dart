@@ -67,6 +67,7 @@ class _MainLayoutState extends State<MainLayout> with TickerProviderStateMixin {
     ChatListViewModel chatListViewModel = context.watch();
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: colorScheme.background,
         surfaceTintColor: Colors.transparent,

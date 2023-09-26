@@ -13,7 +13,7 @@ class MyRadioListTileWidget extends StatelessWidget {
       child: Column(
         children: <Widget>[
           RadioListTile<int>(
-            title: const Text('현재 채팅중인 방',
+            title: const Text('모든 방',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 19,

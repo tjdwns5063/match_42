@@ -40,6 +40,18 @@ class Message {
     };
   }
 
+  bool isNotSender(int userId) {
+    return userId != sender.id;
+  }
+
+  bool isChangeDate(DateTime prev) {
+    DateTime curr = date.toDate();
+
+    return prev.year != curr.year ||
+        prev.month != curr.month ||
+        prev.day != curr.day;
+  }
+
   @override
   String toString() {
     return 'sender: $sender message: $message date: ${date.toDate()}';

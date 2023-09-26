@@ -52,7 +52,7 @@ class LoginViewModel extends ChangeNotifier {
     final fcmToken = await FirebaseMessaging.instance.getToken();
 
     Uri uri = Uri.parse(
-        'http://115.85.181.92/api/v1/firebase/token/subscribe?token=$fcmToken');
+        '${dotenv.env['ROOT_URL']}/api/v1/firebase/token/subscribe?token=$fcmToken');
 
     http.Response response = await http.post(uri, headers: {
       'accept': '*/*',
