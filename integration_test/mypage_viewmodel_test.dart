@@ -9,8 +9,7 @@ import 'package:match_42/viewmodel/mypage_viewmodel.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-@GenerateNiceMocks([MockSpec<BlockService>()])
-@GenerateNiceMocks([MockSpec<InterestService>()])
+@GenerateNiceMocks([MockSpec<BlockService>(), MockSpec<InterestService>()])
 import 'mypage_viewmodel_test.mocks.dart';
 
 class MyPageViewModelTest {
