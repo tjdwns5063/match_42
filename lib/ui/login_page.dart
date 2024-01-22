@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
-import 'package:match_42/error/error_util.dart';
-import 'package:match_42/local_notification.dart';
-import 'package:match_42/router.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:match_42/ui/make_topic.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
