@@ -1,13 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:match_42/firebase_options.dart';
 import 'package:match_42/local_notification.dart';
 import 'package:match_42/router.dart';
 import 'package:match_42/ui/theme/color_schemes.dart';
-import 'package:match_42/ui/login_page.dart';
-import 'package:match_42/ui/my_page.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -19,8 +16,12 @@ void main() async {
   );
   await dotenv.load(fileName: '.env');
   await LocalNotification.initialize();
-  runApp(ChangeNotifierProvider(
-      create: (context) => LoginViewModel(), child: const MyApp()));
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => LoginViewModel(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {

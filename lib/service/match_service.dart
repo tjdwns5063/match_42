@@ -1,35 +1,32 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
-import 'package:match_42/error/http_exception.dart';
+import 'package:match_42/data/chat_room.dart';
+import 'package:match_42/data/message.dart';
+import 'package:match_42/data/user.dart';
+import 'package:match_42/service/chat_service.dart';
 
 class MatchData {
   MatchData(
       {required this.id,
-      required this.size,
       required this.capacity,
       required this.matchType,
-      required this.matchStatus,
-      required this.firebaseMatchId});
+      required this.createdAt,
+      required this.users});
 
-  int id;
-  int size;
-  int capacity;
-  String matchType;
-  String matchStatus;
-  String firebaseMatchId;
+  final String id;
+  final int capacity;
+  final String matchType;
+  final Timestamp createdAt;
+  final List<int> users;
+
+  int get size => users.length;
 
   factory MatchData.fromJson(Map<String, dynamic> json) {
     return MatchData(
-      id: json['id'],
-      size: json['size'],
-      capacity: json['capacity'],
-      matchType: json['matchType'],
-      matchStatus: json['matchStatus'],
-      firebaseMatchId: json['firebaseMatchId'],
-    );
+        id: json['id'],
+        capacity: json['capacity'],
+        matchType: json['matchType'],
+        users: json['users'],
+        createdAt: json['createdAt']);
   }
 
   factory MatchData.fromFirestore(
@@ -37,30 +34,28 @@ class MatchData {
     SnapshotOptions? options,
   ) {
     final Map<String, dynamic> data = snapshot.data()!;
+
     return MatchData(
-      id: data['id'],
-      size: data['size'],
+      id: snapshot.id,
       capacity: data['capacity'],
       matchType: data['matchType'],
-      matchStatus: data['matchStatus'],
-      firebaseMatchId: snapshot.id,
+      users: List<int>.from(data['users']),
+      createdAt: data['createdAt'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'size': size,
       'capacity': capacity,
       'matchType': matchType,
-      'matchStatus': matchStatus,
-      'firebaseMatchId': firebaseMatchId
+      'users': users,
+      'createdAt': createdAt,
     };
   }
 
   @override
   String toString() {
-    return 'id: $id size: $size capacity: $capacity matchType: $matchType matchStatus: $matchStatus firebaseId: $firebaseMatchId';
+    return 'id: $id capacity: $capacity matchType: $matchType, users: $users';
   }
 }
 
@@ -71,168 +66,93 @@ class MatchService {
 
   static final MatchService instance = MatchService._();
 
+  final ChatService _chatService = ChatService.instance;
+
   final CollectionReference<MatchData> matchRef = FirebaseFirestore.instance
       .collection(_matchCollectionPath)
       .withConverter(
           fromFirestore: MatchData.fromFirestore,
           toFirestore: (MatchData data, options) => data.toJson());
 
-  Future<MatchData> startTalkMatch(int capacity, String token) async {
-    Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/match/chat/start');
+  Future<MatchData?> startMatch(int capacity, String type, int id) async {
+    print('type: $type');
+    return FirebaseFirestore.instance.runTransaction((transaction) async {
+      QuerySnapshot<MatchData> query = await matchRef
+          .where('matchType', isEqualTo: type)
+          .orderBy('createdAt')
+          .get();
 
-    http.Response response = await http.post(uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({
-          'capacity': capacity,
-        }));
+      if (query.size != 0) {
+        MatchData matchData = query.docs.first.data();
 
-    if (response.statusCode != 200) {
-      return Future.error(HttpException(
-          statusCode: response.statusCode, message: response.body));
-    }
+        matchData.users.add(id);
+        await matchRef.doc(matchData.id).update({'users': matchData.users});
 
-    Map<String, dynamic> json = jsonDecode(response.body);
+        if (matchData.capacity == matchData.size) {
+          await matchRef.doc(matchData.id).delete();
+          _chatService.addChatRoom(ChatRoom(
+              id: '',
+              name: '$type 채팅방',
+              type: type,
+              open: Timestamp.now(),
+              users: matchData.users,
+              unread: List.generate(matchData.capacity, (index) => 0),
+              lastMsg: Message(
+                  sender: User(id: -1, intra: 'system'),
+                  message: '채팅방이 생성됐습니다.',
+                  date: Timestamp.now())));
+        }
 
-    return MatchData.fromJson(json);
-  }
+        return (await matchRef.doc(matchData.id).get()).data();
+      }
 
-  Future<void> stopTalkMatch(String token) async {
-    Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/match/chat/stop');
+      MatchData matchData = MatchData(
+        id: '0',
+        capacity: capacity,
+        matchType: type,
+        users: <int>[id],
+        createdAt: Timestamp.now(),
+      );
 
-    http.Response response = await http.post(uri, headers: {
-      'Authorization': 'Bearer $token',
+      return (await (await matchRef.add(matchData)).get()).data() as MatchData;
     });
-
-    // print(response.statusCode);
-
-    if (response.statusCode != 200) {
-      return Future.error(HttpException(
-          statusCode: response.statusCode, message: response.body));
-    }
   }
 
-  Future<MatchData> startSubjectMatch(
-      int capacity, String project, String token) async {
-    Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/match/subject/start');
+  Future<MatchData?> stopMatch(int id, String type) async {
+    return FirebaseFirestore.instance.runTransaction((transaction) async {
+      QuerySnapshot<MatchData> query = await matchRef
+          .where('matchType', isEqualTo: type)
+          .where('users', arrayContains: id)
+          .get();
 
-    http.Response response = await http.post(uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({
-          'capacity': capacity,
-          'project': project,
-        }));
+      MatchData? matchData = query.docs.firstOrNull?.data();
 
-    // print(response.body);
+      if (matchData == null) return null;
 
-    if (response.statusCode != 200) {
-      return Future.error(HttpException(
-          statusCode: response.statusCode, message: response.body));
-    }
+      matchData.users.remove(id);
+      await matchRef.doc(matchData.id).update({'users': matchData.users});
+      if (matchData.users.isEmpty) {
+        await matchRef.doc(matchData.id).delete();
+      }
 
-    Map<String, dynamic> json = jsonDecode(response.body);
-
-    return MatchData.fromJson(json);
-  }
-
-  Future<void> stopSubjectMatch(String token) async {
-    Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/match/subject/stop');
-
-    http.Response response = await http.post(uri, headers: {
-      'Authorization': 'Bearer $token',
+      return (await matchRef.doc(matchData.id).get()).data();
     });
-
-    // print(response.statusCode);
-
-    if (response.statusCode != 200) {
-      return Future.error(HttpException(
-          statusCode: response.statusCode, message: response.body));
-    }
   }
 
-  Future<MatchData> startEatMatch(
-      int capacity, String menu, String token) async {
-    Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/match/meal/start');
+  Future<Map<String, MatchData?>> getMatchData(int id) async {
+    QuerySnapshot<MatchData> query =
+        await matchRef.where('users', arrayContains: id).get();
 
-    http.Response response = await http.post(uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({
-          'capacity': capacity,
-          'menu': menu,
-        }));
+    List<MatchData> results = query.docs.map((e) => e.data()).toList();
 
-    // print(response.body);
-
-    if (response.statusCode != 200) {
-      return Future.error(HttpException(
-          statusCode: response.statusCode, message: response.body));
+    if (results.length > 3) {
+      return Future.error(Exception('최대 매치 개수를 초과했습니다. (${results.length}개'));
     }
 
-    Map<String, dynamic> json = jsonDecode(response.body);
-
-    return MatchData.fromJson(json);
-  }
-
-  Future<void> stopEatMatch(String token) async {
-    Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/match/meal/stop');
-
-    http.Response response = await http.post(uri, headers: {
-      'Authorization': 'Bearer $token',
-    });
-
-    // print(response.statusCode);
-
-    if (response.statusCode != 200) {
-      return Future.error(HttpException(
-          statusCode: response.statusCode, message: response.body));
-    }
-  }
-
-  Future<Map<String, dynamic>> getMatchData(String token) async {
-    Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/match/me');
-
-    http.Response response = await http.get(uri, headers: {
-      'Authorization': 'Bearer $token',
-    });
-
-    // print(response.body);
-
-    if (response.statusCode != 200) {
-      return Future.error(HttpException(
-          statusCode: response.statusCode, message: response.body));
-    }
-    Map<String, dynamic> json = jsonDecode(response.body);
-
-    return json;
-  }
-
-  Future<MatchData> getMatchDataById(
-    int id,
-    String token,
-  ) async {
-    Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/match/room/$id');
-
-    http.Response response = await http.get(uri, headers: {
-      'Authorization': 'Bearer $token',
-    });
-    // print('code: ${response.statusCode}');
-
-    print('body: ${response.body}');
-
-    if (response.statusCode != 200) {
-      return Future.error(HttpException(
-          statusCode: response.statusCode, message: response.body));
-    }
-    Map<String, dynamic> json = jsonDecode(response.body);
-
-    return MatchData.fromJson(json);
+    return {
+      '밥': results.where((element) => element.matchType == '밥').firstOrNull,
+      '수다': results.where((element) => element.matchType == '수다').firstOrNull,
+      '과제': results.where((element) => element.matchType == '과제').firstOrNull
+    };
   }
 }

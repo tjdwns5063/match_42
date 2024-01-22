@@ -162,19 +162,29 @@ class _MatchPageState extends State<MatchPage> {
                     );
                   });
             } else {
-              if (labels[selected.indexOf(true)] == '밥') {
-                matchViewModel.matchStop(type: ChatType.meal).onError(
-                    (error, stackTrace) =>
-                        onHttpError(context, error as Exception));
-              } else if (labels[selected.indexOf(true)] == '수다') {
-                matchViewModel.matchStop(type: ChatType.chat).onError(
-                    (error, stackTrace) =>
-                        onHttpError(context, error as Exception));
-              } else {
-                matchViewModel.matchStop(type: ChatType.subject).onError(
-                    (error, stackTrace) =>
-                        onHttpError(context, error as Exception));
-              }
+              matchViewModel
+                  .matchStop(
+                      type: ChatType.values
+                          .where((element) =>
+                              element.typeName ==
+                              labels[selected.indexOf(true)])
+                          .first)
+                  .onError((error, stackTrace) =>
+                      onHttpError(context, error as Exception));
+
+              // if (labels[selected.indexOf(true)] == '밥') {
+              //   matchViewModel.matchStop(type: ChatType.meal).onError(
+              //       (error, stackTrace) =>
+              //           onHttpError(context, error as Exception));
+              // } else if (labels[selected.indexOf(true)] == '수다') {
+              //   matchViewModel.matchStop(type: ChatType.chat).onError(
+              //       (error, stackTrace) =>
+              //           onHttpError(context, error as Exception));
+              // } else {
+              //   matchViewModel.matchStop(type: ChatType.subject).onError(
+              //       (error, stackTrace) =>
+              //           onHttpError(context, error as Exception));
+              // }
             }
           },
           style: ElevatedButton.styleFrom(
