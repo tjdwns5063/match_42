@@ -22,10 +22,9 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   void updateToken(String url) {
-    String token = Uri.parse(url).queryParameters['token'] as String;
+    String? token = Uri.parse(url).queryParameters['token'] ??= '';
 
     _token = token;
-    print(token);
   }
 
   void logout({required Function redirect}) {
