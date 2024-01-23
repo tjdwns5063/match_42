@@ -41,7 +41,7 @@ class MyRouter {
                         loginViewModel.user != null) {
                       return MAIN_PATH;
                     }
-                    return LOGIN_PATH;
+                    return '/auth';
                   }),
               GoRoute(
                   path: MAIN_PATH,
