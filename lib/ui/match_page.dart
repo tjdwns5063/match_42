@@ -15,36 +15,25 @@ class MatchPage extends StatefulWidget {
 }
 
 class _MatchPageState extends State<MatchPage> {
-  final List<String> labels = [
-    '밥',
-    '수다',
-    '과제',
-    '밥',
-    '수다',
-    '과제',
-    '밥',
-    '수다',
-    '과제',
-  ];
+  final List<({String label, bool isSelect})> selected = List.generate(
+      100,
+      (index) => switch (index % 3) {
+            0 => (label: '밥', isSelect: false),
+            1 => (label: '수다', isSelect: false),
+            _ => (label: '과제', isSelect: false),
+          });
 
-  final List<bool> selected = [
-    false,
-    false,
-    false,
-    false,
-    true,
-    false,
-    false,
-    false,
-    false
-  ];
+  int _index = 49;
+
   late PageController controller;
 
   Map<String, bool> isQ = {'밥': false, '수다': false, '과제': false};
 
   @override
   void initState() {
-    controller = PageController(initialPage: 4, viewportFraction: 0.5)
+    selected[_index] = (label: selected[_index].label, isSelect: true);
+
+    controller = PageController(initialPage: _index, viewportFraction: 0.5)
       ..addListener(() {
         _infiniteScroll();
       });
@@ -59,26 +48,31 @@ class _MatchPageState extends State<MatchPage> {
   }
 
   void _infiniteScroll() {
-    if (_isMoreItemPrevious()) {
-      _moreItemPrevious();
-    } else if (_isMoreItemNext()) {
-      _moreItemNext();
+    if (_isMoveSelectedIndex()) {
+      _moveSelectedIndex();
+    }
+    if (_isAddItemNext()) {
+      _addItemNext();
     }
   }
 
-  bool _isMoreItemNext() {
-    return controller.page!.toInt() >= labels.length - 2;
+  bool _isAddItemNext() {
+    return controller.page!.toInt() >= selected.length - 2;
   }
 
-  bool _isMoreItemPrevious() {
+  bool _isMoveSelectedIndex() {
     return controller.page!.toInt() == 1;
   }
 
-  void _moreItemNext() {
-    controller.jumpToPage(4);
+  void _addItemNext() {
+    selected.addAll([
+      (label: '밥', isSelect: false),
+      (label: '수다', isSelect: false),
+      (label: '과제', isSelect: false),
+    ]);
   }
 
-  void _moreItemPrevious() {
+  void _moveSelectedIndex() {
     controller.jumpToPage(5);
     controller.previousPage(
         duration: const Duration(milliseconds: 200), curve: Curves.linear);
@@ -86,8 +80,14 @@ class _MatchPageState extends State<MatchPage> {
 
   void _onPageChanged(int page) {
     setState(() {
-      selected[selected.indexOf(true)] = false;
-      selected[page] = true;
+      if (page >= 1) {
+        selected[page - 1] = (label: selected[page - 1].label, isSelect: false);
+      }
+      if (page < selected.length - 1) {
+        selected[page + 1] = (label: selected[page + 1].label, isSelect: false);
+      }
+      selected[page] = (label: selected[page].label, isSelect: true);
+      _index = page;
     });
   }
 
@@ -102,9 +102,7 @@ class _MatchPageState extends State<MatchPage> {
   }
 
   Widget _getDialog() {
-    int selectIndex = selected.indexOf(true);
-
-    return switch (labels[selectIndex]) {
+    return switch (selected[_index].label) {
       '밥' => const EatDialog(),
       '수다' => const TalkDialog(),
       _ => const SubjectDialog()
@@ -130,7 +128,6 @@ class _MatchPageState extends State<MatchPage> {
         Expanded(
           child: MatchPageView(
             controller: controller,
-            labels: labels,
             selected: selected,
             isQ: matchViewModel.matching,
             onPageChanged: _onPageChanged,
@@ -139,7 +136,7 @@ class _MatchPageState extends State<MatchPage> {
         ),
         ElevatedButton(
           onPressed: () {
-            if (!matchViewModel.matching[labels[selected.indexOf(true)]]!) {
+            if (!matchViewModel.matching[selected[_index].label]!) {
               showDialog(
                   context: context,
                   builder: (context) {
@@ -157,8 +154,7 @@ class _MatchPageState extends State<MatchPage> {
                   .matchStop(
                       type: ChatType.values
                           .where((element) =>
-                              element.typeName ==
-                              labels[selected.indexOf(true)])
+                              element.typeName == selected[_index].label)
                           .first)
                   .onError((error, stackTrace) => onHttpError(context, error));
             }
@@ -166,9 +162,7 @@ class _MatchPageState extends State<MatchPage> {
           style: ElevatedButton.styleFrom(
               shape: const CircleBorder(), padding: const EdgeInsets.all(30.0)),
           child: Text(
-            (!matchViewModel.matching[labels[selected.indexOf(true)]]!)
-                ? '시작'
-                : '중단',
+            (!matchViewModel.matching[selected[_index].label]!) ? '시작' : '중단',
             style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
           ),
         ),
@@ -182,15 +176,13 @@ class MatchPageView extends StatelessWidget {
   const MatchPageView(
       {super.key,
       required this.controller,
-      required this.labels,
       required this.selected,
       required this.isQ,
       required this.onPageChanged,
       required this.onPressed});
 
   final PageController controller;
-  final List<String> labels;
-  final List<bool> selected;
+  final List<({String label, bool isSelect})> selected;
   final Map<String, bool> isQ;
   final ValueChanged<int> onPageChanged;
   final ValueChanged<int> onPressed;
@@ -205,15 +197,15 @@ class MatchPageView extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: MatchListItem(
-            label: labels[index],
-            isSelect: selected[index],
-            isQ: matchViewModel.matching[labels[index]]!,
+            label: selected[index].label,
+            isSelect: selected[index].isSelect,
+            isQ: matchViewModel.matching[selected[index].label]!,
             onPressed: () => onPressed(index),
           ),
         );
       },
       controller: controller,
-      itemCount: labels.length,
+      itemCount: selected.length,
     );
   }
 }
