@@ -5,33 +5,46 @@ import 'package:flutter/material.dart';
 import 'package:match_42/service/match_service.dart';
 
 class MatchViewModel extends ChangeNotifier {
-  MatchViewModel(this._id) {
+  MatchViewModel(this._id, this._token) {
     init();
   }
 
   MatchService matchService = MatchService.instance;
   final int _id;
+  final String _token;
 
   Map<String, MatchData?> matchStatus = {'밥': null, '수다': null, '과제': null};
 
   Map<String, bool> get matching =>
       matchStatus.map((key, value) => MapEntry(key, isMatching(key)));
 
+  late StreamSubscription streamSubscription;
+
   Future<void> init() async {
-    Map<String, dynamic> datas = await matchService.getMatchData(_id);
+    streamSubscription =
+        matchService.matchRef.snapshots().listen((event) async {
+      var results = event.docs
+          .where((e) => e.data().users.contains(_id))
+          .map((e) => e.data())
+          .toList();
 
-    for (MapEntry<String, dynamic> entry in datas.entries) {
-      if (entry.value == null) continue;
-
-      String key = switch (entry.key) {
-        'mealMatchId' => ChatType.meal.typeName,
-        'subjectMatchId' => ChatType.subject.typeName,
-        _ => ChatType.chat.typeName,
-      };
-      matchStatus = await matchService.getMatchData(_id);
-
+      matchStatus = Map.fromEntries(
+        ChatType.values.map(
+          (e) => MapEntry(
+              e.typeName,
+              results
+                  .where((element) => element.matchType == e.typeName)
+                  .firstOrNull),
+        ),
+      );
       notifyListeners();
-    }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    streamSubscription.cancel();
   }
 
   bool isMatching(String type) {
@@ -48,16 +61,12 @@ class MatchViewModel extends ChangeNotifier {
       String menu = ''}) async {
     matchStatus[type.typeName] = await FirebaseFirestore.instance
         .runTransaction((transaction) =>
-            matchService.startMatch(capacity, type.typeName, _id));
-
-    notifyListeners();
+            matchService.startMatch(capacity, type.typeName, _id, _token));
   }
 
   Future<void> matchStop({required ChatType type}) async {
-    matchStatus[type.typeName] = await FirebaseFirestore.instance
-        .runTransaction(
-            (transaction) => matchService.stopMatch(_id, type.typeName));
-    notifyListeners();
+    matchStatus[type.typeName] =
+        await matchService.stopMatch(_id, type.typeName);
   }
 }
 

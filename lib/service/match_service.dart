@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/service/chat_service.dart';
+import 'package:match_42/service/user_service.dart';
 
 class MatchData {
   MatchData(
@@ -74,22 +77,28 @@ class MatchService {
           fromFirestore: MatchData.fromFirestore,
           toFirestore: (MatchData data, options) => data.toJson());
 
-  Future<MatchData?> startMatch(int capacity, String type, int id) async {
-    print('type: $type');
-    return FirebaseFirestore.instance.runTransaction((transaction) async {
-      QuerySnapshot<MatchData> query = await matchRef
-          .where('matchType', isEqualTo: type)
-          .orderBy('createdAt')
-          .get();
+  Future<MatchData?> startMatch(
+      int capacity, String type, int id, String token) async {
+    QuerySnapshot<MatchData> query = await matchRef
+        .where('matchType', isEqualTo: type)
+        .where('capacity', isEqualTo: capacity)
+        .orderBy('createdAt')
+        .get();
 
+    return FirebaseFirestore.instance.runTransaction((transaction) async {
       if (query.size != 0) {
         MatchData matchData = query.docs.first.data();
+        DocumentReference<MatchData?> documentReference =
+            matchRef.doc(matchData.id);
 
         matchData.users.add(id);
-        await matchRef.doc(matchData.id).update({'users': matchData.users});
+        transaction.update(documentReference, {'users': matchData.users});
 
         if (matchData.capacity == matchData.size) {
-          await matchRef.doc(matchData.id).delete();
+          matchData.users.forEach((userId) => UserService.instance
+              .sendNotification(userId, '$type 대화방이 생성되었습니다.', token));
+
+          transaction.delete(documentReference);
           _chatService.addChatRoom(ChatRoom(
               id: '',
               name: '$type 채팅방',
@@ -101,9 +110,9 @@ class MatchService {
                   sender: User(id: -1, intra: 'system'),
                   message: '채팅방이 생성됐습니다.',
                   date: Timestamp.now())));
+          return null;
         }
-
-        return (await matchRef.doc(matchData.id).get()).data();
+        return (await documentReference.get()).data();
       }
 
       MatchData matchData = MatchData(
@@ -114,45 +123,36 @@ class MatchService {
         createdAt: Timestamp.now(),
       );
 
-      return (await (await matchRef.add(matchData)).get()).data() as MatchData;
+      DocumentReference<MatchData?> documentReference =
+          await matchRef.add(matchData);
+
+      return (await documentReference.get()).data();
     });
   }
 
   Future<MatchData?> stopMatch(int id, String type) async {
-    return FirebaseFirestore.instance.runTransaction((transaction) async {
-      QuerySnapshot<MatchData> query = await matchRef
-          .where('matchType', isEqualTo: type)
-          .where('users', arrayContains: id)
-          .get();
+    QuerySnapshot<MatchData> query = await matchRef
+        .where('matchType', isEqualTo: type)
+        .where('users', arrayContains: id)
+        .get();
 
+    return FirebaseFirestore.instance.runTransaction((transaction) async {
       MatchData? matchData = query.docs.firstOrNull?.data();
 
       if (matchData == null) return null;
 
+      DocumentReference<MatchData?> documentReference =
+          matchRef.doc(matchData.id);
+
       matchData.users.remove(id);
-      await matchRef.doc(matchData.id).update({'users': matchData.users});
+      transaction.update(documentReference, {'users': matchData.users});
+
       if (matchData.users.isEmpty) {
-        await matchRef.doc(matchData.id).delete();
+        transaction.delete(documentReference);
+        return null;
       }
 
-      return (await matchRef.doc(matchData.id).get()).data();
+      return (await documentReference.get()).data();
     });
-  }
-
-  Future<Map<String, MatchData?>> getMatchData(int id) async {
-    QuerySnapshot<MatchData> query =
-        await matchRef.where('users', arrayContains: id).get();
-
-    List<MatchData> results = query.docs.map((e) => e.data()).toList();
-
-    if (results.length > 3) {
-      return Future.error(Exception('최대 매치 개수를 초과했습니다. (${results.length}개'));
-    }
-
-    return {
-      '밥': results.where((element) => element.matchType == '밥').firstOrNull,
-      '수다': results.where((element) => element.matchType == '수다').firstOrNull,
-      '과제': results.where((element) => element.matchType == '과제').firstOrNull
-    };
   }
 }

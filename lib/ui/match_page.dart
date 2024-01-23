@@ -1,16 +1,9 @@
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:match_42/data/message.dart';
-import 'package:match_42/data/user.dart';
 import 'package:match_42/error/error_util.dart';
 import 'package:match_42/service/chat_service.dart';
 import 'package:match_42/ui/eat_dialog.dart';
-import 'package:match_42/ui/main_layout.dart';
 import 'package:match_42/ui/subject_dialog.dart';
 import 'package:match_42/ui/talk_dialog.dart';
-import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:match_42/viewmodel/match_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -122,10 +115,8 @@ class _MatchPageState extends State<MatchPage> {
 
   @override
   Widget build(BuildContext context) {
-    LoginViewModel loginViewModel = context.read();
     MatchViewModel matchViewModel = context.watch();
 
-    print(loginViewModel.user);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -169,22 +160,7 @@ class _MatchPageState extends State<MatchPage> {
                               element.typeName ==
                               labels[selected.indexOf(true)])
                           .first)
-                  .onError((error, stackTrace) =>
-                      onHttpError(context, error as Exception));
-
-              // if (labels[selected.indexOf(true)] == '밥') {
-              //   matchViewModel.matchStop(type: ChatType.meal).onError(
-              //       (error, stackTrace) =>
-              //           onHttpError(context, error as Exception));
-              // } else if (labels[selected.indexOf(true)] == '수다') {
-              //   matchViewModel.matchStop(type: ChatType.chat).onError(
-              //       (error, stackTrace) =>
-              //           onHttpError(context, error as Exception));
-              // } else {
-              //   matchViewModel.matchStop(type: ChatType.subject).onError(
-              //       (error, stackTrace) =>
-              //           onHttpError(context, error as Exception));
-              // }
+                  .onError((error, stackTrace) => onHttpError(context, error));
             }
           },
           style: ElevatedButton.styleFrom(

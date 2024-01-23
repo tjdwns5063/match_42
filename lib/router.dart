@@ -41,6 +41,7 @@ class MyRouter {
                         loginViewModel.user != null) {
                       return MAIN_PATH;
                     }
+                    return LOGIN_PATH;
                   }),
               GoRoute(
                   path: MAIN_PATH,
@@ -60,8 +61,8 @@ class MyRouter {
                                   token: loginViewModel.token,
                                 )),
                         ChangeNotifierProvider(
-                            create: (BuildContext context) =>
-                                MatchViewModel(loginViewModel.user!.id)),
+                            create: (BuildContext context) => MatchViewModel(
+                                loginViewModel.user!.id, loginViewModel.token)),
                       ],
                       child: const MainLayout(),
                     );
