@@ -103,9 +103,7 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     Widget builder() {
-      if (chatViewModel.isRemainTime()) {
-        return buildChatPage();
-      } else if (!chatViewModel.isRemainTime() &&
+      if (chatViewModel.isRemainTime() ||
           chatViewModel.chatRoom.isOpen[
               chatViewModel.chatRoom.users.indexOf(loginViewModel.user!.id)]) {
         return buildChatPage();
@@ -119,31 +117,29 @@ class _ChatPageState extends State<ChatPage> {
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0.0,
         centerTitle: false,
-        title: Container(
-            width: 150.0,
-            height: 45.0,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                color: colorScheme.secondaryContainer,
-                borderRadius: BorderRadius.circular(20.0)),
-            child: Text(
-              chatViewModel.remainTime,
-              style:
-                  const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
-            )),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const ReportPage()));
-            },
-            icon: const Icon(
-              Icons.warning_rounded,
-              size: 32.0,
+        title: Row(
+          children: [
+            Text(
+              '${chatViewModel.chatRoom.users.length}인 ${chatViewModel.chatRoom.name}',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            color: Colors.red,
-          )
-        ],
+            SizedBox(
+              width: 16.0,
+            ),
+            Container(
+                width: 150.0,
+                height: 45.0,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(20.0)),
+                child: Text(
+                  chatViewModel.remainTime,
+                  style: const TextStyle(
+                      fontSize: 16.0, fontWeight: FontWeight.w700),
+                )),
+          ],
+        ),
       ),
       body: builder(),
     );
