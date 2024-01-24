@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:match_42/data/message.dart';
-import 'package:match_42/ui/user_interest.dart';
+import 'package:match_42/ui/user_bottom_sheet.dart';
 import 'package:match_42/ui/yes_or_no.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
@@ -290,7 +290,9 @@ class OtherChatMessage extends StatelessWidget {
           onTap: () {
             showModalBottomSheet<void>(
                 context: context,
-                builder: (context) => UserInterest(userId: msg.sender.id));
+                builder: (context) => ChangeNotifierProvider.value(
+                    value: viewModel,
+                    child: UserBottomSheet(userId: msg.sender.id)));
           },
           child: CircleAvatar(
             child: Image.asset('assets/${msg.sender.profile}'),

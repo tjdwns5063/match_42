@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
+import 'package:http/http.dart' as http;
 
 class ChatService {
   static final ChatService instance = ChatService._create();
@@ -73,5 +77,22 @@ class ChatService {
     roomRef.doc(chatRoom.id).update({
       'isOpen': chatRoom.isOpen,
     });
+  }
+
+  Future<void> sendReport(
+      int userId, List<String> reasons, String token) async {
+    Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/user/report');
+
+    http.Response response = await http.post(uri,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json'
+        },
+        body: jsonEncode({
+          'reportedId': userId,
+          'reasons': reasons,
+        }));
+
+    print('report: ${response.body}');
   }
 }

@@ -10,6 +10,7 @@ import 'package:match_42/data/remain_timer.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/service/chat_service.dart';
 import 'package:match_42/service/user_service.dart';
+import 'package:match_42/ui/report_page.dart';
 
 const List<String> topics = [
   '서로의 취미에 대해 얘기해보세요.',
@@ -193,5 +194,13 @@ class ChatViewModel extends ChangeNotifier {
   Future<void> makeTopic() async {
     int index = Random(DateTime.now().millisecond).nextInt(topics.length);
     await _sendSystem(topics[index]);
+  }
+
+  Future<void> report(int userId, List<Report> reports) async {
+    if (reports.isEmpty) return;
+
+    List<String> reasons = reports.map((e) => e.title).toList();
+
+    await _chatService.sendReport(userId, reasons, token);
   }
 }

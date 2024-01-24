@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:match_42/viewmodel/chat_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class Report {
   String title;
@@ -11,27 +13,26 @@ class Report {
 }
 
 class ReportPage extends StatefulWidget {
-  const ReportPage({super.key});
+  const ReportPage(this.userId, {super.key});
 
+  final int userId;
   @override
   State<ReportPage> createState() => _ReportPageState();
 }
 
 class _ReportPageState extends State<ReportPage> {
-  List<Report> reportList = [];
-  List reportName = [
-    '신분 노출',
-    '특정 카뎃 언급',
-    '욕설 및 부적절한 언행',
-    '기타 비매너 행위',
+  List<Report> reportList = [
+    Report('신분 노출', false),
+    Report('특정 카뎃 언급', false),
+    Report('욕설 및 부적절한 언행', false),
+    Report('기타 비매너 행위', false)
   ];
 
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
-    for (int i = 0; i < reportName.length; i++) {
-      reportList.add(Report(reportName[i], false));
-    }
+    ChatViewModel chatViewModel = context.read();
+
     return Scaffold(
       appBar: AppBar(
           title: const Row(
@@ -48,7 +49,7 @@ class _ReportPageState extends State<ReportPage> {
           Expanded(
             child: ListView.builder(
               physics: NeverScrollableScrollPhysics(),
-              itemCount: reportName.length,
+              itemCount: reportList.length,
               itemBuilder: (context, index) {
                 return CheckboxListTile(
                   title: Row(
@@ -76,6 +77,8 @@ class _ReportPageState extends State<ReportPage> {
           ),
           TextButton(
             onPressed: () {
+              chatViewModel.report(widget.userId,
+                  reportList.where((element) => element.isSelect).toList());
               Navigator.of(context).pop();
             },
             style: TextButton.styleFrom(

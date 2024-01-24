@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:match_42/error/error_util.dart';
 import 'package:match_42/service/interest_service.dart';
+import 'package:match_42/ui/report_page.dart';
+import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:match_42/viewmodel/mypage_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +16,7 @@ class UserBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     LoginViewModel loginViewModel = context.read();
+    ChatViewModel chatViewModel = context.read();
 
     Widget buildInterestWrap(List<String> interests) {
       if (interests.isEmpty) {
@@ -55,22 +58,59 @@ class UserBottomSheet extends StatelessWidget {
               '이 유저의 관심사',
               style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: FutureBuilder<List<String>>(
-                future: InterestService.instance
-                    .getInterestsById(userId, loginViewModel.token),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const SizedBox();
-                  } else if (snapshot.hasData) {
-                    List<String> interests = snapshot.data!;
-                    return buildInterestWrap(interests);
-                  } else {
-                    onHttpError(context, snapshot.error as Exception);
-                    return const SizedBox();
-                  }
-                },
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: FutureBuilder<List<String>>(
+                  future: InterestService.instance
+                      .getInterestsById(userId, loginViewModel.token),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const SizedBox();
+                    } else if (snapshot.hasData) {
+                      List<String> interests = snapshot.data!;
+                      return buildInterestWrap(interests);
+                    } else {
+                      onHttpError(context, snapshot.error as Exception);
+                      return const SizedBox();
+                    }
+                  },
+                ),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  minimumSize: Size.fromHeight(54)),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider.value(
+                            value: chatViewModel, child: ReportPage(userId))));
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    '신고하기',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  Icon(
+                    Icons.warning_rounded,
+                    size: 32.0,
+                    color: Colors.redAccent,
+                  )
+                ],
               ),
             ),
           ],
