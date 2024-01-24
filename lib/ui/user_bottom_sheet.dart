@@ -5,8 +5,8 @@ import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:match_42/viewmodel/mypage_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class UserInterest extends StatelessWidget {
-  const UserInterest({super.key, required this.userId});
+class UserBottomSheet extends StatelessWidget {
+  const UserBottomSheet({super.key, required this.userId});
 
   final int userId;
 
@@ -44,7 +44,7 @@ class UserInterest extends StatelessWidget {
     }
 
     return SizedBox(
-      height: MediaQuery.of(context).size.height / 2,
+      height: MediaQuery.of(context).size.height,
       width: double.infinity,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
