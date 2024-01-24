@@ -47,12 +47,21 @@ class MatchData {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toFirestore() {
     return {
       'capacity': capacity,
       'matchType': matchType,
       'users': users,
       'createdAt': createdAt,
+    };
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'capacity': capacity,
+      'matchType': matchType,
+      'ids': users,
+      'createdAt': createdAt.toDate().toString(),
     };
   }
 
@@ -75,7 +84,7 @@ class MatchService {
       .collection(_matchCollectionPath)
       .withConverter(
           fromFirestore: MatchData.fromFirestore,
-          toFirestore: (MatchData data, options) => data.toJson());
+          toFirestore: (MatchData data, options) => data.toFirestore());
 
   Future<MatchData?> startMatch(
       int capacity, String type, int id, String token) async {
@@ -95,8 +104,7 @@ class MatchService {
         transaction.update(documentReference, {'users': matchData.users});
 
         if (matchData.capacity == matchData.size) {
-          matchData.users.forEach((userId) => UserService.instance
-              .sendNotification(userId, '$type 대화방이 생성되었습니다.', token));
+          UserService.instance.sendCreateChatNotification(matchData, token);
 
           transaction.delete(documentReference);
           _chatService.addChatRoom(ChatRoom(

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:logger/logger.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/error/http_exception.dart';
 
@@ -14,9 +15,18 @@ class LoginViewModel extends ChangeNotifier {
 
   User? user;
 
+  LoginViewModel() {
+    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+      submitFCMToken(fcmToken);
+    }).onError((error) async {
+      Logger().d('FCM 토큰 발급에 실패했습니다.');
+    });
+  }
+
   Future<void> login(String url) async {
     updateToken(url);
-    await submitFCMToken();
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    await submitFCMToken(fcmToken);
     await initUser();
     notifyListeners();
   }
@@ -47,9 +57,7 @@ class LoginViewModel extends ChangeNotifier {
     user = User.fromJson(json);
   }
 
-  Future<void> submitFCMToken() async {
-    final fcmToken = await FirebaseMessaging.instance.getToken();
-
+  Future<void> submitFCMToken(String? fcmToken) async {
     Uri uri = Uri.parse(
         '${dotenv.env['ROOT_URL']}/api/v1/firebase/token/subscribe?token=$fcmToken');
 

@@ -7,9 +7,9 @@ import 'package:match_42/service/user_service.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-
 import '../test/chat_room_test.dart';
 import 'FirebaseSetter.dart';
+
 @GenerateNiceMocks([MockSpec<UserService>()])
 import 'chat_viewmodel_test.mocks.dart';
 
@@ -39,22 +39,17 @@ class ChatViewModelTest {
     await chatViewModel.send(me, TextEditingController(text: 'hello'));
 
     expect(chatViewModel.messages[0].message, 'hello');
-    verify(userService.sendNotification(2, 'seongjki: hello', 'token'));
+    verify(userService.sendChatNotification({}, 'seongjki: hello', 'token'));
   }
 
   Future<void> whenRemainTimeZeroAllUserDecideOpenIdTest() async {
-    when(userService.getUserIntraNames([1, 2], 'token'))
-        .thenAnswer((_) => Future.value(['seongjki', 'jiheekan']));
-
     chatViewModel.chatRoom.updateIsOpen(2);
 
     await chatViewModel.updateOpenResult();
 
     expect(chatViewModel.chatRoom.isEveryOpened(), true);
     verifyInOrder([
-      userService.getUserIntraNames([1, 2], 'token'),
-      userService.sendNotification(1, 'seongjki, jiheekan 님이 매치되었습니다', 'token'),
-      userService.sendNotification(2, 'seongjki, jiheekan 님이 매치되었습니다', 'token')
+      userService.sendMatchNotification({}, 'token'),
     ]);
   }
 

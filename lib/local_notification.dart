@@ -1,10 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:go_router/go_router.dart';
-import 'package:match_42/router.dart';
 
 class LocalNotification {
   const LocalNotification._();
@@ -41,22 +38,29 @@ class LocalNotification {
   }
 
   static showNotification(RemoteMessage message) async {
-    AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(channel.id, channel.name,
-            channelDescription: channel.description,
-            importance: channel.importance,
-            priority: Priority.high);
+    AndroidNotificationDetails firstNotificationAndroidSpecifics =
+        AndroidNotificationDetails(
+      channel.id,
+      channel.name,
+      channelDescription: channel.description,
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
     NotificationDetails platformSpecifics =
-        NotificationDetails(android: androidNotificationDetails);
-    await flutterLocalNotificationsPlugin.show(0, message.notification?.title,
-        message.notification?.body, platformSpecifics);
+        NotificationDetails(android: firstNotificationAndroidSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+        message.data['groupKey'].hashCode,
+        message.notification?.title,
+        message.notification?.body,
+        platformSpecifics);
   }
 }
 
 @pragma('vm:entry-point')
 Future<void> background(RemoteMessage message) async {
-  print('call backgroundMessage: ${message.data}');
-  print('noti: ${message.notification?.title}');
+  // print('call backgroundMessage: ${message.data}');
+  // print('noti: ${message.notification?.title}');
 // if (message.notification != null)
 //   LocalNotification.showNotification(message);
 }
@@ -72,7 +76,6 @@ class FirebaseMessageController {
   void handleMessage(RemoteMessage message) {}
 
   Future<void> setupInteractedMessage() async {
-    print('setupInteractedMessage called');
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
 
@@ -94,8 +97,6 @@ class FirebaseMessageController {
     setupInteractedMessage();
     foregroundSubscription ??=
         FirebaseMessaging.onMessage.listen((RemoteMessage event) {
-      print('Call ForegroundMessage ${event.data}');
-
       LocalNotification.showNotification(event);
     });
   }

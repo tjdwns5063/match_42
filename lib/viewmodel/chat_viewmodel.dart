@@ -123,13 +123,12 @@ class ChatViewModel extends ChangeNotifier {
   }
 
   void _sendNotificationInChatRoom(User sender, String text) {
-    for (int userId in chatRoom.users) {
-      if (user.id == userId) continue;
-      _userService.sendNotification(
-          userId,
-          '${(chatRoom.type.toLowerCase() == 'chat') ? sender.nickname : sender.intra}: $text',
-          token);
-    }
+    _userService.sendChatNotification({
+      'id': chatRoom.id,
+      'name': chatRoom.name,
+      'userIds': chatRoom.users,
+    }, '${(chatRoom.type.toLowerCase() == 'chat') ? sender.nickname : sender.intra}: $text',
+        token);
   }
 
   Future<void> send(User sender, TextEditingController text) async {
@@ -167,14 +166,10 @@ class ChatViewModel extends ChangeNotifier {
   }
 
   Future<void> _sendMatchMessage() async {
-    List<String> intras =
-        await _userService.getUserIntraNames(chatRoom.users, token);
-    String names = intras.toString();
-
-    for (int userId in chatRoom.users) {
-      await _userService.sendNotification(
-          userId, '${names.substring(1, names.length - 1)} 님이 매치되었습니다', token);
-    }
+    print('send MatchMessage');
+    _userService.sendMatchNotification({
+      'ids': chatRoom.users,
+    }, token);
   }
 
   Future<void> _addMessage(Message msg) async {
