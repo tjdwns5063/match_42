@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:match_42/data/chat_room.dart';
@@ -39,7 +41,12 @@ class ChatViewModelTest {
     await chatViewModel.send(me, TextEditingController(text: 'hello'));
 
     expect(chatViewModel.messages[0].message, 'hello');
-    verify(userService.sendChatNotification({}, 'seongjki: hello', 'token'));
+    verify(userService.sendChatNotification({
+      'id': chatViewModel.chatRoom.id,
+      'name': chatViewModel.chatRoom.name,
+      'userIds': chatViewModel.chatRoom.users,
+    }, 'seongjki: hello', 'token'))
+        .called(1);
   }
 
   Future<void> whenRemainTimeZeroAllUserDecideOpenIdTest() async {
@@ -49,7 +56,9 @@ class ChatViewModelTest {
 
     expect(chatViewModel.chatRoom.isEveryOpened(), true);
     verifyInOrder([
-      userService.sendMatchNotification({}, 'token'),
+      userService.sendMatchNotification({
+        'ids': chatRoom.users,
+      }, 'token'),
     ]);
   }
 

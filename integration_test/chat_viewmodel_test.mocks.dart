@@ -5,6 +5,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
+import 'package:match_42/service/match_service.dart' as _i4;
 import 'package:match_42/service/user_service.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
@@ -26,23 +27,6 @@ import 'package:mockito/mockito.dart' as _i1;
 /// See the documentation for Mockito's code generation for more information.
 class MockUserService extends _i1.Mock implements _i2.UserService {
   @override
-  _i3.Future<List<String>> getUserIntraNames(
-    List<int>? ids,
-    String? token,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getUserIntraNames,
-          [
-            ids,
-            token,
-          ],
-        ),
-        returnValue: _i3.Future<List<String>>.value(<String>[]),
-        returnValueForMissingStub: _i3.Future<List<String>>.value(<String>[]),
-      ) as _i3.Future<List<String>>);
-
-  @override
   _i3.Future<void> sendChatNotification(
     Map<String, dynamic>? body,
     String? msg,
@@ -50,10 +34,44 @@ class MockUserService extends _i1.Mock implements _i2.UserService {
   ) =>
       (super.noSuchMethod(
         Invocation.method(
-          #sendNotification,
+          #sendChatNotification,
           [
             body,
             msg,
+            token,
+          ],
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> sendCreateChatNotification(
+    _i4.MatchData? matchData,
+    String? token,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #sendCreateChatNotification,
+          [
+            matchData,
+            token,
+          ],
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> sendMatchNotification(
+    Map<String, dynamic>? body,
+    String? token,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #sendMatchNotification,
+          [
+            body,
             token,
           ],
         ),
