@@ -2,51 +2,47 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:match_42/api/http_apis.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/service/chat_service.dart';
-import 'package:match_42/service/user_service.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import '../test/chat_room_test.dart';
 import 'FirebaseSetter.dart';
 
-@GenerateNiceMocks([MockSpec<UserService>()])
+@GenerateNiceMocks([MockSpec<HttpApis>()])
 import 'chat_viewmodel_test.mocks.dart';
 
 class ChatViewModelTest {
   late User me;
-  late MockUserService userService;
+  late MockHttpApis httpApis;
   late ChatService chatService;
   late ChatRoom chatRoom;
   late ChatViewModel chatViewModel;
 
   Future<void> init() async {
     me = User(id: 1, nickname: '', intra: 'seongjki', profile: '');
-    userService = MockUserService();
+    httpApis = MockHttpApis();
     chatService = ChatService.instance;
     chatRoom = ChatRoomCreator.create();
     final ref = await chatService.addChatRoom(chatRoom);
 
     chatViewModel = ChatViewModel(
-        roomId: ref.id,
-        user: me,
-        token: 'token',
-        chatService: chatService,
-        userService: userService);
+        roomId: ref.id, user: me, chatService: chatService, httpApis: httpApis);
   }
 
   Future<void> sendMessageTest() async {
     await chatViewModel.send(me, TextEditingController(text: 'hello'));
 
     expect(chatViewModel.messages[0].message, 'hello');
-    verify(userService.sendChatNotification({
+    verify(httpApis.sendChatNotification({
       'id': chatViewModel.chatRoom.id,
       'name': chatViewModel.chatRoom.name,
       'userIds': chatViewModel.chatRoom.users,
-    }, 'seongjki: hello', 'token'))
-        .called(1);
+      'msg': 'seongjki: hello'
+    })).called(1);
   }
 
   Future<void> whenRemainTimeZeroAllUserDecideOpenIdTest() async {
@@ -56,9 +52,9 @@ class ChatViewModelTest {
 
     expect(chatViewModel.chatRoom.isEveryOpened(), true);
     verifyInOrder([
-      userService.sendMatchNotification({
+      httpApis.sendMatchNotification({
         'ids': chatRoom.users,
-      }, 'token'),
+      }),
     ]);
   }
 

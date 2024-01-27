@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:match_42/api/http_apis.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/service/chat_service.dart';
-import 'package:match_42/service/user_service.dart';
 
 class MatchData {
   MatchData(
@@ -104,7 +104,7 @@ class MatchService {
         transaction.update(documentReference, {'users': matchData.users});
 
         if (matchData.capacity == matchData.size) {
-          UserService.instance.sendCreateChatNotification(matchData, token);
+          HttpApis.instance(token).sendCreateChatNotification(matchData);
 
           transaction.delete(documentReference);
           _chatService.addChatRoom(ChatRoom(

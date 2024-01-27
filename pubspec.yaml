@@ -45,6 +45,7 @@ dependencies:
   firebase_messaging: ^14.6.7
   flutter_local_notifications: ^15.1.1
   logger: ^2.0.2
+  dio: ^5.4.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

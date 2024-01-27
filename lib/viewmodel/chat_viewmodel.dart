@@ -4,12 +4,12 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:match_42/api/http_apis.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/remain_timer.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/service/chat_service.dart';
-import 'package:match_42/service/user_service.dart';
 import 'package:match_42/ui/report_page.dart';
 
 const List<String> topics = [
@@ -51,11 +51,10 @@ class ChatViewModel extends ChangeNotifier {
   ChatViewModel(
       {required this.roomId,
       required this.user,
-      required this.token,
       required ChatService chatService,
-      required UserService userService})
+      required HttpApis httpApis})
       : _chatService = chatService,
-        _userService = userService,
+        _httpApis = httpApis,
         _chatRoom = ChatRoom(
             id: roomId,
             name: '',
@@ -71,9 +70,8 @@ class ChatViewModel extends ChangeNotifier {
   final String roomId;
 
   final ChatService _chatService;
-  final UserService _userService;
+  final HttpApis _httpApis;
   final User user;
-  final String token;
 
   ChatRoom get chatRoom => _chatRoom;
   ChatRoom _chatRoom;
@@ -124,12 +122,13 @@ class ChatViewModel extends ChangeNotifier {
   }
 
   void _sendNotificationInChatRoom(User sender, String text) {
-    _userService.sendChatNotification({
+    _httpApis.sendChatNotification({
       'id': chatRoom.id,
       'name': chatRoom.name,
       'userIds': chatRoom.users,
-    }, '${(chatRoom.type.toLowerCase() == 'chat') ? sender.nickname : sender.intra}: $text',
-        token);
+      'msg':
+          '${(chatRoom.type.toLowerCase() == 'chat') ? sender.nickname : sender.intra}: $text'
+    });
   }
 
   Future<void> send(User sender, TextEditingController text) async {
@@ -168,9 +167,9 @@ class ChatViewModel extends ChangeNotifier {
 
   Future<void> _sendMatchMessage() async {
     print('send MatchMessage');
-    _userService.sendMatchNotification({
+    _httpApis.sendMatchNotification({
       'ids': chatRoom.users,
-    }, token);
+    });
   }
 
   Future<void> _addMessage(Message msg) async {
@@ -201,6 +200,6 @@ class ChatViewModel extends ChangeNotifier {
 
     List<String> reasons = reports.map((e) => e.title).toList();
 
-    await _chatService.sendReport(userId, reasons, token);
+    await _httpApis.sendReport(userId, reasons);
   }
 }

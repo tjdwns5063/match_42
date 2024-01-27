@@ -39,8 +39,7 @@ class ChatListViewModelTest {
     final chatViewModel = ChatViewModel(
         roomId: ref.id,
         user: other,
-        token: 'token',
-        userService: MockUserService(),
+        httpApis: MockHttpApis(),
         chatService: chatService);
     await chatViewModel.send(other, TextEditingController(text: 'hi'));
 
@@ -60,15 +59,13 @@ class ChatListViewModelTest {
     final chatViewModel = ChatViewModel(
         roomId: ref.id,
         user: other,
-        token: 'token',
-        userService: MockUserService(),
+        httpApis: MockHttpApis(),
         chatService: chatService);
 
     final chatViewModel2 = ChatViewModel(
         roomId: ref2.id,
         user: other,
-        token: 'token',
-        userService: MockUserService(),
+        httpApis: MockHttpApis(),
         chatService: chatService);
 
     await chatViewModel.send(other, TextEditingController(text: 'hi'));

@@ -5,8 +5,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
+import 'package:match_42/api/http_apis.dart' as _i2;
 import 'package:match_42/service/match_service.dart' as _i4;
-import 'package:match_42/service/user_service.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -22,57 +22,54 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-/// A class which mocks [UserService].
+/// A class which mocks [HttpApis].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockUserService extends _i1.Mock implements _i2.UserService {
+class MockHttpApis extends _i1.Mock implements _i2.HttpApis {
   @override
-  _i3.Future<void> sendChatNotification(
-    Map<String, dynamic>? body,
-    String? msg,
-    String? token,
-  ) =>
+  _i3.Future<void> sendChatNotification(Map<String, dynamic>? body) =>
       (super.noSuchMethod(
         Invocation.method(
           #sendChatNotification,
-          [
-            body,
-            msg,
-            token,
-          ],
+          [body],
         ),
         returnValue: _i3.Future<void>.value(),
         returnValueForMissingStub: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
 
   @override
-  _i3.Future<void> sendCreateChatNotification(
-    _i4.MatchData? matchData,
-    String? token,
-  ) =>
+  _i3.Future<void> sendCreateChatNotification(_i4.MatchData? matchData) =>
       (super.noSuchMethod(
         Invocation.method(
           #sendCreateChatNotification,
-          [
-            matchData,
-            token,
-          ],
+          [matchData],
         ),
         returnValue: _i3.Future<void>.value(),
         returnValueForMissingStub: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
 
   @override
-  _i3.Future<void> sendMatchNotification(
-    Map<String, dynamic>? body,
-    String? token,
-  ) =>
+  _i3.Future<void> sendMatchNotification(Map<String, dynamic>? body) =>
       (super.noSuchMethod(
         Invocation.method(
           #sendMatchNotification,
+          [body],
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> sendReport(
+    int? userId,
+    List<String>? reasons,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #sendReport,
           [
-            body,
-            token,
+            userId,
+            reasons,
           ],
         ),
         returnValue: _i3.Future<void>.value(),
