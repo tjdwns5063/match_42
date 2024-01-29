@@ -79,14 +79,15 @@ class LoginWeb extends StatelessWidget {
   Widget build(BuildContext context) {
     LoginViewModel loginViewModel = context.read();
 
-    final WebViewController controller = WebViewController()
+    WebViewController controller = WebViewController();
+
+    controller = controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
           NavigationDelegate(onNavigationRequest: (NavigationRequest request) {
         if (loginViewModel.isLoginSuccess(request.url)) {
           loginViewModel.login(request.url);
         }
-
         return NavigationDecision.navigate;
       }))
       ..loadRequest(Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/login/'));

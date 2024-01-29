@@ -8,10 +8,12 @@ class User {
     this.nickname = '',
     required this.intra,
     this.profile = '',
+    reportCount,
     interests,
     blockUsers,
   })  : interests = interests ?? <String>[],
-        blockUsers = blockUsers ?? <String>[];
+        blockUsers = blockUsers ?? <String>[],
+        reportCount = reportCount;
 
   final int id;
   String nickname;
@@ -19,20 +21,21 @@ class User {
   String profile;
   List<String> interests;
   List<String> blockUsers;
+  int reportCount = 0;
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'] ?? 0,
-      nickname: json['nickname'] ?? '',
-      intra: json['intra'],
-      profile: json['profile'] ?? '',
-      interests: json['interests'] == null
-          ? <String>[]
-          : List<String>.from(json['interests']),
-      blockUsers: json['blockUsers'] == null
-          ? <String>[]
-          : List<String>.from(json['blockUsers']),
-    );
+        id: json['id'] ?? 0,
+        nickname: json['nickname'] ?? '',
+        intra: json['intra'],
+        profile: json['profile'] ?? '',
+        interests: json['interests'] == null
+            ? <String>[]
+            : List<String>.from(json['interests']),
+        blockUsers: json['blockUsers'] == null
+            ? <String>[]
+            : List<String>.from(json['blockUsers']),
+        reportCount: json['reportCount'] ?? 0);
   }
 
   Map<String, dynamic> toFirestore() {

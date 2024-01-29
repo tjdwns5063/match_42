@@ -8,6 +8,7 @@ import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/error/http_exception.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class LoginViewModel extends ChangeNotifier {
   String _token = '';
@@ -39,6 +40,7 @@ class LoginViewModel extends ChangeNotifier {
 
   void logout({required Function redirect}) {
     _token = '';
+    WebViewCookieManager().clearCookies();
     redirect();
   }
 
@@ -54,6 +56,7 @@ class LoginViewModel extends ChangeNotifier {
           statusCode: response.statusCode, message: json['message']));
     }
 
+    print('json: $json');
     user = User.fromJson(json);
   }
 

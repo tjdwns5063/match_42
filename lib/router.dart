@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:match_42/api/http_apis.dart';
 import 'package:match_42/api/firebase/chat_api.dart';
+import 'package:match_42/ui/ban_page.dart';
 import 'package:match_42/ui/chat_page.dart';
 import 'package:match_42/ui/login_page.dart';
 import 'package:match_42/ui/main_layout.dart';
@@ -62,6 +63,11 @@ class MyRouter {
                       ],
                       child: const MainLayout(),
                     );
+                  },
+                  redirect: (context, state) {
+                    LoginViewModel loginViewModel = context.read();
+                    if (loginViewModel.user!.reportCount >= 5) return '/ban';
+                    return MAIN_PATH;
                   }),
               GoRoute(
                   path: '$CHAT_PATH/:room_id',
@@ -78,6 +84,13 @@ class MyRouter {
                         },
                         child: const ChatPage());
                   }),
+              GoRoute(
+                  path: '/ban',
+                  builder: (context, state) {
+                    return ChangeNotifierProvider.value(
+                        value: context.read<LoginViewModel>(),
+                        child: const BanPage());
+                  })
             ]);
 
   final BuildContext context;
