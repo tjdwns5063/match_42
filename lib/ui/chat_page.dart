@@ -4,9 +4,7 @@ import 'package:match_42/ui/user_bottom_sheet.dart';
 import 'package:match_42/ui/yes_or_no.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
-import 'package:match_42/viewmodel/match_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:match_42/ui/report_page.dart';
 import 'package:match_42/ui/make_topic.dart';
 
 class ChatPage extends StatefulWidget {
@@ -118,26 +116,37 @@ class _ChatPageState extends State<ChatPage> {
         scrolledUnderElevation: 0.0,
         centerTitle: false,
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              '${chatViewModel.chatRoom.users.length}인 ${chatViewModel.chatRoom.name}',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            RichText(
+              text: TextSpan(
+                text: chatViewModel.chatRoom.name,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 20.0),
+                children: [
+                  TextSpan(
+                      text: ' ${chatViewModel.chatRoom.users.length}',
+                      style: TextStyle(fontSize: 12.0, color: Colors.black38))
+                ],
+              ),
             ),
-            SizedBox(
-              width: 16.0,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12.0),
+                  height: 45.0,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(20.0)),
+                  child: Text(
+                    '${chatViewModel.remainTime} 남음',
+                    style: const TextStyle(
+                        fontSize: 16.0, fontWeight: FontWeight.w700),
+                  )),
             ),
-            Container(
-                width: 150.0,
-                height: 45.0,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    color: colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(20.0)),
-                child: Text(
-                  chatViewModel.remainTime,
-                  style: const TextStyle(
-                      fontSize: 16.0, fontWeight: FontWeight.w700),
-                )),
           ],
         ),
       ),

@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 
 class RemainTimer {
   RemainTimer({required Timestamp openTime, required this.notify})
       : _remainTime = _calculateRemainSeconds(openTime) {
+    initializeDateFormatting();
     startTimer();
   }
 
@@ -22,13 +25,10 @@ class RemainTimer {
   }
 
   String parseRemainTime() {
-    int remainTime = _remainTime;
+    DateTime time = DateTime.fromMillisecondsSinceEpoch(
+        Duration(seconds: _remainTime).inMilliseconds);
 
-    int h = remainTime ~/ 3600;
-    int m = remainTime % 3600 ~/ 60;
-    int s = remainTime % 3600 % 60;
-
-    return '$h : $m : $s 남음';
+    return DateFormat.Hms().format(time);
   }
 
   void startTimer() {
