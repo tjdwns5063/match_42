@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:match_42/error/error_util.dart';
-import 'package:match_42/service/chat_service.dart';
+import 'package:match_42/api/firebase/chat_api.dart';
 import 'package:match_42/ui/eat_dialog.dart';
 import 'package:match_42/ui/subject_dialog.dart';
 import 'package:match_42/ui/talk_dialog.dart';
@@ -109,7 +109,7 @@ class _MatchPageState extends State<MatchPage> {
     };
   }
 
-  ChatService chatService = ChatService.instance;
+  ChatApis chatService = ChatApis.instance;
 
   @override
   Widget build(BuildContext context) {

@@ -5,10 +5,10 @@ import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
 
-class ChatService {
-  static final ChatService instance = ChatService._create();
+class ChatApis {
+  static final ChatApis instance = ChatApis._create();
 
-  ChatService._create();
+  ChatApis._create();
 
   static const String roomCollectionPath = 'rooms';
   static const String messageCollectionPath = 'messages';

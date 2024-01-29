@@ -5,7 +5,7 @@ import 'package:match_42/api/http_apis.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
-import 'package:match_42/service/chat_service.dart';
+import 'package:match_42/api/firebase/chat_api.dart';
 
 class MatchData {
   MatchData(
@@ -73,12 +73,12 @@ class MatchData {
 
 const String _matchCollectionPath = 'match';
 
-class MatchService {
-  MatchService._();
+class MatchApis {
+  MatchApis._();
 
-  static final MatchService instance = MatchService._();
+  static final MatchApis instance = MatchApis._();
 
-  final ChatService _chatService = ChatService.instance;
+  final ChatApis _chatService = ChatApis.instance;
 
   final CollectionReference<MatchData> matchRef = FirebaseFirestore.instance
       .collection(_matchCollectionPath)

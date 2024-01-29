@@ -3,10 +3,10 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:match_42/api/firebase/chat_api.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
-import 'package:match_42/service/chat_service.dart';
 import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 
@@ -16,18 +16,18 @@ import 'chat_viewmodel_test.mocks.dart';
 
 class ChatListViewModelTest {
   late User me;
-  late ChatService chatService;
+  late ChatApis chatApis;
   late ChatListViewModel chatListViewModel;
 
   Future<void> init() async {
     me = User(id: 1, intra: 'seongjki');
-    chatService = ChatService.instance;
-    chatListViewModel = ChatListViewModel(me, chatService);
+    chatApis = ChatApis.instance;
+    chatListViewModel = ChatListViewModel(me, chatApis);
   }
 
   Future<void> createRoomTest() async {
     ChatRoom chatRoom = ChatRoomCreator.create();
-    final ref = await chatService.addChatRoom(chatRoom);
+    final ref = await chatApis.addChatRoom(chatRoom);
 
     expect(chatListViewModel.rooms[0].id, ref.id);
   }
@@ -35,12 +35,12 @@ class ChatListViewModelTest {
   Future<void> unreadCountTest() async {
     User other = User(id: 2, intra: 'jiheekan');
     ChatRoom chatRoom = ChatRoomCreator.create();
-    final ref = await chatService.addChatRoom(chatRoom);
+    final ref = await chatApis.addChatRoom(chatRoom);
     final chatViewModel = ChatViewModel(
         roomId: ref.id,
         user: other,
         httpApis: MockHttpApis(),
-        chatService: chatService);
+        chatService: chatApis);
     await chatViewModel.send(other, TextEditingController(text: 'hi'));
 
     expect(chatListViewModel.rooms[0].unread[chatRoom.users.indexOf(me.id)], 1);
@@ -53,20 +53,20 @@ class ChatListViewModelTest {
     ChatRoom chatRoom = ChatRoomCreator.create();
     ChatRoom chatRoom2 = ChatRoomCreator.create();
 
-    final ref = await chatService.addChatRoom(chatRoom);
-    final ref2 = await chatService.addChatRoom(chatRoom2);
+    final ref = await chatApis.addChatRoom(chatRoom);
+    final ref2 = await chatApis.addChatRoom(chatRoom2);
 
     final chatViewModel = ChatViewModel(
         roomId: ref.id,
         user: other,
         httpApis: MockHttpApis(),
-        chatService: chatService);
+        chatService: chatApis);
 
     final chatViewModel2 = ChatViewModel(
         roomId: ref2.id,
         user: other,
         httpApis: MockHttpApis(),
-        chatService: chatService);
+        chatService: chatApis);
 
     await chatViewModel.send(other, TextEditingController(text: 'hi'));
     await chatViewModel2.send(other, TextEditingController(text: 'hi'));
@@ -95,8 +95,8 @@ class ChatListViewModelTest {
 
     chatListViewModel.isOn = 2; // 2 == 비활성화 된 채팅방
 
-    final refOff = await chatService.addChatRoom(chatRoomOff);
-    await chatService.addChatRoom(chatRoomOn);
+    final refOff = await chatApis.addChatRoom(chatRoomOff);
+    await chatApis.addChatRoom(chatRoomOn);
 
     expect(chatListViewModel.rooms.length, 1);
     expect(chatListViewModel.rooms[0].id, refOff.id);

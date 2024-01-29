@@ -9,7 +9,7 @@ import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/remain_timer.dart';
 import 'package:match_42/data/user.dart';
-import 'package:match_42/service/chat_service.dart';
+import 'package:match_42/api/firebase/chat_api.dart';
 import 'package:match_42/ui/report_page.dart';
 
 const List<String> topics = [
@@ -51,9 +51,9 @@ class ChatViewModel extends ChangeNotifier {
   ChatViewModel(
       {required this.roomId,
       required this.user,
-      required ChatService chatService,
+      required ChatApis chatService,
       required HttpApis httpApis})
-      : _chatService = chatService,
+      : _chatApis = chatService,
         _httpApis = httpApis,
         _chatRoom = ChatRoom(
             id: roomId,
@@ -69,7 +69,7 @@ class ChatViewModel extends ChangeNotifier {
 
   final String roomId;
 
-  final ChatService _chatService;
+  final ChatApis _chatApis;
   final HttpApis _httpApis;
   final User user;
 
@@ -99,18 +99,14 @@ class ChatViewModel extends ChangeNotifier {
   }
 
   void listen() {
-    final chatStream = _chatService.createMessageRef(chatRoom.id).snapshots();
+    final chatStream = _chatApis.createMessageRef(chatRoom.id).snapshots();
 
     _chatSubscription = chatStream.listen((event) async {
-      List<Message> newMessages = [];
-      for (QueryDocumentSnapshot<Message> doc in event.docs) {
-        newMessages.add(doc.data());
-      }
-      _messages = newMessages;
+      _messages = event.docs.map((e) => e.data()).toList();
       notifyListeners();
     });
 
-    final readStream = _chatService.roomRef.doc(chatRoom.id).snapshots();
+    final readStream = _chatApis.roomRef.doc(chatRoom.id).snapshots();
 
     _readSubscription = readStream.listen((event) async {
       _chatRoom = event.data() ?? _chatRoom;
@@ -151,13 +147,13 @@ class ChatViewModel extends ChangeNotifier {
 
     User system = User(id: 0, nickname: 'system', intra: 'system');
 
-    await _chatService.addMessage(chatRoom.id,
+    await _chatApis.addMessage(chatRoom.id,
         Message(sender: system, message: msg, date: Timestamp.now()));
   }
 
   Future<void> updateOpenResult() async {
     _chatRoom.updateIsOpen(user.id);
-    await _chatService.updateIsOpen(chatRoom);
+    await _chatApis.updateIsOpen(chatRoom);
 
     if (_chatRoom.isEveryOpened()) {
       await _sendMatchMessage();
@@ -176,14 +172,14 @@ class ChatViewModel extends ChangeNotifier {
     _chatRoom.addUnreadMessage(msg);
     _chatRoom.lastMsg = msg;
 
-    await _chatService.updateChatRoom(_chatRoom);
-    await _chatService.addMessage(chatRoom.id, msg);
+    await _chatApis.updateChatRoom(_chatRoom);
+    await _chatApis.addMessage(chatRoom.id, msg);
   }
 
   Future<void> _readAll() async {
     _chatRoom.readAll(user.id);
 
-    await _chatService.updateUnread(_chatRoom);
+    await _chatApis.updateUnread(_chatRoom);
   }
 
   bool isRemainTime() {

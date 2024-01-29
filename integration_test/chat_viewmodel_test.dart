@@ -1,11 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:match_42/api/firebase/chat_api.dart';
 import 'package:match_42/api/http_apis.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/user.dart';
-import 'package:match_42/service/chat_service.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -18,19 +16,20 @@ import 'chat_viewmodel_test.mocks.dart';
 class ChatViewModelTest {
   late User me;
   late MockHttpApis httpApis;
-  late ChatService chatService;
+  late ChatApis chatApis;
+
   late ChatRoom chatRoom;
   late ChatViewModel chatViewModel;
 
   Future<void> init() async {
     me = User(id: 1, nickname: '', intra: 'seongjki', profile: '');
     httpApis = MockHttpApis();
-    chatService = ChatService.instance;
+    chatApis = ChatApis.instance;
     chatRoom = ChatRoomCreator.create();
-    final ref = await chatService.addChatRoom(chatRoom);
+    final ref = await chatApis.addChatRoom(chatRoom);
 
     chatViewModel = ChatViewModel(
-        roomId: ref.id, user: me, chatService: chatService, httpApis: httpApis);
+        roomId: ref.id, user: me, chatService: chatApis, httpApis: httpApis);
   }
 
   Future<void> sendMessageTest() async {
@@ -50,6 +49,8 @@ class ChatViewModelTest {
 
     await chatViewModel.updateOpenResult();
 
+    print('isEveryOpened = ${chatViewModel.chatRoom.isEveryOpened()}');
+
     expect(chatViewModel.chatRoom.isEveryOpened(), true);
     verifyInOrder([
       httpApis.sendMatchNotification({
@@ -61,7 +62,10 @@ class ChatViewModelTest {
   Future<void> conversationTopicRecommendationTest() async {
     await chatViewModel.makeTopic();
 
-    expect(topics.contains(chatViewModel.messages[0].message), true);
+    String result =
+        (await chatApis.getAllMessage(chatViewModel.chatRoom.id)).last.message;
+
+    expect(topics.contains(result), true);
   }
 }
 
@@ -74,7 +78,10 @@ Future<void> main() async {
     await chatViewModelTest.init();
   });
 
-  tearDown(() => chatViewModelTest.chatViewModel.dispose());
+  tearDown(() async {
+    chatViewModelTest.chatViewModel.dispose();
+    await FirebaseSetter.deleteFirestore();
+  });
 
   group('chat viewmodel test', () {
     test('메세지 전송 기능 테스트', () => chatViewModelTest.sendMessageTest());

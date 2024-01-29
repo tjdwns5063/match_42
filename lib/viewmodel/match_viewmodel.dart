@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:match_42/service/match_service.dart';
+import 'package:match_42/api/firebase/match_api.dart';
 
 class MatchViewModel extends ChangeNotifier {
   MatchViewModel(this._id, this._token) {
     init();
   }
 
-  MatchService matchService = MatchService.instance;
+  MatchApis matchService = MatchApis.instance;
   final int _id;
   final String _token;
 

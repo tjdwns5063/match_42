@@ -8,13 +8,13 @@ class FirebaseSetter {
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp();
     FirebaseFirestore.instance
-        .useFirestoreEmulator('localhost', 8080, sslEnabled: false);
+        .useFirestoreEmulator('localhost', 8082, sslEnabled: false);
     FirebaseFirestore.instance.settings =
         const Settings(persistenceEnabled: false);
   }
 
   static Future<void> deleteFirestore() async {
-    Uri uri = Uri.http('10.0.2.2:8080',
+    Uri uri = Uri.http('10.0.2.2:8082',
         '/emulator/v1/projects/match-42/databases/(default)/documents');
 
     http.Response response =

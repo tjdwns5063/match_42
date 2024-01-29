@@ -3,10 +3,11 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
 
-import 'package:match_42/api/http_apis.dart' as _i2;
-import 'package:match_42/service/match_service.dart' as _i4;
+import 'package:match_42/api/firebase/match_api.dart' as _i5;
+import 'package:match_42/api/http_apis.dart' as _i3;
+import 'package:match_42/data/user.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -22,45 +23,55 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
+class _FakeUser_0 extends _i1.SmartFake implements _i2.User {
+  _FakeUser_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [HttpApis].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockHttpApis extends _i1.Mock implements _i2.HttpApis {
+class MockHttpApis extends _i1.Mock implements _i3.HttpApis {
   @override
-  _i3.Future<void> sendChatNotification(Map<String, dynamic>? body) =>
+  _i4.Future<void> sendChatNotification(Map<String, dynamic>? body) =>
       (super.noSuchMethod(
         Invocation.method(
           #sendChatNotification,
           [body],
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i3.Future<void> sendCreateChatNotification(_i4.MatchData? matchData) =>
+  _i4.Future<void> sendCreateChatNotification(_i5.MatchData? matchData) =>
       (super.noSuchMethod(
         Invocation.method(
           #sendCreateChatNotification,
           [matchData],
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i3.Future<void> sendMatchNotification(Map<String, dynamic>? body) =>
+  _i4.Future<void> sendMatchNotification(Map<String, dynamic>? body) =>
       (super.noSuchMethod(
         Invocation.method(
           #sendMatchNotification,
           [body],
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i3.Future<void> sendReport(
+  _i4.Future<void> sendReport(
     int? userId,
     List<String>? reasons,
   ) =>
@@ -72,7 +83,84 @@ class MockHttpApis extends _i1.Mock implements _i2.HttpApis {
             reasons,
           ],
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
+  _i4.Future<_i2.User> addBlockUser(String? intraId) => (super.noSuchMethod(
+        Invocation.method(
+          #addBlockUser,
+          [intraId],
+        ),
+        returnValue: _i4.Future<_i2.User>.value(_FakeUser_0(
+          this,
+          Invocation.method(
+            #addBlockUser,
+            [intraId],
+          ),
+        )),
+        returnValueForMissingStub: _i4.Future<_i2.User>.value(_FakeUser_0(
+          this,
+          Invocation.method(
+            #addBlockUser,
+            [intraId],
+          ),
+        )),
+      ) as _i4.Future<_i2.User>);
+
+  @override
+  _i4.Future<_i2.User> deleteBlockUser(String? intraId) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteBlockUser,
+          [intraId],
+        ),
+        returnValue: _i4.Future<_i2.User>.value(_FakeUser_0(
+          this,
+          Invocation.method(
+            #deleteBlockUser,
+            [intraId],
+          ),
+        )),
+        returnValueForMissingStub: _i4.Future<_i2.User>.value(_FakeUser_0(
+          this,
+          Invocation.method(
+            #deleteBlockUser,
+            [intraId],
+          ),
+        )),
+      ) as _i4.Future<_i2.User>);
+
+  @override
+  _i4.Future<List<String>> getInterestsById(int? userId) => (super.noSuchMethod(
+        Invocation.method(
+          #getInterestsById,
+          [userId],
+        ),
+        returnValue: _i4.Future<List<String>>.value(<String>[]),
+        returnValueForMissingStub: _i4.Future<List<String>>.value(<String>[]),
+      ) as _i4.Future<List<String>>);
+
+  @override
+  _i4.Future<_i2.User> postInterests(List<String>? interests) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #postInterests,
+          [interests],
+        ),
+        returnValue: _i4.Future<_i2.User>.value(_FakeUser_0(
+          this,
+          Invocation.method(
+            #postInterests,
+            [interests],
+          ),
+        )),
+        returnValueForMissingStub: _i4.Future<_i2.User>.value(_FakeUser_0(
+          this,
+          Invocation.method(
+            #postInterests,
+            [interests],
+          ),
+        )),
+      ) as _i4.Future<_i2.User>);
 }

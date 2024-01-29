@@ -6,7 +6,7 @@ import 'package:match_42/error/http_exception.dart';
 import 'package:dio/dio.dart';
 
 import '../data/user.dart';
-import '../service/match_service.dart';
+import 'firebase/match_api.dart';
 
 const String _ROOT_URL_ID = 'ROOT_URL';
 
