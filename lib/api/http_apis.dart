@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:match_42/api/interceptor.dart';
 import 'package:match_42/error/http_exception.dart';
 import 'package:dio/dio.dart';
 
@@ -13,25 +14,29 @@ class HttpApis {
 
   Dio _dio;
 
-  HttpApis._(this._dio);
+  HttpApis._(this._dio) {
+    _dio.interceptors.add(CustomInterceptor());
+  }
 
   factory HttpApis.instance(String token) {
-    BaseOptions options =
-        BaseOptions(baseUrl: dotenv.env[_ROOT_URL_ID] as String, headers: {
-      'Authorization': 'Bearer $token',
-    });
+    BaseOptions options = BaseOptions(
+      baseUrl: dotenv.env[_ROOT_URL_ID] as String,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+      contentType: 'application/json',
+    );
+
     _instance ??= HttpApis._(Dio(options));
 
     return _instance as HttpApis;
   }
 
   Future<void> _sendNotification(Map<String, dynamic> body, String type) async {
-    Response<void> response =
-        await _dio.post('/api/v1/firebase/message/send/$type',
-            data: jsonEncode(body),
-            options: Options(headers: {
-              'Content-Type': 'application/json',
-            }));
+    Response<void> response = await _dio.post(
+      '/api/v1/firebase/message/send/$type',
+      data: jsonEncode(body),
+    );
 
     if (response.statusCode != 200) {
       return Future.error(HttpException(
@@ -56,9 +61,6 @@ class HttpApis {
         data: jsonEncode({
           'reportedId': userId,
           'reasons': reasons,
-        }),
-        options: Options(headers: {'Content-Type': 'application/json'}));
-
-    print('report: ${response.data}');
+        }));
   }
 }
