@@ -5,6 +5,7 @@ import 'package:match_42/api/interceptor.dart';
 import 'package:match_42/error/http_exception.dart';
 import 'package:dio/dio.dart';
 
+import '../data/user.dart';
 import '../service/match_service.dart';
 
 const String _ROOT_URL_ID = 'ROOT_URL';
@@ -57,10 +58,74 @@ class HttpApis {
   }
 
   Future<void> sendReport(int userId, List<String> reasons) async {
-    Response<String> response = await _dio.post('/api/v1/user/report',
+    await _dio.post('/api/v1/user/report',
         data: jsonEncode({
           'reportedId': userId,
           'reasons': reasons,
         }));
+  }
+
+  Future<User> addBlockUser(String intraId) async {
+    Response response = await _dio.post('/api/v1/user/block', queryParameters: {
+      'blockUser': intraId,
+    });
+
+    if (response.statusCode != 200) {
+      return Future.error(HttpException(
+          statusCode: response.statusCode!, message: response.data));
+    }
+    Map<String, dynamic> json = jsonDecode(response.data);
+
+    return User.fromJson(json);
+  }
+
+  Future<User> deleteBlockUser(String intraId) async {
+    Response response =
+        await _dio.delete('/api/v1/user/block', queryParameters: {
+      'blockUser': intraId,
+    });
+
+    if (response.statusCode != 200) {
+      return Future.error(HttpException(
+          statusCode: response.statusCode!, message: response.data));
+    }
+    Map<String, dynamic> json = jsonDecode(response.data);
+
+    return User.fromJson(json);
+  }
+
+  Future<List<String>> getInterestsById(int userId) async {
+    Response response = await _dio.get('/api/v1/user/interest/$userId');
+
+    if (response.statusCode != 200) {
+      return Future.error(HttpException(
+          statusCode: response.statusCode ??= 500, message: response.data));
+    }
+    Map<String, dynamic> json = jsonDecode(response.data);
+
+    return List<String>.from(json['interests'].toList());
+  }
+
+  Future<User> postInterests(List<String> interests) async {
+    Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/user/interest');
+
+    Response response = await _dio.put(
+      '/api/v1/user/interest',
+      // headers: {
+      //   'Content-Type': 'application/json',
+      //   'content-encoding': 'utf-8',
+      //   'Authorization': 'Bearer $token',
+      // },
+      data: jsonEncode(interests),
+    );
+
+    // print(response.body);
+
+    if (response.statusCode != 200) {
+      return Future.error(HttpException(
+          statusCode: response.statusCode ??= 500, message: response.data));
+    }
+
+    return User.fromJson(response.data);
   }
 }

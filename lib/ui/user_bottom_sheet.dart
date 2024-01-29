@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:match_42/error/error_util.dart';
-import 'package:match_42/service/interest_service.dart';
 import 'package:match_42/ui/report_page.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
-import 'package:match_42/viewmodel/mypage_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class UserBottomSheet extends StatelessWidget {
@@ -61,21 +58,8 @@ class UserBottomSheet extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(top: 16.0),
-                child: FutureBuilder<List<String>>(
-                  future: InterestService.instance
-                      .getInterestsById(userId, loginViewModel.token),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const SizedBox();
-                    } else if (snapshot.hasData) {
-                      List<String> interests = snapshot.data!;
-                      return buildInterestWrap(interests);
-                    } else {
-                      onHttpError(context, snapshot.error as Exception);
-                      return const SizedBox();
-                    }
-                  },
-                ),
+                child: buildInterestWrap(
+                    loginViewModel.user?.interests ?? <String>[]),
               ),
             ),
             ElevatedButton(

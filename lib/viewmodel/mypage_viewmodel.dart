@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
-import 'package:match_42/service/block_service.dart';
-import 'package:match_42/service/interest_service.dart';
 import 'package:match_42/ui/my_page.dart';
 import 'package:match_42/data/user.dart';
+
+import '../api/http_apis.dart';
 
 const List<String> allInterest = [
   '운동',
@@ -39,18 +39,16 @@ const List<String> allInterest = [
 ];
 
 class MyPageViewModel extends ChangeNotifier {
-  String token;
-  final InterestService _interestService;
-  final BlockService _blockService;
+  final HttpApis _httpApis;
 
   late List<Interest> interestList;
   late List<Interest> selectedList;
   late List<String> blockUsers;
 
-  MyPageViewModel(BlockService blockService, InterestService interestService,
-      {user, required this.token})
-      : _blockService = blockService,
-        _interestService = interestService {
+  MyPageViewModel(
+    HttpApis httpApis, {
+    user,
+  }) : _httpApis = httpApis {
     _initInterestList(user);
     _initSelectedList();
     _initBlockUsers(user);
@@ -106,7 +104,7 @@ class MyPageViewModel extends ChangeNotifier {
         .map((Interest interest) => interest.title)
         .toList();
 
-    User user = await _interestService.postInterests(selected, token);
+    User user = await _httpApis.postInterests(selected);
 
     callback(user);
     _initInterestList(user);
@@ -116,7 +114,7 @@ class MyPageViewModel extends ChangeNotifier {
 
   Future<void> requestAddBlockUser(
       {required String intraId, required Function callback}) async {
-    User user = await _blockService.addBlockUser(intraId, token);
+    User user = await _httpApis.addBlockUser(intraId);
 
     callback(user);
     _initBlockUsers(user);
@@ -126,7 +124,7 @@ class MyPageViewModel extends ChangeNotifier {
 
   Future<void> requestDeleteBlockUser(
       {required int index, required Function callback}) async {
-    User user = await _blockService.deleteBlockUser(blockUsers[index], token);
+    User user = await _httpApis.deleteBlockUser(blockUsers[index]);
 
     callback(user);
     _initBlockUsers(user);
