@@ -137,6 +137,7 @@ class _ChatPageState extends State<ChatPage> {
               child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 12.0),
                   height: 45.0,
+                  width: 140,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                       color: colorScheme.secondaryContainer,
