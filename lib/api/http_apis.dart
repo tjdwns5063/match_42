@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:match_42/api/interceptor.dart';
+import 'package:match_42/api/token_apis.dart';
 import 'package:match_42/error/http_exception.dart';
 import 'package:dio/dio.dart';
 
@@ -15,20 +16,18 @@ class HttpApis {
 
   Dio _dio;
 
-  HttpApis._(this._dio) {
-    _dio.interceptors.add(CustomInterceptor());
-  }
+  HttpApis._(this._dio);
 
-  factory HttpApis.instance(String token) {
+  factory HttpApis.instance(TokenApis tokenApis) {
     BaseOptions options = BaseOptions(
       baseUrl: dotenv.env[_ROOT_URL_ID] as String,
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
       contentType: 'application/json',
     );
 
-    _instance ??= HttpApis._(Dio(options));
+    Dio dio = Dio(options);
+    dio.interceptors.add(CustomInterceptor(tokenApis));
+
+    _instance ??= HttpApis._(dio);
 
     return _instance as HttpApis;
   }
@@ -107,19 +106,10 @@ class HttpApis {
   }
 
   Future<User> postInterests(List<String> interests) async {
-    Uri uri = Uri.parse('${dotenv.env['ROOT_URL']}/api/v1/user/interest');
-
     Response response = await _dio.put(
       '/api/v1/user/interest',
-      // headers: {
-      //   'Content-Type': 'application/json',
-      //   'content-encoding': 'utf-8',
-      //   'Authorization': 'Bearer $token',
-      // },
       data: jsonEncode(interests),
     );
-
-    // print(response.body);
 
     if (response.statusCode != 200) {
       return Future.error(HttpException(
@@ -127,5 +117,27 @@ class HttpApis {
     }
 
     return User.fromJson(response.data);
+  }
+
+  Future<User> getUser() async {
+    Response response = await _dio.get('/api/v1/user/me');
+
+    if (response.statusCode != 200) {
+      return Future.error(HttpException(
+          statusCode: response.statusCode ?? 500, message: response.data));
+    }
+
+    return User.fromJson(response.data);
+  }
+
+  Future<void> submitFCMToken(String? fcmToken) async {
+    Response response =
+        await _dio.post('/api/v1/firebase/token/subscribe?token=$fcmToken');
+
+    if (response.statusCode != 200) {
+      return Future.error(HttpException(
+          statusCode: response.statusCode ?? 500,
+          message: 'FCM 토큰 등록에 실패했습니다.'));
+    }
   }
 }

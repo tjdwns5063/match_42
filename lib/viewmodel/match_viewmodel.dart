@@ -5,13 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:match_42/api/firebase/match_api.dart';
 
 class MatchViewModel extends ChangeNotifier {
-  MatchViewModel(this._id, this._token) {
+  MatchViewModel(this._id) {
     init();
   }
 
   MatchApis matchService = MatchApis.instance;
   final int _id;
-  final String _token;
 
   Map<String, MatchData?> matchStatus = {'밥': null, '수다': null, '과제': null};
 
@@ -61,7 +60,7 @@ class MatchViewModel extends ChangeNotifier {
       String menu = ''}) async {
     matchStatus[type.typeName] = await FirebaseFirestore.instance
         .runTransaction((transaction) =>
-            matchService.startMatch(capacity, type.typeName, _id, _token));
+            matchService.startMatch(capacity, type.typeName, _id));
   }
 
   Future<void> matchStop({required ChatType type}) async {

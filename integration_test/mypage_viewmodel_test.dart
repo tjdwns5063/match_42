@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:match_42/api/http_apis.dart';
+import 'package:match_42/api/token_apis.dart';
 import 'package:match_42/data/user.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:match_42/viewmodel/mypage_viewmodel.dart';
@@ -42,7 +43,8 @@ class MyPageViewModelTest {
     List<String> interestList = [
       for (int index in selectedIndex) allInterest[index]
     ];
-    LoginViewModel loginViewModel = LoginViewModel();
+    LoginViewModel loginViewModel = LoginViewModel(
+        TokenApis.instance, HttpApis.instance(TokenApis.instance));
 
     for (int index in selectedIndex) {
       myPageViewModel.selectedList[index].isSelect = true;
@@ -70,7 +72,8 @@ class MyPageViewModelTest {
     ];
     init(User(id: 1, intra: 'seongjki', interests: interestList));
 
-    LoginViewModel loginViewModel = LoginViewModel();
+    LoginViewModel loginViewModel = LoginViewModel(
+        TokenApis.instance, HttpApis.instance(TokenApis.instance));
 
     for (int i = 0; i < cnt; ++i) {
       int selectIndex = selectedIndex[i];

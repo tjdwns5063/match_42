@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:match_42/api/http_apis.dart';
+import 'package:match_42/api/token_apis.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/data/message.dart';
 import 'package:match_42/data/user.dart';
@@ -86,8 +87,7 @@ class MatchApis {
           fromFirestore: MatchData.fromFirestore,
           toFirestore: (MatchData data, options) => data.toFirestore());
 
-  Future<MatchData?> startMatch(
-      int capacity, String type, int id, String token) async {
+  Future<MatchData?> startMatch(int capacity, String type, int id) async {
     QuerySnapshot<MatchData> query = await matchRef
         .where('matchType', isEqualTo: type)
         .where('capacity', isEqualTo: capacity)
@@ -104,7 +104,9 @@ class MatchApis {
         transaction.update(documentReference, {'users': matchData.users});
 
         if (matchData.capacity == matchData.size) {
-          HttpApis.instance(token).sendCreateChatNotification(matchData);
+          //TODO: HttpApis 의존성을 viewModel로 이동시켜야함.
+          HttpApis.instance(TokenApis.instance)
+              .sendCreateChatNotification(matchData);
 
           transaction.delete(documentReference);
           _chatService.addChatRoom(ChatRoom(

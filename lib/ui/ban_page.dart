@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../router.dart';
 
@@ -42,8 +43,11 @@ class BanPage extends StatelessWidget {
                       minimumSize: Size.fromHeight(48),
                       foregroundColor: Colors.grey,
                       backgroundColor: Theme.of(context).primaryColor),
-                  onPressed: () => loginViewModel.logout(
-                      redirect: () => context.go(LOGIN_PATH)),
+                  onPressed: () {
+                    loginViewModel.logout(
+                        redirect: () => context.go(LOGIN_PATH));
+                    WebViewCookieManager().clearCookies();
+                  },
                   child: Text(
                     '로그아웃',
                     style: TextStyle(

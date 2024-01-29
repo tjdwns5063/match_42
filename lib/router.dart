@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:match_42/api/http_apis.dart';
 import 'package:match_42/api/firebase/chat_api.dart';
+import 'package:match_42/api/token_apis.dart';
 import 'package:match_42/ui/ban_page.dart';
 import 'package:match_42/ui/chat_page.dart';
 import 'package:match_42/ui/login_page.dart';
@@ -36,8 +37,7 @@ class MyRouter {
                   redirect: (context, state) {
                     LoginViewModel loginViewModel = context.read();
 
-                    if (loginViewModel.token.isNotEmpty &&
-                        loginViewModel.user != null) {
+                    if (loginViewModel.user != null) {
                       return MAIN_PATH;
                     }
                     return '/auth';
@@ -54,12 +54,12 @@ class MyRouter {
                         ),
                         ChangeNotifierProvider(
                             create: (BuildContext context) => MyPageViewModel(
-                                  HttpApis.instance(loginViewModel.token),
+                                  HttpApis.instance(TokenApis.instance),
                                   user: loginViewModel.user!,
                                 )),
                         ChangeNotifierProvider(
-                            create: (BuildContext context) => MatchViewModel(
-                                loginViewModel.user!.id, loginViewModel.token)),
+                            create: (BuildContext context) =>
+                                MatchViewModel(loginViewModel.user!.id)),
                       ],
                       child: const MainLayout(),
                     );
@@ -79,8 +79,7 @@ class MyRouter {
                               roomId: state.pathParameters['room_id']!,
                               user: loginViewModel.user!,
                               chatService: ChatApis.instance,
-                              httpApis:
-                                  HttpApis.instance(loginViewModel.token));
+                              httpApis: HttpApis.instance(TokenApis.instance));
                         },
                         child: const ChatPage());
                   }),
