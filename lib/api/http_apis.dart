@@ -23,6 +23,16 @@ class HttpApis {
     BaseOptions options = BaseOptions(
       baseUrl: dotenv.env[_ROOT_URL_ID] as String,
       contentType: 'application/json',
+      validateStatus: (statusCode) {
+        if (statusCode == null) return false;
+        return switch (statusCode) {
+          200 => true,
+          400 => true,
+          500 => true,
+          401 => true,
+          _ => false
+        };
+      },
     );
 
     Dio dio = Dio(options);
@@ -34,7 +44,7 @@ class HttpApis {
   }
 
   Future<void> _sendNotification(Map<String, dynamic> body, String type) async {
-    Response<void> response = await _dio.post(
+    Response response = await _dio.post(
       '/api/v1/firebase/message/send/$type',
       data: jsonEncode(body,
           toEncodable: (Object? value) => value is BlockInfo
@@ -44,7 +54,7 @@ class HttpApis {
 
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode!, message: '알림 전송에 실패했습니다'));
+          statusCode: response.statusCode!, message: response.data));
     }
   }
 
@@ -74,12 +84,9 @@ class HttpApis {
     });
 
     if (response.statusCode != 200) {
-      print('statusCode: ${response.statusCode!} msg: ${response.data}');
       return Future.error(HttpException(
           statusCode: response.statusCode!, message: response.data));
     }
-
-    print('data: ${response.data}');
 
     return User.fromJson(response.data);
   }
@@ -91,7 +98,6 @@ class HttpApis {
     });
 
     if (response.statusCode != 200) {
-      print('error: ${response.statusCode!} data: ${response.data}');
       return Future.error(HttpException(
           statusCode: response.statusCode!, message: response.data));
     }
@@ -142,8 +148,7 @@ class HttpApis {
 
     if (response.statusCode != 200) {
       return Future.error(HttpException(
-          statusCode: response.statusCode ?? 500,
-          message: 'FCM 토큰 등록에 실패했습니다.'));
+          statusCode: response.statusCode ?? 500, message: response.data));
     }
   }
 }
