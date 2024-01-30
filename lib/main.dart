@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:match_42/api/http_apis.dart';
 import 'package:match_42/api/token_apis.dart';
 import 'package:match_42/firebase_options.dart';
@@ -19,6 +20,7 @@ void main() async {
   await dotenv.load(fileName: '.env');
   await LocalNotification.initialize();
   await TokenApis.init();
+  await initializeDateFormatting('ko');
   runApp(
     ChangeNotifierProvider(
       create: (context) => LoginViewModel(

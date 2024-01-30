@@ -117,7 +117,7 @@ class MatchApis {
               users: matchData.users,
               unread: List.generate(matchData.capacity, (index) => 0),
               lastMsg: Message(
-                  sender: User(id: -1, intra: 'system'),
+                  sender: User(id: -1, intra: 'system', reportCount: 0),
                   message: '채팅방이 생성됐습니다.',
                   date: Timestamp.now())));
           return null;

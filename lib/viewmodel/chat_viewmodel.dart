@@ -183,7 +183,7 @@ class ChatViewModel extends ChangeNotifier {
   }
 
   bool isRemainTime() {
-    return (timer?.remainTime ?? 42 * 3600) > 0;
+    return (timer?.remainTime.inMilliseconds ?? 42 * 3600) > 0;
   }
 
   Future<void> makeTopic() async {

@@ -6,35 +6,32 @@ import 'package:intl/intl.dart';
 
 class RemainTimer {
   RemainTimer({required Timestamp openTime, required this.notify})
-      : _remainTime = _calculateRemainSeconds(openTime) {
-    initializeDateFormatting();
+      : _openTime = openTime.toDate(),
+        _endTime = openTime.toDate().add(const Duration(hours: 42)) {
     startTimer();
   }
 
-  int get remainTime => _remainTime;
-  int _remainTime;
+  final DateTime _openTime;
+  final DateTime _endTime;
+  Duration get remainTime => _calculateRemainSeconds(_endTime);
+
   Function notify;
 
   late Timer timer;
 
-  static int _calculateRemainSeconds(Timestamp openTime) {
-    int remainSeconds =
-        openTime.seconds + (42 * 3600) - Timestamp.now().seconds;
-
-    return remainSeconds > 0 ? remainSeconds : 0;
+  static Duration _calculateRemainSeconds(DateTime endTime) {
+    return endTime.difference(DateTime.now());
   }
 
   String parseRemainTime() {
-    DateTime time = DateTime.fromMillisecondsSinceEpoch(
-        Duration(seconds: _remainTime).inMilliseconds);
-
-    return DateFormat.Hms().format(time);
+    print(remainTime);
+    return remainTime.toString().substring(0, 8);
   }
 
   void startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_remainTime > 0) {
-        _remainTime = _remainTime - 1;
+      if (remainTime.compareTo(Duration(seconds: 0)) > 0) {
+        _calculateRemainSeconds(_endTime);
       } else {
         timer.cancel();
       }

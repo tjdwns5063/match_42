@@ -14,7 +14,8 @@ class ChatRoomCreator {
         users: [1, 2, 3, 4],
         unread: [0, 0, 0, 0],
         lastMsg: Message(
-            sender: User(id: 1, intra: 'test1', nickname: 'test'),
+            sender:
+                User(id: 1, intra: 'test1', nickname: 'test', reportCount: 0),
             message: 'hi',
             date: Timestamp.now()));
   }
@@ -28,7 +29,8 @@ class ChatRoomCreator {
         users: [1, 2],
         unread: [0, 0],
         lastMsg: Message(
-            sender: User(id: 1, intra: 'test1', nickname: 'test'),
+            sender:
+                User(id: 1, intra: 'test1', nickname: 'test', reportCount: 0),
             message: 'hi',
             date: Timestamp.now()));
   }
@@ -38,7 +40,7 @@ void incrementUnreadMessageCountTest() {
   ChatRoom chatRoom = ChatRoomCreator.createGroup();
 
   Message message = Message(
-      sender: User(id: 2, intra: 'test2', nickname: 'test2'),
+      sender: User(id: 2, intra: 'test2', nickname: 'test2', reportCount: 0),
       message: 'test',
       date: Timestamp.now());
 
@@ -63,7 +65,7 @@ void readMessagesThenClearUnreadMessageCountTest() {
 }
 
 void updateOpenStateTest() {
-  User me = User(id: 1, nickname: 'me', intra: 'seongjki');
+  User me = User(id: 1, nickname: 'me', intra: 'seongjki', reportCount: 0);
 
   ChatRoom chatRoom = ChatRoomCreator.create();
 

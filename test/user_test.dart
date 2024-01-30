@@ -23,19 +23,19 @@ void checkProfileTest(User user, String expected) {
 void main() {
   group('user unit test', () {
     Map<User, String> nicknameParam = {
-      User(id: 1, intra: '1'): '건',
-      User(id: 2, intra: '2'): '곤',
-      User(id: 3, intra: '3'): '감',
-      User(id: 4, intra: '4'): '리',
-      User(id: 5, intra: '5'): '리',
+      User(id: 1, intra: '1', reportCount: 0): '건',
+      User(id: 2, intra: '2', reportCount: 0): '곤',
+      User(id: 3, intra: '3', reportCount: 0): '감',
+      User(id: 4, intra: '4', reportCount: 0): '리',
+      User(id: 5, intra: '5', reportCount: 0): '리',
     };
 
     Map<User, String> profileParam = {
-      User(id: 1, intra: '1'): 'gun.png',
-      User(id: 2, intra: '2'): 'gon.png',
-      User(id: 3, intra: '3'): 'gam.png',
-      User(id: 4, intra: '4'): 'lee.png',
-      User(id: 5, intra: '5'): 'lee.png',
+      User(id: 1, intra: '1', reportCount: 0): 'gun.png',
+      User(id: 2, intra: '2', reportCount: 0): 'gon.png',
+      User(id: 3, intra: '3', reportCount: 0): 'gam.png',
+      User(id: 4, intra: '4', reportCount: 0): 'lee.png',
+      User(id: 5, intra: '5', reportCount: 0): 'lee.png',
     };
 
     nicknameParam.forEach((user, expected) {
