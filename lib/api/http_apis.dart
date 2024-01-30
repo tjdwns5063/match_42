@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:match_42/api/interceptor.dart';
 import 'package:match_42/api/token_apis.dart';
+import 'package:match_42/data/block_user.dart';
 import 'package:match_42/error/http_exception.dart';
 import 'package:dio/dio.dart';
 
@@ -35,7 +36,10 @@ class HttpApis {
   Future<void> _sendNotification(Map<String, dynamic> body, String type) async {
     Response<void> response = await _dio.post(
       '/api/v1/firebase/message/send/$type',
-      data: jsonEncode(body),
+      data: jsonEncode(body,
+          toEncodable: (Object? value) => value is BlockInfo
+              ? value.toFirestore()
+              : throw UnsupportedError('Cannot convert to JSON: $value')),
     );
 
     if (response.statusCode != 200) {
@@ -70,12 +74,14 @@ class HttpApis {
     });
 
     if (response.statusCode != 200) {
+      print('statusCode: ${response.statusCode!} msg: ${response.data}');
       return Future.error(HttpException(
           statusCode: response.statusCode!, message: response.data));
     }
-    Map<String, dynamic> json = jsonDecode(response.data);
 
-    return User.fromJson(json);
+    print('data: ${response.data}');
+
+    return User.fromJson(response.data);
   }
 
   Future<User> deleteBlockUser(String intraId) async {
@@ -85,12 +91,12 @@ class HttpApis {
     });
 
     if (response.statusCode != 200) {
+      print('error: ${response.statusCode!} data: ${response.data}');
       return Future.error(HttpException(
           statusCode: response.statusCode!, message: response.data));
     }
-    Map<String, dynamic> json = jsonDecode(response.data);
 
-    return User.fromJson(json);
+    return User.fromJson(response.data);
   }
 
   Future<List<String>> getInterestsById(int userId) async {

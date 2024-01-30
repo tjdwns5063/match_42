@@ -1,3 +1,4 @@
+import 'package:match_42/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TokenApis {
@@ -15,6 +16,8 @@ class TokenApis {
       throw Future.error(
           StateError('instance not initialize. please call TokenApis.init()'));
     }
+
+    Log.logger.d('JWT TOKEN: ${token}');
 
     return await _prefs!.setString('token', token);
   }

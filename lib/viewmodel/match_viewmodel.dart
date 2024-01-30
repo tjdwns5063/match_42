@@ -1,16 +1,16 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:match_42/api/firebase/match_api.dart';
+import 'package:match_42/data/user.dart';
 
 class MatchViewModel extends ChangeNotifier {
-  MatchViewModel(this._id) {
+  MatchViewModel(this._user) {
     init();
   }
 
   MatchApis matchService = MatchApis.instance;
-  final int _id;
+  final User _user;
 
   Map<String, MatchData?> matchStatus = {'밥': null, '수다': null, '과제': null};
 
@@ -22,8 +22,8 @@ class MatchViewModel extends ChangeNotifier {
   Future<void> init() async {
     streamSubscription =
         matchService.matchRef.snapshots().listen((event) async {
-      var results = event.docs
-          .where((e) => e.data().users.contains(_id))
+      List<MatchData> results = event.docs
+          .where((e) => e.data().users.contains(_user.id))
           .map((e) => e.data())
           .toList();
 
@@ -58,14 +58,13 @@ class MatchViewModel extends ChangeNotifier {
       bool isGender = false,
       String projectName = '',
       String menu = ''}) async {
-    matchStatus[type.typeName] = await FirebaseFirestore.instance
-        .runTransaction((transaction) =>
-            matchService.startMatch(capacity, type.typeName, _id));
+    matchStatus[type.typeName] =
+        await matchService.startMatch(capacity, type.typeName, _user.id);
   }
 
   Future<void> matchStop({required ChatType type}) async {
     matchStatus[type.typeName] =
-        await matchService.stopMatch(_id, type.typeName);
+        await matchService.stopMatch(_user.id, type.typeName);
   }
 }
 

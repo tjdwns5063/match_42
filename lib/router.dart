@@ -59,7 +59,7 @@ class MyRouter {
                                 )),
                         ChangeNotifierProvider(
                             create: (BuildContext context) =>
-                                MatchViewModel(loginViewModel.user!.id)),
+                                MatchViewModel(loginViewModel.user!)),
                       ],
                       child: const MainLayout(),
                     );

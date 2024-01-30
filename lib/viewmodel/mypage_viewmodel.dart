@@ -76,7 +76,7 @@ class MyPageViewModel extends ChangeNotifier {
   }
 
   void _initBlockUsers(User user) {
-    blockUsers = user.blockUsers;
+    blockUsers = user.blockUsers.map((e) => e.to.intra).toList();
   }
 
   bool checkInterest(String interest, List<String?> interestList) {

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:match_42/data/block_user.dart';
 import 'package:match_42/data/chat_room.dart';
 import 'package:match_42/ui/my_page.dart';
 
@@ -12,7 +13,7 @@ class User {
     interests,
     blockUsers,
   })  : interests = interests ?? <String>[],
-        blockUsers = blockUsers ?? <String>[],
+        blockUsers = blockUsers ?? <List<BlockInfo>>[],
         reportCount = reportCount;
 
   final int id;
@@ -20,7 +21,7 @@ class User {
   final String intra;
   String profile;
   List<String> interests;
-  List<String> blockUsers;
+  List<BlockInfo> blockUsers;
   int reportCount = 0;
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -33,8 +34,10 @@ class User {
             ? <String>[]
             : List<String>.from(json['interests']),
         blockUsers: json['blockUsers'] == null
-            ? <String>[]
-            : List<String>.from(json['blockUsers']),
+            ? <BlockInfo>[]
+            : List.from(json['blockUsers'])
+                .map((e) => BlockInfo.fromJson(e))
+                .toList(),
         reportCount: json['reportCount'] ?? 0);
   }
 

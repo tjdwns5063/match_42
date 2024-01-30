@@ -11,8 +11,9 @@ class CustomInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     Log.logger.d('REQUEST[${options.method}] => PATH: ${options.path}');
-    options.headers
-        .addEntries([MapEntry('Authorization', 'Bearer ${_tokenApis.read()}')]);
+    options.headers.addEntries([
+      MapEntry('Authorization', 'Bearer ${_tokenApis.read()}'),
+    ]);
     super.onRequest(options, handler);
   }
 

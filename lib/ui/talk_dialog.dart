@@ -128,9 +128,9 @@ class _TalkDialogState extends State<TalkDialog> {
                         .matchStart(
                             type: ChatType.chat,
                             capacity: populationList.indexOf(true) == 0 ? 2 : 4)
-                        .then((value) => context.pop())
-                        .onError((error, stackTrace) =>
-                            onHttpError(context, error as Exception));
+                        .then((value) => context.pop());
+                    // .onError((error, stackTrace) =>
+                    //     onHttpError(context, error as Exception));
                   },
                   child: const SizedBox(
                     width: double.infinity,
