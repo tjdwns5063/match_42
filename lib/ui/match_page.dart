@@ -135,30 +135,33 @@ class _MatchPageState extends State<MatchPage> {
           ),
         ),
         ElevatedButton(
-          onPressed: () {
-            if (!matchViewModel.matching[selected[_index].label]!) {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return ChangeNotifierProvider.value(
-                      value: matchViewModel,
-                      child: Dialog(
-                        surfaceTintColor:
-                            Theme.of(context).colorScheme.background,
-                        child: _getDialog(),
-                      ),
-                    );
-                  });
-            } else {
-              matchViewModel
-                  .matchStop(
-                      type: ChatType.values
-                          .where((element) =>
-                              element.typeName == selected[_index].label)
-                          .first)
-                  .onError((error, stackTrace) => onHttpError(context, error));
-            }
-          },
+          onPressed: selected[_index].label == '수다'
+              ? () {
+                  if (!matchViewModel.matching[selected[_index].label]!) {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return ChangeNotifierProvider.value(
+                            value: matchViewModel,
+                            child: Dialog(
+                              surfaceTintColor:
+                                  Theme.of(context).colorScheme.background,
+                              child: _getDialog(),
+                            ),
+                          );
+                        });
+                  } else {
+                    matchViewModel
+                        .matchStop(
+                            type: ChatType.values
+                                .where((element) =>
+                                    element.typeName == selected[_index].label)
+                                .first)
+                        .onError(
+                            (error, stackTrace) => onHttpError(context, error));
+                  }
+                }
+              : null,
           style: ElevatedButton.styleFrom(
               shape: const CircleBorder(), padding: const EdgeInsets.all(30.0)),
           child: Text(
@@ -289,7 +292,7 @@ class MatchListItem extends StatelessWidget {
                                             .matchStatus[label]!.capacity;
                                     ++i)
                                   Icon(
-                                    Icons.circle,
+                                    Icons.person,
                                     size: 13,
                                     color: i <
                                             matchViewModel
@@ -314,6 +317,9 @@ class MatchListItem extends StatelessWidget {
                         borderRadius: BorderRadius.circular(30.0)),
                     child: Image.asset(
                       imagePath,
+                      opacity: (label == '수다')
+                          ? null
+                          : const AlwaysStoppedAnimation(0.2),
                       fit: BoxFit.contain,
                     ),
                   ),
