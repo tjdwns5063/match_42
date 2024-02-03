@@ -21,7 +21,7 @@ class _TalkDialogState extends State<TalkDialog> {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     MatchViewModel matchViewModel = context.read();
     return SizedBox(
-      height: 400,
+      height: 300,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,35 +33,35 @@ class _TalkDialogState extends State<TalkDialog> {
                 style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 16.0, 0.0, 0.0),
-              child: Text(
-                '성별',
-                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 16.0),
-                  child: Text(
-                    '동성만',
-                    style:
-                        TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
-                  ),
-                ),
-                Padding(
-                    padding: EdgeInsets.only(right: 16.0),
-                    child: Switch(
-                        value: isSameGender,
-                        onChanged: (value) {
-                          setState(() {
-                            isSameGender = value;
-                          });
-                        })),
-              ],
-            ),
+            // const Padding(
+            //   padding: EdgeInsets.fromLTRB(16.0, 16.0, 0.0, 0.0),
+            //   child: Text(
+            //     '성별',
+            //     style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
+            //   ),
+            // ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     Padding(
+            //       padding: EdgeInsets.only(left: 16.0),
+            //       child: Text(
+            //         '동성만',
+            //         style:
+            //             TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
+            //       ),
+            //     ),
+            //     Padding(
+            //         padding: EdgeInsets.only(right: 16.0),
+            //         child: Switch(
+            //             value: isSameGender,
+            //             onChanged: (value) {
+            //               setState(() {
+            //                 isSameGender = value;
+            //               });
+            //             })),
+            //   ],
+            // ),
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 16.0, 0.0, 0.0),
               child: Text(
@@ -81,8 +81,9 @@ class _TalkDialogState extends State<TalkDialog> {
                         style: TextStyle(
                             fontSize: 20.0, fontWeight: FontWeight.w700),
                       ),
-                      Checkbox(
+                      Radio(
                           value: populationList[0],
+                          groupValue: true,
                           onChanged: (value) {
                             setState(() {
                               int currIndex = populationList.indexOf(true);
@@ -102,8 +103,9 @@ class _TalkDialogState extends State<TalkDialog> {
                         style: TextStyle(
                             fontSize: 20.0, fontWeight: FontWeight.w700),
                       ),
-                      Checkbox(
+                      Radio(
                           value: populationList[1],
+                          groupValue: true,
                           onChanged: (value) {
                             setState(() {
                               int currIndex = populationList.indexOf(true);

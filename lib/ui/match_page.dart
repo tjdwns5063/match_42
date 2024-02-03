@@ -293,7 +293,7 @@ class MatchListItem extends StatelessWidget {
                                     ++i)
                                   Icon(
                                     Icons.person,
-                                    size: 13,
+                                    size: 20,
                                     color: i <
                                             matchViewModel
                                                 .matchStatus[label]!.size

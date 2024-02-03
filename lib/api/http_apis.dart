@@ -26,10 +26,7 @@ class HttpApis {
       validateStatus: (statusCode) {
         if (statusCode == null) return false;
         return switch (statusCode) {
-          200 => true,
-          400 => true,
-          500 => true,
-          401 => true,
+          200 || 400 || 501 || 401 || 404 => true,
           _ => false
         };
       },
