@@ -11,6 +11,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.ACTION_TOKEN }}
+          submodules: true
+
 
       - name: Java Setup
         uses: actions/setup-java@v3.12.0
@@ -22,6 +26,11 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.10.6'
+
+      - name: Copy Application-Properties
+        run: |
+          cp match42-secret/.env .
+
 
       - name: Pub Get Packages
         run: flutter pub get
