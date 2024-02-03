@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: linux-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -37,13 +37,6 @@ jobs:
 
       - name: Run Unit Test
         run: flutter test
-
-      - name: 테스트 결과를 PR에 코멘트로 등록합니다
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        if: always()
-        with:
-          files: '**/build/test-results/test/TEST-*.xml'
-
 
       # - name: Upload Apk
       #   uses: actions/upload-artifact@v3.1.2

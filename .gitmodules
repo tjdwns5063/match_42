@@ -1,0 +1,3 @@
+[submodule "match42-secret"]
+	path = match42-secret
+	url = https://github.com/tjdwns5063/match42-secret.git

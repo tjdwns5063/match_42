@@ -4,7 +4,7 @@ import 'package:match_42/api/http_apis.dart';
 import 'package:match_42/api/firebase/chat_api.dart';
 import 'package:match_42/api/token_apis.dart';
 import 'package:match_42/ui/ban_page.dart';
-import 'package:match_42/ui/chat_page.dart';
+import 'package:match_42/ui/chat/chat_page.dart';
 import 'package:match_42/ui/login_page.dart';
 import 'package:match_42/ui/main_layout.dart';
 import 'package:match_42/viewmodel/chat_list_viewmodel.dart';
