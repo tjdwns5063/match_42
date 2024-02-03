@@ -44,20 +44,6 @@ class MyRadioListTileWidget extends StatelessWidget {
   }
 }
 
-// class MyRadioListTileWidget extends StatefulWidget {
-//   const MyRadioListTileWidget({super.key});
-//
-//   @override
-//   State<MyRadioListTileWidget> createState() => _MyRadioListTileWidgetState();
-// }
-//
-// class _MyRadioListTileWidgetState extends State<MyRadioListTileWidget> {
-//   int _selectedValue = 1;
-//
-//   @override
-//   Widget build(BuildContext context) {}
-// }
-
 class SelectChat extends StatelessWidget {
   const SelectChat({super.key});
 

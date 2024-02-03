@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:match_42/data/message.dart';
-import 'package:match_42/ui/user_bottom_sheet.dart';
-import 'package:match_42/ui/yes_or_no.dart';
+import 'package:match_42/ui/chat/user_bottom_sheet.dart';
+import 'package:match_42/ui/chat/yes_or_no.dart';
 import 'package:match_42/viewmodel/chat_viewmodel.dart';
 import 'package:match_42/viewmodel/login_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:match_42/ui/make_topic.dart';
+import 'package:match_42/ui/chat/make_topic.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
