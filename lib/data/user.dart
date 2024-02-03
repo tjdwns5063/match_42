@@ -13,7 +13,7 @@ class User {
     interests,
     blockUsers,
   })  : interests = interests ?? <String>[],
-        blockUsers = blockUsers ?? <List<BlockInfo>>[],
+        blockUsers = blockUsers ?? <BlockInfo>[],
         reportCount = reportCount;
 
   final int id;
