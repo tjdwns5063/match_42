@@ -1,5 +1,9 @@
 name: Build
-on: workflow_dispatch
+on: 
+  pull_request:
+    branches:
+      - main
+      - develop
 
 jobs:
   build:
@@ -7,6 +11,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.ACTION_TOKEN }}
+          submodules: true
+
 
       - name: Java Setup
         uses: actions/setup-java@v3.12.0
@@ -19,14 +27,26 @@ jobs:
         with:
           flutter-version: '3.10.6'
 
+      - name: Copy Application-Properties
+        run: |
+          cp match42-secret/.env .
+
+
       - name: Pub Get Packages
         run: flutter pub get
 
-      - name: Build Dev Apk
-        run: flutter build apk --debug
+      - name: Run Unit Test
+        run: flutter test
 
-      - name: Upload Apk
-        uses: actions/upload-artifact@v3.1.2
+      - name: 테스트 결과를 PR에 코멘트로 등록합니다
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
         with:
-          name: android_debug_apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          files: '**/build/test-results/test/TEST-*.xml'
+
+
+      # - name: Upload Apk
+      #   uses: actions/upload-artifact@v3.1.2
+      #   with:
+      #     name: android_debug_apk
+      #     path: build/app/outputs/flutter-apk/app-debug.apk
