@@ -121,7 +121,7 @@ class _ChatPageState extends State<ChatPage> {
             RichText(
               text: TextSpan(
                 text: chatViewModel.chatRoom.name,
-                style: TextStyle(
+                style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                     fontSize: 20.0),
@@ -284,7 +284,7 @@ class OtherChatMessage extends StatelessWidget {
     ChatViewModel viewModel = context.read();
 
     String decideNickname() {
-      if (viewModel.chatRoom.type.toLowerCase() == 'chat') {
+      if (viewModel.chatRoom.type.toLowerCase() == '수다') {
         if (viewModel.chatRoom.isEveryOpened()) {
           return msg.sender.intra;
         }
